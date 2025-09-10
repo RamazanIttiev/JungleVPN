@@ -1,0 +1,11 @@
+{
+  "name": "VPN",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "docker compose up -d --build",
+    "push": "rsync -avz --delete --exclude-from='.rsync-exclude' -e 'ssh -i /Users/rittiev/.ssh/vpn_key' ./ root@2.58.98.191:/vpn-app/",
+    "enter:cloud": "ssh -i /Users/rittiev/.ssh/vpn_key root@2.58.98.191"
+  }
+}
