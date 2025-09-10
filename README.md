@@ -94,3 +94,4 @@ sudo systemctl reload wg-quick@wg0
 - `POST /api/payments/mock` (API key) body: `{ telegramId, amount? }` → creates paid payment, marks user active
 - `GET /api/peers/issue?telegramId=...` (API key) → returns `{ filename, content }` WireGuard client config
 
+# VPN
