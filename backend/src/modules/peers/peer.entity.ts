@@ -3,39 +3,44 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 
+export type PeerStatus = 'provisioning' | 'active' | 'disabled' | 'revoked';
+
 @Entity('peers')
 export class Peer {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @PrimaryGeneratedColumn('uuid') id: string;
 
-  @OneToOne(
+  @ManyToOne(
     () => User,
-    (u) => u.peer,
-    { eager: true },
+    (u) => u.peers,
+    { onDelete: 'CASCADE' },
   )
-  @JoinColumn()
-  user!: User;
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
-  @Column({ unique: true })
-  ipAddress!: string; // 10.0.0.x
+  @Column() userId: string; // optional handy column
 
-  @Column()
-  publicKey!: string;
+  @Column({ unique: true }) ipAddress: string;
 
-  @Column()
-  privateKey!: string;
+  @Column({ unique: true }) publicKey: string;
 
-  @CreateDateColumn()
-  createdAt!: Date;
+  @Column({ type: 'text', select: false }) privateKeyEnc: string; // encrypted, not returned by default
 
-  @Column({ type: 'uuid', nullable: true })
-  userId: string | undefined;
+  @CreateDateColumn() createdAt: Date;
 
-  @Column({ type: 'uuid', nullable: true })
-  token: string | undefined;
+  @Column({
+    type: 'enum',
+    enum: ['provisioning', 'active', 'disabled', 'revoked'],
+    default: 'provisioning',
+  })
+  status: PeerStatus;
+
+  @Column({ nullable: true }) name?: string;
+
+  @Column({ nullable: true }) expiresAt?: Date;
+  @Column({ nullable: true }) revokedAt?: Date;
 }

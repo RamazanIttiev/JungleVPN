@@ -1,32 +1,39 @@
 import {
-	Column,
-	CreateDateColumn,
-	Entity,
-	ManyToOne,
-	PrimaryGeneratedColumn,
-} from "typeorm";
-import { User } from "../users/user.entity";
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from '../users/user.entity';
 
-export type PaymentStatus = "pending" | "paid" | "failed";
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
-@Entity("payments")
+@Entity('payments')
 export class Payment {
-	@PrimaryGeneratedColumn("uuid")
-	id!: string;
+  @PrimaryGeneratedColumn('uuid') id: string;
 
-	@ManyToOne(
-		() => User,
-		(u) => u.payments,
-		{ eager: true },
-	)
-	user!: User;
+  @ManyToOne(
+    () => User,
+    (u) => u.payments,
+    { onDelete: 'SET NULL' },
+  )
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
-	@Column("integer")
-	amount!: number;
+  @Column() userId: string;
 
-	@Column({ type: "varchar" })
-	status!: PaymentStatus;
+  @Column({ type: 'integer' }) amountCents: number; // store cents
 
-	@CreateDateColumn()
-	createdAt!: Date;
+  @Column({ length: 3 }) currency: string; // ISO code, e.g. "EUR"
+
+  @Column({ nullable: true }) provider?: string;
+  @Column({ nullable: true }) providerPaymentId?: string;
+
+  @Column({ type: 'enum', enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' })
+  status: PaymentStatus;
+
+  @CreateDateColumn() createdAt: Date;
+  @Column({ nullable: true }) confirmedAt?: Date;
 }
