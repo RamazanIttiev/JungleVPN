@@ -24,9 +24,9 @@ export class Payment {
 
   @Column() userId: string;
 
-  @Column({ type: 'integer' }) amountCents: number; // store cents
+  @Column({ type: 'integer' }) amount: number; // store cents
 
-  @Column({ length: 3 }) currency: string; // ISO code, e.g. "EUR"
+  @Column({ length: 3, default: 'RUB' }) currency: string; // ISO code, e.g. "EUR"
 
   @Column({ nullable: true }) provider?: string;
   @Column({ nullable: true }) providerPaymentId?: string;

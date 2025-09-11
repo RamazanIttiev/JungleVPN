@@ -20,6 +20,7 @@ bot.api
     { command: 'add', description: 'Add device' },
     { command: 'pay', description: 'Pay' },
     { command: 'devices', description: 'List devices' },
+    { command: 'removeall', description: 'Remove all devices' },
   ])
   .catch((err) => console.error('Failed to set commands:', err));
 
@@ -33,12 +34,17 @@ bot.api
 
 bot.command('start', async (ctx) => {
   await ctx.reply('Welcome! Use menu buttons (commands) to add a device, pay, list or delete.');
+
+  if (!ctx.from) return;
+  const telegramId = String(ctx.from.id);
+
+  await backend.post('/users/create', { telegramId });
 });
 
 bot.command('add', async (ctx) => {
   if (!ctx.from) return;
   const telegramId = String(ctx.from.id);
-  await backend.get('/users/ensure', { params: { telegramId } });
+  await backend.post('/peers/add', { telegramId });
   await ctx.reply('User ensured. Now run /pay to proceed.');
 });
 
@@ -68,25 +74,25 @@ bot.command('devices', async (ctx) => {
   const telegramId = String(ctx.from.id);
   const { data } = await backend.get('/peers/list', { params: { telegramId } });
 
-  const items = (data?.items || []) as Array<{
+  const peers = (data?.peers || []) as Array<{
     id: string;
-    ipAddress: string;
     createdAt: string;
   }>;
 
-  if (!items.length) {
+  if (!peers.length) {
     await ctx.reply('📱 You don’t have any active devices yet. Run /add to link one.');
     return;
   }
 
-  await ctx.reply(`✅ You currently have *${items.length}* linked device(s):`, {
+  await ctx.reply(`✅ You currently have *${peers.length}* linked device(s):`, {
     parse_mode: 'Markdown',
   });
 
-  for (const d of items) {
-    const addedAt = new Date(d.createdAt).toLocaleString();
-    const kb = new InlineKeyboard().text('🗑 Delete', `del:${d.id}`);
-    await ctx.reply(`• Device ID: \`${d.id}\`\n• Added: ${addedAt}`, {
+  for (const peer of peers) {
+    const addedAt = new Date(peer.createdAt).toLocaleString('ru-RU');
+    const kb = new InlineKeyboard().text('🗑 Delete', `del:${peer.id}`);
+
+    await ctx.reply(`• Device ID: \`${peer.id}\`\n• Added: ${addedAt}`, {
       parse_mode: 'Markdown',
       reply_markup: kb,
     });
@@ -101,7 +107,9 @@ bot.callbackQuery(/del:(.+)/, async (ctx) => {
   if (!peerId) return;
 
   try {
-    await backend.delete(`/peers/${peerId}`, { params: { telegramId } });
+    const { data } = await backend.delete(`/peers/${peerId}`, { params: { telegramId } });
+
+    console.log(data);
     if (ctx.callbackQuery?.message) {
       const original = ctx.callbackQuery.message;
       const text = typeof original.text === 'string' ? original.text : '';
@@ -118,6 +126,18 @@ bot.callbackQuery(/del:(.+)/, async (ctx) => {
     const message =
       (err as any)?.response?.data?.message || (err as Error)?.message || 'Unknown error';
     await ctx.reply(`❌ Failed to delete device: ${message}`);
+  }
+});
+
+bot.command('removeAll', async (ctx) => {
+  if (!ctx.from) return;
+  const telegramId = String(ctx.from.id);
+  const { data } = await backend.delete('/peers/removeAll', { params: { telegramId } });
+
+  if (data.status) {
+    await ctx.reply('✅ Devices deleted');
+  } else {
+    await ctx.reply('Failed to delete devices');
   }
 });
 

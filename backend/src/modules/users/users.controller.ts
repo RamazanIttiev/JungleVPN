@@ -1,4 +1,4 @@
-import { Controller, Get, Headers, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiKeyGuard } from '../../shared/auth/api-key.guard';
 import { UsersService } from './users.service';
 
@@ -7,9 +7,9 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly users: UsersService) {}
 
-  @Get('ensure')
-  async ensure(@Query('telegramId') telegramId: string, @Headers('x-api-key') _apiKey: string) {
-    const user = await this.users.findOrCreateByTelegramId(telegramId);
+  @Post('create')
+  async create(@Body('telegramId') telegramId: string): Promise<{ id: string }> {
+    const user = await this.users.createUser(telegramId);
     return { id: user.id };
   }
 }

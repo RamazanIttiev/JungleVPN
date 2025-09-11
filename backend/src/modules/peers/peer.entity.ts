@@ -22,13 +22,11 @@ export class Peer {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column() userId: string; // optional handy column
-
   @Column({ unique: true }) ipAddress: string;
 
   @Column({ unique: true }) publicKey: string;
 
-  @Column({ type: 'text', select: false }) privateKeyEnc: string; // encrypted, not returned by default
+  @Column({ type: 'text', select: false, nullable: true }) privateKeyEnc: string; // encrypted, not returned by default
 
   @CreateDateColumn() createdAt: Date;
 
