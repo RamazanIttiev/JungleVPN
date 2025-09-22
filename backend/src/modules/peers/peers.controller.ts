@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiKeyGuard } from '../../shared/auth/api-key.guard';
 import { PeerStatus } from './peer.entity';
 import { PeersService } from './peers.service';
@@ -40,13 +50,13 @@ export class PeersController {
     };
   }
 
-  @Delete(':peerId')
-  async remove(@Param('peerId') peerId: string) {
-    return await this.peersService.remove(peerId);
+  @Delete('removeAll')
+  async removeAll(): Promise<{ success: boolean }> {
+    return await this.peersService.removeAll();
   }
 
-  @Delete('all')
-  async removeAll(@Param('telegramId') telegramId: string) {
-    return await this.peersService.removeAll(telegramId);
+  @Delete(':peerId')
+  async remove(@Param('peerId', new ParseUUIDPipe()) peerId: string) {
+    return await this.peersService.remove(peerId);
   }
 }

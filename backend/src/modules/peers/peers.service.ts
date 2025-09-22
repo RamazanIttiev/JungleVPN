@@ -87,12 +87,6 @@ export class PeersService {
     }
   }
 
-  async getMappedPeers(telegramId: string): Promise<Array<{ id: string; createdAt: Date }>> {
-    const peers = await this.getAll(telegramId);
-    // Even though the relation is currently OneToOne, return an array for future-proofing
-    return peers.map((p) => ({ id: p.id, createdAt: p.createdAt }));
-  }
-
   async remove(peerId: string): Promise<{ success: boolean }> {
     const peer = await this.get(peerId);
 
@@ -109,15 +103,19 @@ export class PeersService {
     }
   }
 
-  async removeAll(telegramId: string): Promise<{ success: boolean }> {
-    const peer = await this.getAll(telegramId);
+  async getMappedPeers(telegramId: string): Promise<Array<{ id: string; createdAt: Date }>> {
+    const peers = await this.getAll(telegramId);
+    // Even though the relation is currently OneToOne, return an array for future-proofing
+    return peers.map((p) => ({ id: p.id, createdAt: p.createdAt }));
+  }
 
+  async removeAll(): Promise<{ success: boolean }> {
     try {
       if (!this.mock) {
         // await this.wg.removePeerFromConfig(peer.publicKey);
         // await this.wg.reloadWireGuard();
       }
-      await this.repo.remove(peer);
+      await this.repo.clear();
 
       return { success: true };
     } catch (error) {

@@ -113,17 +113,27 @@ bot.command('devices', async (ctx) => {
   }
 });
 
+bot.command('removeall', async (ctx) => {
+  if (!ctx.from) return;
+
+  const { data } = await backend.delete('/peers/removeAll');
+
+  if (data.success) {
+    await ctx.reply('✅ Devices deleted');
+  } else {
+    await ctx.reply('Failed to delete devices');
+  }
+});
+
 bot.callbackQuery(/del:(.+)/, async (ctx) => {
   await ctx.answerCallbackQuery();
   if (!ctx.from) return;
-  const telegramId = String(ctx.from.id);
   const peerId = ctx.match?.[1];
   if (!peerId) return;
 
   try {
-    const { data } = await backend.delete(`/peers/${peerId}`, { params: { telegramId } });
+    await backend.delete(`/peers/${peerId}`, { params: { peerId } });
 
-    console.log(data);
     if (ctx.callbackQuery?.message) {
       const original = ctx.callbackQuery.message;
       const text = typeof original.text === 'string' ? original.text : '';
@@ -140,18 +150,6 @@ bot.callbackQuery(/del:(.+)/, async (ctx) => {
     const message =
       (err as any)?.response?.data?.message || (err as Error)?.message || 'Unknown error';
     await ctx.reply(`❌ Failed to delete device: ${message}`);
-  }
-});
-
-bot.command('removeAll', async (ctx) => {
-  if (!ctx.from) return;
-  const telegramId = String(ctx.from.id);
-  const { data } = await backend.delete('/peers/removeAll', { params: { telegramId } });
-
-  if (data.status) {
-    await ctx.reply('✅ Devices deleted');
-  } else {
-    await ctx.reply('Failed to delete devices');
   }
 });
 
