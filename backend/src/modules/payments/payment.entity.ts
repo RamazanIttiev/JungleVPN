@@ -31,7 +31,12 @@ export class Payment {
   @Column({ nullable: true }) provider?: string;
   @Column({ nullable: true }) providerPaymentId?: string;
 
-  @Column({ type: 'enum', enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' })
+  @Column({
+    type: 'enum',
+    enum: ['pending', 'paid', 'failed', 'refunded'],
+    default: 'pending',
+    nullable: false,
+  })
   status: PaymentStatus;
 
   @CreateDateColumn() createdAt: Date;

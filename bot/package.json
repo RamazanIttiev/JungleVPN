@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch --clear-screen=false src/index.ts"
+    "start:bot": "tsx watch --clear-screen=false src/index.ts"
   },
   "dependencies": {
     "axios": "^1.7.7",

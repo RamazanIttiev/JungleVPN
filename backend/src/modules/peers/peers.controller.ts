@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Header, Param, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiKeyGuard } from '../../shared/auth/api-key.guard';
+import { PeerStatus } from './peer.entity';
 import { PeersService } from './peers.service';
 import { WireGuardService } from './wireguard.service';
 
@@ -11,38 +12,21 @@ export class PeersController {
     private readonly wireGuardService: WireGuardService,
   ) {}
 
-  @Get('issue')
-  @Header('Content-Type', 'application/json')
-  async issue(@Query('telegramId') telegramId: string) {
-    const { token } = await this.peersService.issueConfigForTelegram(telegramId);
+  @Post('add')
+  async add(@Body('telegramId') telegramId: string): Promise<{ id: string; status: PeerStatus }> {
+    const data = await this.peersService.add(telegramId);
 
-    return { token };
-  }
-
-  @Delete(':peerId')
-  async remove(@Param('peerId') peerId: string, @Query('telegramId') telegramId: string) {
-    await this.peersService.removePeer(peerId, telegramId);
-    return { success: true };
-  }
-
-  @Get('list')
-  @Header('Content-Type', 'application/json')
-  async list(@Query('telegramId') telegramId: string) {
-    const items = await this.peersService.listForTelegram(telegramId);
-    return { items };
+    return {
+      id: data.id,
+      status: data.status,
+    };
   }
 
   @Get('config')
-  @Header('Content-Type', 'application/json')
   async config(@Query('telegramId') telegramId: string) {
-    const peer = await this.peersService.getPeerByTgId(telegramId);
+    const peer = await this.peersService.getByTelegramId(telegramId);
 
-    if (!peer) {
-      console.log('NO PEER');
-      return;
-    }
-
-    const filename = `vpn-${peer.user.telegramId}.conf`;
+    const filename = `vpn-${peer.createdAt.getTime()}.conf`;
     const content = this.wireGuardService.buildWireGuardClientConfig(peer);
 
     return {
@@ -51,28 +35,19 @@ export class PeersController {
     };
   }
 
-  // @Get(':token')
-  // async getConfig(@Param('token') token: string, @Res() res: Response) {
-  //   const peer = await this.peersService.getPeer(token);
-  //
-  //   if (!peer) throw new UnauthorizedException('Invalid or expired token');
-  //
-  //   const filename = `wg0-${peer.user.telegramId}.conf`;
-  //   const content = this.wireGuardService.buildWireGuardClientConfig({
-  //     clientPrivateKey: peer.privateKey,
-  //     clientIpAddress: peer.ipAddress,
-  //     serverPublicKey: process.env.WG_SERVER_PUBLIC_KEY || '',
-  //     serverPublicIp: process.env.WG_SERVER_PUBLIC_IP || '',
-  //     dns: process.env.WG_DNS || '1.1.1.1,8.8.8.8',
-  //     allowedIps: process.env.WG_ALLOWED_IPS || '0.0.0.0/0, ::/0',
-  //   });
-  //
-  //   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-  //   res.setHeader('Content-Type', 'application/wireguard');
-  //   res.send(content);
-  //
-  //   // Optional: expire token after first download
-  //   peer.token = undefined;
-  //   await this.peersService.savePeer(peer);
-  // }
+  @Get('list')
+  async list(@Query('telegramId') telegramId: string) {
+    const peers = await this.peersService.getMappedPeers(telegramId);
+    return { peers };
+  }
+
+  @Delete(':peerId')
+  async remove(@Param('peerId') peerId: string) {
+    return await this.peersService.remove(peerId);
+  }
+
+  @Delete('all')
+  async removeAll(@Param('telegramId') telegramId: string) {
+    return await this.peersService.removeAll(telegramId);
+  }
 }

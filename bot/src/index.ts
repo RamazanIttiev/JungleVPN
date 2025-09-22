@@ -44,8 +44,22 @@ bot.command('start', async (ctx) => {
 bot.command('add', async (ctx) => {
   if (!ctx.from) return;
   const telegramId = String(ctx.from.id);
-  await backend.post('/peers/add', { telegramId });
-  await ctx.reply('User ensured. Now run /pay to proceed.');
+
+  const { data: peer } = await backend.post('/peers/add', { telegramId });
+
+  const kb = new InlineKeyboard().text('🗑 Delete', `del:${peer.id}`);
+
+  await ctx.reply(
+    `
+  New device is added. Now run /pay to proceed.
+  
+  • Device ID: \`${peer.id}\`\n
+  • Status: ${peer.status}`,
+    {
+      parse_mode: 'Markdown',
+      reply_markup: kb,
+    },
+  );
 });
 
 bot.command('pay', async (ctx) => {

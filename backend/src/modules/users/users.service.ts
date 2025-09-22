@@ -10,7 +10,7 @@ export class UsersService {
     private readonly repo: Repository<User>,
   ) {}
 
-  async getUserByTgId(telegramId: string): Promise<User> {
+  async get(telegramId: string): Promise<User> {
     const user = await this.repo.findOne({ where: { telegramId } });
 
     if (!user) {
@@ -21,7 +21,7 @@ export class UsersService {
   }
 
   async createUser(telegramId: string): Promise<User> {
-    const existingUser = await this.getUserByTgId(telegramId);
+    const existingUser = await this.get(telegramId);
 
     if (existingUser) {
       console.log(`User ${existingUser.telegramId} already exists. [method]: createUser`);

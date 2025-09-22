@@ -10,7 +10,6 @@ import { UsersModule } from './users/users.module';
     ConfigModule,
     TypeOrmModule.forRootAsync({
       useFactory: () => {
-        console.log(process.env.DATABASE_URL);
         return {
           type: 'postgres',
           url: process.env.DATABASE_URL,

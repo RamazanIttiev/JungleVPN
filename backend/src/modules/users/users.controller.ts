@@ -8,8 +8,8 @@ export class UsersController {
   constructor(private readonly users: UsersService) {}
 
   @Post('create')
-  async create(@Body('telegramId') telegramId: string): Promise<{ id: string }> {
+  async create(@Body('telegramId') telegramId: string): Promise<string> {
     const user = await this.users.createUser(telegramId);
-    return { id: user.id };
+    return user.id;
   }
 }

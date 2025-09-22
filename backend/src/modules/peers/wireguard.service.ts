@@ -31,14 +31,8 @@ const exec = promisify(execCb);
 @Injectable()
 export class WireGuardService {
   private readonly interfaceName = process.env.WG_INTERFACE || 'wg0';
-  private readonly mock = (process.env.WG_MOCK || 'true') === 'true';
 
   async generateKeypair(): Promise<{ publicKey: string; privateKey: string }> {
-    if (this.mock) {
-      const { publicKey, privateKey } = generateWgKeypair();
-
-      return { publicKey, privateKey };
-    }
     const { stdout: priv } = await exec('wg genkey');
     const privateKey = priv.trim();
     const { stdout: pub } = await exec(`echo ${privateKey} | wg pubkey`);
@@ -47,14 +41,12 @@ export class WireGuardService {
   }
 
   async appendPeerToConfig(publicKey: string, allowedIpCidr: string): Promise<void> {
-    if (this.mock) return;
     const peerBlock = `\n[Peer]\nPublicKey = ${publicKey}\nAllowedIPs = ${allowedIpCidr}\nPersistentKeepalive = 25`;
     // Append peer block into the server config on the host filesystem (no sudo/systemctl)
     await exec(`sh -lc 'printf "%s" "${peerBlock}" >> /etc/wireguard/${this.interfaceName}.conf'`);
   }
 
   async removePeerFromConfig(publicKey: string): Promise<void> {
-    if (this.mock) return;
     const ifc = this.interfaceName;
 
     // Use wg syncconf: create a stripped config without this peer
@@ -74,7 +66,6 @@ export class WireGuardService {
   }
 
   async reloadWireGuard(): Promise<void> {
-    if (this.mock) return;
     // Reload configuration using wg-quick strip + wg syncconf (no systemctl)
     const ifc = this.interfaceName;
     const stripCmd = `wg-quick strip /etc/wireguard/${ifc}.conf > /tmp/${ifc}.stripped`;
