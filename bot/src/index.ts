@@ -86,9 +86,9 @@ bot.command('pay', async (ctx) => {
 bot.command('devices', async (ctx) => {
   if (!ctx.from) return;
   const telegramId = String(ctx.from.id);
-  const { data } = await backend.get('/peers/list', { params: { telegramId } });
+    const { data } = await backend.get('/peers/list', { params: { telegramId } });
 
-  const peers = (data?.peers || []) as Array<{
+  const peers = (data || []) as Array<{
     id: string;
     createdAt: string;
   }>;

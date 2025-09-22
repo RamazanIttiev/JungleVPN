@@ -22,6 +22,11 @@ export class PeersController {
     };
   }
 
+  @Get('list')
+  async list(@Query('telegramId') telegramId: string): Promise<{ id: string; createdAt: Date }[]> {
+    return await this.peersService.getMappedPeers(telegramId);
+  }
+
   @Get('config')
   async config(@Query('telegramId') telegramId: string) {
     const peer = await this.peersService.getByTelegramId(telegramId);
@@ -33,12 +38,6 @@ export class PeersController {
       filename,
       content,
     };
-  }
-
-  @Get('list')
-  async list(@Query('telegramId') telegramId: string) {
-    const peers = await this.peersService.getMappedPeers(telegramId);
-    return { peers };
   }
 
   @Delete(':peerId')
