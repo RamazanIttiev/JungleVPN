@@ -34,7 +34,7 @@ export class PeersService {
       where: { user: { id: user.id } },
     });
 
-    if (!peer) throw new UnauthorizedException('NO PEER FOUND. method: getByTelegramId');
+    if (!peer) throw new UnauthorizedException('NO PEER FOUND. method: getByTelegramId').message;
 
     return peer;
   }

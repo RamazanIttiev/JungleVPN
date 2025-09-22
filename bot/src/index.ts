@@ -71,22 +71,26 @@ bot.command('pay', async (ctx) => {
   const { data } = await backend.post('/payments/mock', { telegramId, amount: 500 });
 
   if (data.status === 'paid') {
-    const { data: config } = await backend.get('/peers/config', { params: { telegramId } });
+    try {
+      const { data: config } = await backend.get('/peers/config', { params: { telegramId } });
 
-    const { filename, content } = config as { filename: string; content: string };
+      const { filename, content } = config as { filename: string; content: string };
 
-    const buffer = Buffer.from(content, 'utf-8');
+      const buffer = Buffer.from(content, 'utf-8');
 
-    await ctx.replyWithDocument(new InputFile(buffer, filename), {
-      caption: `✅ Payment received!\n\nImport this config into the WireGuard app.`,
-    });
+      await ctx.replyWithDocument(new InputFile(buffer, filename), {
+        caption: `✅ Payment received!\n\nImport this config into the WireGuard app.`,
+      });
+    } catch (error) {
+      await ctx.reply('You dont have any devices. Use /add command');
+    }
   }
 });
 
 bot.command('devices', async (ctx) => {
   if (!ctx.from) return;
   const telegramId = String(ctx.from.id);
-    const { data } = await backend.get('/peers/list', { params: { telegramId } });
+  const { data } = await backend.get('/peers/list', { params: { telegramId } });
 
   const peers = (data || []) as Array<{
     id: string;
