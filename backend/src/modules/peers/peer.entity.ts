@@ -16,7 +16,7 @@ export class Peer {
 
   @ManyToOne(
     () => User,
-    (u) => u.peers,
+    (u) => u.clients,
     { onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'userId' })

@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '../shared/config/config.module';
 import { PaymentsModule } from './payments/payments.module';
-import { PeersModule } from './peers/peers.module';
 import { UsersModule } from './users/users.module';
 import { XuiModule } from './xui/xui.module';
 
@@ -21,7 +20,6 @@ import { XuiModule } from './xui/xui.module';
     }),
     UsersModule,
     PaymentsModule,
-    PeersModule,
     XuiModule,
   ],
 })

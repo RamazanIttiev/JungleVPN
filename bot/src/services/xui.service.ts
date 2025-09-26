@@ -38,22 +38,24 @@ export class XuiService {
     }
   }
 
-  async getClients(inboundId: InboundId): Promise<InboundClient[]> {
+  async getClients(telegramId: string, inboundId: InboundId = 1): Promise<InboundClient[]> {
     try {
       const { success } = await this.login();
-
-      if (success) {
-        const { data } = await backend.get(`/${inboundId}`);
-
-        const settings: InboundSettingsPayload = JSON.parse(data.obj.settings);
-
-        return settings.clients;
+      if (!success) {
+        throw new Error('BOT. Please log in. Method getClients');
       }
 
-      throw new Error('BOT. Please log in. Method getInbound');
+      const { data } = await backend.get(`/${inboundId}`);
+
+      if (!data?.obj?.settings) {
+        throw new Error(`BOT. Inbound ${inboundId} has no settings`);
+      }
+
+      const settings: InboundSettingsPayload = JSON.parse(data.obj.settings);
+      return settings.clients.filter((client) => client.tgId === telegramId);
     } catch (error) {
-      console.log('BOT. SERVER ERROR. Method getInbound');
-      throw new Error(error as string);
+      console.error('BOT. SERVER ERROR. Method getClients', error);
+      throw error;
     }
   }
 
@@ -62,26 +64,20 @@ export class XuiService {
 
     try {
       const { success } = await this.login();
-
-      if (success) {
-        const { data } = await backend.post('/addClient', body);
-
-        if (data.success) {
-          return data;
-        } else {
-          throw new Error(data.msg);
-        }
+      if (!success) {
+        throw new Error('BOT. Please log in. Method addClient');
       }
+
       const { data } = await backend.post('/addClient', body);
 
-      if (data.success) {
-        return data;
-      } else {
-        throw new Error(data.msg);
+      if (!data?.success) {
+        throw new Error(`BOT. addClient failed: ${data?.msg || 'Unknown error'}`);
       }
+
+      return data;
     } catch (error) {
-      console.log(error);
-      throw new Error('BOT. SERVER ERROR. Method: addClient');
+      console.error('BOT. SERVER ERROR. Method addClient', error);
+      throw error;
     }
   }
 
@@ -92,13 +88,25 @@ export class XuiService {
     return data;
   }
 
-  async deleteClient(clientId: string): Promise<unknown> {
-    const body = {
-      inboundId: 1,
-      clientId,
-    };
+  async deleteClient(clientId: string, inboundId: InboundId = 1): Promise<unknown> {
+    const body = { inboundId, clientId };
 
-    const { data } = await backend.post(`/deleteClient`, body);
-    return data as unknown;
+    try {
+      const { success } = await this.login();
+      if (!success) {
+        throw new Error('BOT. Please log in. Method deleteClient');
+      }
+
+      const { data } = await backend.post('/deleteClient', body);
+
+      if (!data?.success) {
+        throw new Error(`BOT. deleteClient failed: ${data?.msg || 'Unknown error'}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('BOT. SERVER ERROR. Method deleteClient', error);
+      throw error;
+    }
   }
 }

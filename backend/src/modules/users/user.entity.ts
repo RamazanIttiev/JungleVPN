@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Payment } from '../payments/payment.entity';
-import { Peer } from '../peers/peer.entity';
+import { InboundClientEntity } from '../xui/inbound-settings.entity';
 
 @Entity('users')
 export class User {
@@ -17,8 +17,8 @@ export class User {
   payments: Payment[];
 
   @OneToMany(
-    () => Peer,
-    (d) => d.user,
+    () => User,
+    (d) => d.clients,
   )
-  peers: Peer[];
+  clients: InboundClientEntity[];
 }

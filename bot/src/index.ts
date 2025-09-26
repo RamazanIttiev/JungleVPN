@@ -30,8 +30,9 @@ bot.command('start', async (ctx) => {
 
 bot.command('devices', async (ctx) => {
   if (!ctx.from) return;
+  const telegramId = String(ctx.from.id);
 
-  const clients = await xuiService.getClients(1);
+  const clients = await xuiService.getClients(telegramId);
 
   if (!clients.length) {
     await ctx.reply('📱 You don’t have any active devices yet. Run /add to link one.');

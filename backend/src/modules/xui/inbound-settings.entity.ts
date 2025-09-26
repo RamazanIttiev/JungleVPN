@@ -1,4 +1,55 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+export type ClientFlow = 'xtls-rprx-vision';
+
+@Entity('inbound_clients')
+export class InboundClientEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ nullable: true })
+  flow: ClientFlow;
+
+  @Column({ unique: true })
+  email: string;
+
+  @Column({ type: 'int', default: 1 })
+  limitIp: number;
+
+  @Column({ type: 'bigint', default: 0 })
+  totalGB: number;
+
+  @Column({ type: 'bigint', nullable: true })
+  expiryTime: number; // unix timestamp (ms)
+
+  @Column({ default: true })
+  enable: boolean;
+
+  @Column({ nullable: true })
+  tgId: string; // telegram user id
+
+  @Column({ unique: true })
+  subId: string;
+
+  @Column({ type: 'text', nullable: true })
+  comment: string;
+
+  @Column({ type: 'int', default: 0 })
+  reset: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
 
 export interface InboundClient {
   id: string;
@@ -18,7 +69,6 @@ export interface InboundSettingsPayload {
   clients: InboundClient[];
 }
 
-@Entity('xui_inbound_settings')
 export class InboundSettings {
   @PrimaryColumn({ type: 'integer' })
   id: number;
