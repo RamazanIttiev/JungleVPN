@@ -75,7 +75,7 @@ export class XuiController {
     return res.status(result.status).send(result.data);
   }
 
-  @Post('updateClient/:uuid')
+  @Post('updateClient')
   @ApiBody({
     description: 'Send id and updated client settings (stringified JSON)',
     schema: {
@@ -104,19 +104,25 @@ export class XuiController {
     return res.status(result.status).send(result.data);
   }
 
-  @Post('deleteClient/:uuid')
+  @Post('deleteClient')
   @ApiBody({
     description: 'No body required',
-    schema: { type: 'object', properties: {} },
-    required: false,
+    schema: {
+      type: 'object',
+      properties: {
+        inboundId: { type: 'number' },
+        clientId: { type: 'string', description: 'id' },
+      },
+    },
+    required: true,
   })
-  async delClient(@Body() body: InboundSettings, @Req() req: Request, @Res() res: Response) {
+  async delClient(
+    @Body() body: { inboundId: number; clientId: string },
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     const sessionCookie = parseSessionCookie(req.headers.cookie);
-
-    const settingsObj: InboundSettingsPayload = JSON.parse(body.settings);
-
-    const inboundId = body.id;
-    const clientId = settingsObj.clients[0].id;
+    const { inboundId, clientId } = body;
 
     const result = await this.xui.forward(
       'POST',

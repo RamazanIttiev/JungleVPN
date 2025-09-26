@@ -26,7 +26,7 @@ export class Peer {
 
   @Column({ unique: true }) publicKey: string;
 
-  @Column({ type: 'text', select: false, nullable: true, default: null }) privateKey: string; // encrypted, not returned by default
+  // @Column({ type: 'text', select: false, nullable: true, default: null }) privateKey: string; // encrypted, not returned by default
 
   @CreateDateColumn() createdAt: Date;
 

@@ -35,7 +35,7 @@ export class Payment {
     type: 'enum',
     enum: ['pending', 'paid', 'failed', 'refunded'],
     default: 'pending',
-    nullable: false,
+    nullable: true,
   })
   status: PaymentStatus;
 

@@ -1,8 +1,15 @@
 import axios from 'axios';
 import * as dotenv from 'dotenv';
 import { Bot, InlineKeyboard, InputFile } from 'grammy';
+import { XuiService } from './services/xui.service';
 
 dotenv.config();
+
+export const backend = axios.create({
+  baseURL: process.env.BACKEND_BASE_URL,
+  headers: { 'x-api-key': process.env.BACKEND_API_KEY || '' },
+  withCredentials: true,
+});
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 if (!token) {
@@ -10,10 +17,7 @@ if (!token) {
 }
 
 const bot = new Bot(token);
-const backend = axios.create({
-  baseURL: process.env.BACKEND_BASE_URL,
-  headers: { 'x-api-key': process.env.BACKEND_API_KEY || '' },
-});
+const xuiService = new XuiService();
 
 bot.command('start', async (ctx) => {
   await ctx.reply('Welcome! Use menu buttons (commands) to add a device, pay, list or delete.');
@@ -24,25 +28,39 @@ bot.command('start', async (ctx) => {
   await backend.post('/users/create', { telegramId });
 });
 
+bot.command('devices', async (ctx) => {
+  if (!ctx.from) return;
+
+  const clients = await xuiService.getClients(1);
+
+  if (!clients.length) {
+    await ctx.reply('📱 You don’t have any active devices yet. Run /add to link one.');
+    return;
+  }
+
+  await ctx.reply(`✅ You currently have *${clients.length}* linked device(s):`, {
+    parse_mode: 'Markdown',
+  });
+
+  for (const client of clients) {
+    const kb = new InlineKeyboard().text('🗑 Delete', `del:${client.id}`);
+
+    await ctx.reply(`• Device ID: \`${client.id}\``, {
+      parse_mode: 'Markdown',
+      reply_markup: kb,
+    });
+  }
+});
+
 bot.command('add', async (ctx) => {
   if (!ctx.from) return;
   const telegramId = String(ctx.from.id);
 
-  const { data: peer } = await backend.post('/peers/add', { telegramId });
+  const data = await xuiService.addClient(telegramId);
 
-  const kb = new InlineKeyboard().text('🗑 Delete', `del:${peer.id}`);
-
-  await ctx.reply(
-    `
-  New device is added. Now run /pay to proceed.
-  
-  • Device ID: \`${peer.id}\`\n
-  • Status: ${peer.status}`,
-    {
-      parse_mode: 'Markdown',
-      reply_markup: kb,
-    },
-  );
+  await ctx.reply(`✅ ${data.msg}`, {
+    parse_mode: 'Markdown',
+  });
 });
 
 bot.command('pay', async (ctx) => {
@@ -70,56 +88,14 @@ bot.command('pay', async (ctx) => {
   }
 });
 
-bot.command('devices', async (ctx) => {
-  if (!ctx.from) return;
-  const telegramId = String(ctx.from.id);
-  const { data } = await backend.get('/peers/list', { params: { telegramId } });
-
-  const peers = (data || []) as Array<{
-    id: string;
-    createdAt: string;
-  }>;
-
-  if (!peers.length) {
-    await ctx.reply('📱 You don’t have any active devices yet. Run /add to link one.');
-    return;
-  }
-
-  await ctx.reply(`✅ You currently have *${peers.length}* linked device(s):`, {
-    parse_mode: 'Markdown',
-  });
-
-  for (const peer of peers) {
-    const addedAt = new Date(peer.createdAt).toLocaleString('ru-RU');
-    const kb = new InlineKeyboard().text('🗑 Delete', `del:${peer.id}`);
-
-    await ctx.reply(`• Device ID: \`${peer.id}\`\n• Added: ${addedAt}`, {
-      parse_mode: 'Markdown',
-      reply_markup: kb,
-    });
-  }
-});
-
-bot.command('removeall', async (ctx) => {
-  if (!ctx.from) return;
-
-  const { data } = await backend.delete('/peers/removeAll');
-
-  if (data.success) {
-    await ctx.reply('✅ Devices deleted');
-  } else {
-    await ctx.reply('Failed to delete devices');
-  }
-});
-
 bot.callbackQuery(/del:(.+)/, async (ctx) => {
   await ctx.answerCallbackQuery();
   if (!ctx.from) return;
-  const peerId = ctx.match?.[1];
-  if (!peerId) return;
+  const clientId = ctx.match?.[1];
+  if (!clientId) return;
 
   try {
-    await backend.delete(`/peers/${peerId}`, { params: { peerId } });
+    await xuiService.deleteClient(clientId);
 
     if (ctx.callbackQuery?.message) {
       const original = ctx.callbackQuery.message;
@@ -134,8 +110,11 @@ bot.callbackQuery(/del:(.+)/, async (ctx) => {
       await ctx.reply('✅ Device deleted');
     }
   } catch (err: unknown) {
+    const axiosErr = err as { response?: { data?: { message?: string } } } | Error;
     const message =
-      (err as any)?.response?.data?.message || (err as Error)?.message || 'Unknown error';
+      (axiosErr as { response?: { data?: { message?: string } } }).response?.data?.message ||
+      (axiosErr as Error).message ||
+      'Unknown error';
     await ctx.reply(`❌ Failed to delete device: ${message}`);
   }
 });
