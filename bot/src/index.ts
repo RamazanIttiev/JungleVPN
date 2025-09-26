@@ -15,23 +15,6 @@ const backend = axios.create({
   headers: { 'x-api-key': process.env.BACKEND_API_KEY || '' },
 });
 
-bot.api
-  .setMyCommands([
-    { command: 'add', description: 'Add device' },
-    { command: 'pay', description: 'Pay' },
-    { command: 'devices', description: 'List devices' },
-    { command: 'removeall', description: 'Remove all devices' },
-  ])
-  .catch((err) => console.error('Failed to set commands:', err));
-
-bot.api
-  .setChatMenuButton({
-    menu_button: {
-      type: 'commands',
-    },
-  })
-  .catch((err) => console.error('Failed to set menu button:', err));
-
 bot.command('start', async (ctx) => {
   await ctx.reply('Welcome! Use menu buttons (commands) to add a device, pay, list or delete.');
 

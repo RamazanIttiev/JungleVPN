@@ -1,21 +1,18 @@
-import * as process from 'node:process';
 import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { generateWgKeypair, nextIpFromExisting } from '../../shared/utils/generators';
+import { nextIpFromExisting } from '../../shared/utils/generators';
 import { UsersService } from '../users/users.service';
 import { Peer } from './peer.entity';
-import { WireGuardService } from './wireguard.service';
 
 @Injectable()
 export class PeersService {
   constructor(
     @InjectRepository(Peer) private readonly repo: Repository<Peer>,
     private readonly users: UsersService,
-    private readonly wg: WireGuardService,
   ) {}
 
-  private readonly mock = (process.env.WG_MOCK || 'true') === 'true';
+  // WireGuard removed; peers are tracked in DB only for VLESS clients
 
   async getAll(telegramId: string): Promise<Peer[]> {
     const user = await this.users.get(telegramId);
@@ -49,13 +46,7 @@ export class PeersService {
     return peer;
   }
 
-  private async generateKeypair() {
-    if (this.mock) {
-      return generateWgKeypair();
-    } else {
-      return await this.wg.generateKeypair();
-    }
-  }
+  // No keypair generation required for VLESS
 
   async add(telegramId: string): Promise<Peer> {
     const user = await this.users.get(telegramId);
@@ -64,22 +55,13 @@ export class PeersService {
     const existingIps = peers.map((p) => p.ipAddress);
     const ipAddress = nextIpFromExisting(existingIps);
 
-    const { publicKey, privateKey } = await this.generateKeypair();
-
     try {
       const peer = this.repo.create({
         user,
         ipAddress,
-        publicKey,
-        privateKey,
       });
 
       await this.repo.save(peer);
-
-      if (!this.mock) {
-        await this.wg.appendPeerToConfig(publicKey, `${ipAddress}/32`);
-        await this.wg.reloadWireGuard();
-      }
 
       return peer;
     } catch (error) {
@@ -91,10 +73,6 @@ export class PeersService {
     const peer = await this.get(peerId);
 
     try {
-      if (!this.mock) {
-        await this.wg.removePeerFromConfig(peer.publicKey);
-        await this.wg.reloadWireGuard();
-      }
       await this.repo.remove(peer);
 
       return { success: true };
@@ -111,10 +89,6 @@ export class PeersService {
 
   async removeAll(): Promise<{ success: boolean }> {
     try {
-      if (!this.mock) {
-        // await this.wg.removePeerFromConfig(peer.publicKey);
-        // await this.wg.reloadWireGuard();
-      }
       await this.repo.clear();
 
       return { success: true };

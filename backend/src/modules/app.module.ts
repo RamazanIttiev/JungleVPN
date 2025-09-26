@@ -4,6 +4,7 @@ import { ConfigModule } from '../shared/config/config.module';
 import { PaymentsModule } from './payments/payments.module';
 import { PeersModule } from './peers/peers.module';
 import { UsersModule } from './users/users.module';
+import { XuiModule } from './xui/xui.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     PaymentsModule,
     PeersModule,
+    XuiModule,
   ],
 })
 export class AppModule {}

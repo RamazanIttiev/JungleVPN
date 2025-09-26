@@ -9,23 +9,20 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ApiKeyGuard } from '../../shared/auth/api-key.guard';
 import { PeerStatus } from './peer.entity';
 import { PeersService } from './peers.service';
-import { WireGuardService } from './wireguard.service';
 
 @UseGuards(ApiKeyGuard)
+@ApiTags('peers')
 @Controller('peers')
 export class PeersController {
-  constructor(
-    private readonly peersService: PeersService,
-    private readonly wireGuardService: WireGuardService,
-  ) {}
+  constructor(private readonly peersService: PeersService) {}
 
   @Post('add')
   async add(@Body('telegramId') telegramId: string): Promise<{ id: string; status: PeerStatus }> {
     const data = await this.peersService.add(telegramId);
-
     return {
       id: data.id,
       status: data.status,
@@ -37,18 +34,7 @@ export class PeersController {
     return await this.peersService.getMappedPeers(telegramId);
   }
 
-  @Get('config')
-  async config(@Query('telegramId') telegramId: string) {
-    const peer = await this.peersService.getByTelegramId(telegramId);
-
-    const filename = `vpn-${peer.createdAt.getTime()}.conf`;
-    const content = this.wireGuardService.buildWireGuardClientConfig(peer);
-
-    return {
-      filename,
-      content,
-    };
-  }
+  // Removed WireGuard config endpoint as part of VLESS migration
 
   @Delete('removeAll')
   async removeAll(): Promise<{ success: boolean }> {
