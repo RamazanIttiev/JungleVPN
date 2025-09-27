@@ -1,26 +1,10 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { User } from '../users/user.entity';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
 @Entity('payments')
 export class Payment {
   @PrimaryGeneratedColumn('uuid') id: string;
-
-  @ManyToOne(
-    () => User,
-    (u) => u.payments,
-    { onDelete: 'SET NULL' },
-  )
-  @JoinColumn({ name: 'userId' })
-  user: User;
 
   @Column() userId: string;
 

@@ -13,7 +13,7 @@ export class PaymentsService {
 
   async mockCreatePaid(telegramId: string, amount: number): Promise<Payment> {
     const user = await this.users.get(telegramId);
-    const payment = this.repo.create({ user, amount, currency: 'RUB', status: 'paid' });
+    const payment = this.repo.create({ amount, currency: 'RUB', status: 'paid' });
     await this.repo.save(payment);
     return payment;
   }
