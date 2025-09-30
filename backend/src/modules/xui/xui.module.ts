@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { InboundSettings } from './inbound-settings.entity';
+import { Inbound } from './inbound.entity';
 import { XuiController } from './xui.controller';
 import { XuiService } from './xui.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([InboundSettings])],
+  imports: [TypeOrmModule.forFeature([Inbound])],
   controllers: [XuiController],
   providers: [XuiService],
   exports: [XuiService],

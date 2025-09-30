@@ -1,20 +1,16 @@
 import { randomUUID } from 'node:crypto';
 import { ClientFlow, InboundId } from '../models/xui-inbound-settings.model';
 
-export const generateClientBody = (
-  tgId: string,
-  enable: boolean = true,
-  inboundId: InboundId = 1,
-) => {
+export const generateClientBody = (tgId: string, enable: boolean = true, inboundId?: InboundId) => {
   const payload = {
-    id: inboundId,
+    id: inboundId || Number(process.env.XUI_TEST_INBOUND),
     settings: {
       clients: [
         {
           id: randomUUID(),
           flow: (process.env.XUI_CLIENT_FLOW as ClientFlow) || '',
           email: randomUUID(),
-          limitIp: 0,
+          limitIp: Number(process.env.XUI_LIMIT_IP),
           totalGB: 0,
           expiryTime: 0,
           enable,

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { ApiBody, ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { InboundSettings, InboundSettingsPayload } from './inbound-settings.entity';
+import { Inbound, InboundSettingsPayload } from './inbound.entity';
 import { XuiService } from './xui.service';
 
 @ApiTags('xui')
@@ -62,7 +62,7 @@ export class XuiController {
       required: ['id', 'settings'],
     },
   })
-  async addClient(@Body() body: InboundSettings, @Req() req: Request, @Res() res: Response) {
+  async addClient(@Body() body: Inbound, @Req() req: Request, @Res() res: Response) {
     const sessionCookie = parseSessionCookie(req.headers.cookie);
 
     const result = await this.xui.forward(
@@ -87,7 +87,7 @@ export class XuiController {
       required: ['id', 'settings'],
     },
   })
-  async updateClient(@Body() body: InboundSettings, @Req() req: Request, @Res() res: Response) {
+  async updateClient(@Body() body: Inbound, @Req() req: Request, @Res() res: Response) {
     const sessionCookie = parseSessionCookie(req.headers.cookie);
 
     const settingsObj: InboundSettingsPayload = JSON.parse(body.settings);

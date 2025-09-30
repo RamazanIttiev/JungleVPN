@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as dotenv from 'dotenv';
-import { Bot, InlineKeyboard, InputFile } from 'grammy';
+import { Bot, InlineKeyboard } from 'grammy';
 import { XuiService } from './services/xui.service';
 
 dotenv.config();
@@ -59,34 +59,13 @@ bot.command('add', async (ctx) => {
 
   const data = await xuiService.addClient(telegramId);
 
-  await ctx.reply(`✅ ${data.msg}`, {
-    parse_mode: 'Markdown',
-  });
-});
-
-bot.command('pay', async (ctx) => {
-  if (!ctx.from) return;
-
-  const telegramId = String(ctx.from.id);
-
-  // Mock payment
-  const { data } = await backend.post('/payments/mock', { telegramId, amount: 500 });
-
-  if (data.status === 'paid') {
-    try {
-      const { data: config } = await backend.get('/peers/config', { params: { telegramId } });
-
-      const { filename, content } = config as { filename: string; content: string };
-
-      const buffer = Buffer.from(content, 'utf-8');
-
-      await ctx.replyWithDocument(new InputFile(buffer, filename), {
-        caption: `✅ Payment received!\n\nImport this config into the WireGuard app.`,
-      });
-    } catch (error) {
-      await ctx.reply('You dont have any devices. Use /add command');
-    }
+  function escapeHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
+
+  await ctx.reply(`<code>${escapeHtml(data)}</code>`, {
+    parse_mode: 'HTML',
+  });
 });
 
 bot.callbackQuery(/del:(.+)/, async (ctx) => {

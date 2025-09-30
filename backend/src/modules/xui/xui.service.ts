@@ -4,12 +4,10 @@ import axios, { AxiosInstance } from 'axios';
 @Injectable()
 export class XuiService {
   private readonly http: AxiosInstance;
-  private readonly baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.XUI_BASE_URL || '';
     this.http = axios.create({
-      baseURL: this.baseUrl,
+      baseURL: process.env.XUI_BASE_URL,
       withCredentials: true,
       validateStatus: () => true,
     });

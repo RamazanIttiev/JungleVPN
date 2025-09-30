@@ -65,14 +65,52 @@ export interface InboundClient {
   reset: number;
 }
 
+export interface StreamSettings {
+  network: string; // e.g., "tcp"
+  security: string; // e.g., "reality"
+  externalProxy: unknown[]; // empty array in sample
+  realitySettings: RealitySettings;
+  tcpSettings: TcpSettings;
+}
+
+export interface RealitySettings {
+  show: boolean;
+  xver: number;
+  dest: string; // host:port, e.g., "yahoo.com:443"
+  serverNames: string[];
+  privateKey: string;
+  minClient: string;
+  maxClient: string;
+  maxTimediff: number;
+  shortIds: string[];
+  settings: RealityInnerSettings;
+}
+
+export interface RealityInnerSettings {
+  publicKey: string;
+  fingerprint: string; // e.g., "chrome"
+  serverName: string;
+  spiderX: string; // e.g., "/"
+}
+
+export interface TcpSettings {
+  acceptProxyProtocol: boolean;
+  header: {
+    type: string; // e.g., "none"
+  };
+}
+
 export interface InboundSettingsPayload {
   clients: InboundClient[];
 }
 
-export class InboundSettings {
+export class Inbound {
   @PrimaryColumn({ type: 'integer' })
   id: number;
 
   @Column({ type: 'jsonb' })
   settings: string;
+
+  @Column({ type: 'jsonb' })
+  streamSettings: string;
 }

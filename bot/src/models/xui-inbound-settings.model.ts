@@ -15,16 +15,19 @@ export interface InboundClient {
   reset: number;
 }
 
-export interface InboundSettingsPayload {
+export interface InboundSettings {
   clients: InboundClient[];
 }
 
-export interface InboundSettings {
-  id: InboundId;
-  settings: InboundSettingsPayload;
+export interface InboundStreamSettings {
+  network: string; // e.g., "tcp"
+  security: string; // e.g., "reality"
+  externalProxy: unknown[]; // empty array in sample
+  realitySettings: RealitySettings;
+  tcpSettings: TcpSettings;
 }
 
-export interface XuiInbound {
+export interface Inbound {
   id: InboundId;
   up: number;
   down: number;
@@ -46,4 +49,31 @@ export interface XuiResponse<T> {
   success: boolean;
   msg: string;
   obj: T;
+}
+
+interface RealitySettings {
+  show: boolean;
+  xver: number;
+  dest: string; // host:port, e.g., "yahoo.com:443"
+  serverNames: string[];
+  privateKey: string;
+  minClient: string;
+  maxClient: string;
+  maxTimediff: number;
+  shortIds: string[];
+  settings: RealityInnerSettings;
+}
+
+interface RealityInnerSettings {
+  publicKey: string;
+  fingerprint: string; // e.g., "chrome"
+  serverName: string;
+  spiderX: string; // e.g., "/"
+}
+
+interface TcpSettings {
+  acceptProxyProtocol: boolean;
+  header: {
+    type: string; // e.g., "none"
+  };
 }

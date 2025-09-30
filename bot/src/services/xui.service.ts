@@ -1,9 +1,10 @@
 import { AxiosError } from 'axios';
 import { backend } from '../index';
 import {
+  Inbound,
   InboundClient,
   InboundId,
-  InboundSettingsPayload,
+  InboundSettings,
   XuiResponse,
 } from '../models/xui-inbound-settings.model';
 import { generateClientBody } from '../utils/xui.util';
@@ -38,20 +39,25 @@ export class XuiService {
     }
   }
 
-  async getClients(telegramId: string, inboundId: InboundId = 1): Promise<InboundClient[]> {
+  async getClients(telegramId: string, inboundId?: InboundId): Promise<InboundClient[]> {
     try {
       const { success } = await this.login();
       if (!success) {
         throw new Error('BOT. Please log in. Method getClients');
       }
 
-      const { data } = await backend.get(`/${inboundId}`);
+      const { data } = await backend.get(`/${inboundId || process.env.XUI_TEST_INBOUND}`);
 
-      if (!data?.obj?.settings) {
-        throw new Error(`BOT. Inbound ${inboundId} has no settings`);
+      const inbound: Inbound | null = data?.obj;
+
+      if (!inbound?.settings) {
+        throw new Error(
+          `BOT. Inbound ${inboundId || process.env.XUI_TEST_INBOUND} has no settings`,
+        );
       }
 
-      const settings: InboundSettingsPayload = JSON.parse(data.obj.settings);
+      const settings: InboundSettings = JSON.parse(data.obj.settings);
+
       return settings.clients.filter((client) => client.tgId === telegramId);
     } catch (error) {
       console.error('BOT. SERVER ERROR. Method getClients', error);
@@ -59,7 +65,7 @@ export class XuiService {
     }
   }
 
-  async addClient(tgId: string): Promise<XuiResponse<null>> {
+  async addClient(tgId: string): Promise<string> {
     const body = generateClientBody(tgId);
 
     try {
@@ -74,7 +80,10 @@ export class XuiService {
         throw new Error(`BOT. addClient failed: ${data?.msg || 'Unknown error'}`);
       }
 
-      return data;
+      const settings: InboundSettings = JSON.parse(body.settings);
+      const client = settings.clients.find((client) => client.tgId === tgId);
+
+      return await this.generateUrl(client);
     } catch (error) {
       console.error('BOT. SERVER ERROR. Method addClient', error);
       throw error;
@@ -88,8 +97,8 @@ export class XuiService {
     return data;
   }
 
-  async deleteClient(clientId: string, inboundId: InboundId = 1): Promise<unknown> {
-    const body = { inboundId, clientId };
+  async deleteClient(clientId: string, inboundId?: InboundId): Promise<unknown> {
+    const body = { inboundId: inboundId || Number(process.env.XUI_TEST_INBOUND), clientId };
 
     try {
       const { success } = await this.login();
@@ -106,6 +115,30 @@ export class XuiService {
       return data;
     } catch (error) {
       console.error('BOT. SERVER ERROR. Method deleteClient', error);
+      throw error;
+    }
+  }
+
+  async generateUrl(client: InboundClient | undefined, inboundId?: InboundId): Promise<string> {
+    try {
+      const { success } = await this.login();
+      if (!success) {
+        throw new Error('BOT. Please log in. Method getClients');
+      }
+
+      const { data } = await backend.get(`/${inboundId || process.env.XUI_TEST_INBOUND}`);
+
+      const inbound: Inbound | null = data?.obj;
+
+      if (!inbound) {
+        throw new Error(
+          `BOT. Inbound ${inboundId || process.env.XUI_TEST_INBOUND} has no settings`,
+        );
+      }
+
+      return `${process.env.XUI_URL}:${process.env.XUI_SUB_PORT}/subscription/${client?.subId}?name=${process.env.XUI_SERVER_NAME}`;
+    } catch (error) {
+      console.error('BOT. SERVER ERROR. Method getClients', error);
       throw error;
     }
   }
