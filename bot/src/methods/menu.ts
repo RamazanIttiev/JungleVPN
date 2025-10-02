@@ -1,7 +1,7 @@
 import { Menu } from '@grammyjs/menu';
 import { Api, Bot, Context, RawApi } from 'grammy';
 
-export const executeMenu = (bot:  Bot<Context, Api<RawApi>>) => {
+export const executeMenu = (bot: Bot<Context, Api<RawApi>>) => {
   const mainMenu = new Menu('main-menu', { autoAnswer: false })
     .text('🔌 Connections', (ctx) => ctx.menu.nav('connections-menu'))
     .row()
@@ -28,5 +28,5 @@ export const executeMenu = (bot:  Bot<Context, Api<RawApi>>) => {
 
   bot.use(mainMenu);
 
-  return mainMenu
-}
+  return mainMenu;
+};

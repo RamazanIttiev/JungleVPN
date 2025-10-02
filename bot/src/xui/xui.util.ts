@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { ClientFlow, InboundId } from '../models/xui-inbound-settings.model';
+import { ClientFlow, InboundId } from './xui.model';
 
 export const generateClientBody = (tgId: string, enable: boolean = true, inboundId?: InboundId) => {
   const payload = {

@@ -1,4 +1,4 @@
-export type InboundId = 1;
+export type InboundId = '1';
 export type ClientFlow = 'xtls-rprx-vision';
 
 export interface InboundClient {
@@ -43,12 +43,6 @@ export interface Inbound {
   streamSettings: string; // raw JSON string per your API
   tag: string;
   sniffing: string; // raw JSON string per your API
-}
-
-export interface XuiResponse<T> {
-  success: boolean;
-  msg: string;
-  obj: T;
 }
 
 interface RealitySettings {

@@ -1,7 +1,7 @@
 import { Api, Bot, Context, InlineKeyboard, RawApi } from 'grammy';
-import { XuiService } from '../services/xui.service';
+import { XuiService } from '../xui/xui.service';
 
-export const executeCommands = (bot:  Bot<Context, Api<RawApi>>, xuiService: XuiService) => {
+export const executeCommands = (bot: Bot<Context, Api<RawApi>>, xuiService: XuiService) => {
   bot.command('devices', async (ctx) => {
     if (!ctx.from) return;
     const telegramId = String(ctx.from.id);
@@ -31,14 +31,14 @@ export const executeCommands = (bot:  Bot<Context, Api<RawApi>>, xuiService: Xui
     if (!ctx.from) return;
     const telegramId = String(ctx.from.id);
 
-    const data = await xuiService.addClient(telegramId);
+    const subUrl = await xuiService.addClient(telegramId);
 
     function escapeHtml(s: string) {
       return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
-    await ctx.reply(`<code>${escapeHtml(data)}</code>`, {
+    await ctx.reply(`<code>${escapeHtml(subUrl)}</code>`, {
       parse_mode: 'HTML',
     });
   });
-}
+};
