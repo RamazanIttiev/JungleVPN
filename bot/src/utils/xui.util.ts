@@ -8,7 +8,7 @@ export const generateClientBody = (tgId: string, enable: boolean = true, inbound
       clients: [
         {
           id: randomUUID(),
-          flow: (process.env.XUI_CLIENT_FLOW as ClientFlow) || '',
+          flow: (process.env.XUI_CLIENT_FLOW as ClientFlow) || 'xtls-rprx-vision',
           email: randomUUID(),
           limitIp: Number(process.env.XUI_LIMIT_IP),
           totalGB: 0,
