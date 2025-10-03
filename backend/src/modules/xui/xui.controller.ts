@@ -1,11 +1,9 @@
-import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { ApiBody, ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { ApiKeyGuard } from '../../shared/auth/api-key.guard';
 import { Inbound, InboundSettingsPayload } from './inbound.entity';
 import { XuiService } from './xui.service';
 
-@UseGuards(ApiKeyGuard)
 @ApiTags('xui')
 @ApiCookieAuth('session')
 @Controller()

@@ -9,7 +9,6 @@ interface XuiResponse<T> {
 }
 
 export class XuiService {
-  private sessionCookie: string | undefined = undefined;
   private backend: AxiosInstance = axios.create({
     baseURL: process.env.XUI_FETCH_URL,
     withCredentials: true,
@@ -20,19 +19,15 @@ export class XuiService {
   private async fetch<Data>({
     method = 'POST',
     url,
-    sessionCookie,
     body,
   }: {
     url: string;
     sessionCookie?: string;
     method?: 'GET' | 'POST';
     body?: unknown;
-  }): Promise<Data> {
-    const headers: Record<string, string> = {};
-    if (sessionCookie) headers.Cookie = `3x-ui=${sessionCookie}`;
-
+  }): Promise<Data | undefined> {
     try {
-      const res = await this.backend.request({ method, url, headers, data: body });
+      const res = await this.backend.request({ method, url, data: body });
 
       const data: XuiResponse<Data> = res.data;
 
@@ -40,10 +35,9 @@ export class XuiService {
         return data.obj;
       }
 
-      // TODO create error handling service
       throw new AxiosError('REQUEST ERROR', url);
     } catch (error) {
-      throw new AxiosError('SERVER ERROR', url);
+      console.log('SERVER ERROR', url);
     }
   }
 
@@ -63,30 +57,24 @@ export class XuiService {
         const cookieStr = setCookie.find((c: string) => c.startsWith('3x-ui='));
 
         if (cookieStr) {
-          const value = cookieStr.split(';')[0];
-          this.sessionCookie = value.replace('3x-ui=', '');
-          this.backend.defaults.headers.Cookie = `3x-ui=${this.sessionCookie}`;
+          this.backend.defaults.headers.Cookie = cookieStr.split(';')[0];
         }
       }
 
       if (!data.success) {
-        console.log(data);
-        throw new AxiosError('BOT. Please login. Method login');
+        throw new AxiosError('BOT. Please login. Method login', data.msg);
       }
     } catch (error) {
       throw new AxiosError('BOT. SERVER ERROR. Method login');
     }
   }
 
-  private async getInbound(inboundId: string | undefined): Promise<Inbound> {
-    const sessionCookie = parseSessionCookie(this.sessionCookie);
-
+  private async getInbound(inboundId: string | undefined): Promise<Inbound | undefined> {
     if (!inboundId) throw new AxiosError('NO inboundId. Method getInbound');
 
     return await this.fetch<Inbound>({
       method: 'GET',
       url: `/inbounds/get/${inboundId}`,
-      sessionCookie,
     });
   }
 
@@ -95,7 +83,7 @@ export class XuiService {
 
     const inbound = await this.getInbound(inboundId || process.env.XUI_TEST_INBOUND);
 
-    const settings: InboundSettings = JSON.parse(inbound.settings);
+    const settings: InboundSettings = inbound && JSON.parse(inbound.settings);
 
     return settings.clients.filter((client) => client.tgId === telegramId);
   }
@@ -122,14 +110,6 @@ export class XuiService {
   }
 
   generateUrl(client: InboundClient | undefined): string {
-    return `${process.env.XUI_BASE_URL}:${process.env.XUI_SUB_PORT}/subscription/${client?.subId}?name=${process.env.XUI_SERVER_NAME}`;
+    return `${process.env.XUI_SUB_URL}/subscription/${client?.subId}?name=${process.env.XUI_SERVER_NAME}`;
   }
-}
-
-function parseSessionCookie(cookieHeader?: string): string | undefined {
-  if (!cookieHeader) return undefined;
-  const parts = cookieHeader.split(';').map((c) => c.trim());
-  const session = parts.find((c) => c.startsWith('3x-ui='));
-  if (!session) return undefined;
-  return session.substring('3x-ui='.length);
 }

@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { Bot } from 'grammy';
+import { Bot, GrammyError, HttpError } from 'grammy';
 import { executeCallbackQuery } from './methods/callbackQuery';
 import { executeCommands } from './methods/command';
 import { executeMenu } from './methods/menu';
@@ -21,5 +21,17 @@ const mainMenu = executeMenu(bot);
 executeStartCommand(bot, mainMenu);
 executeCommands(bot, xuiService);
 executeCallbackQuery(bot, xuiService);
+
+bot.catch((err) => {
+  console.log(err);
+  const e = err.error;
+  if (e instanceof GrammyError) {
+    console.log('GrammyError. Error in request:', e.description);
+  } else if (e instanceof HttpError) {
+    console.log('HttpError. Could not contact Telegram:', e);
+  } else {
+    console.log('Unknown error:', e);
+  }
+});
 
 bot.start();

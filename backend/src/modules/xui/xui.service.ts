@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 
@@ -7,7 +8,7 @@ export class XuiService {
 
   constructor() {
     this.http = axios.create({
-      baseURL: process.env.XUI_BASE_URL,
+      baseURL: process.env.XUI_FETCH_URL,
       withCredentials: true,
       validateStatus: () => true,
     });
@@ -15,7 +16,7 @@ export class XuiService {
 
   async login(username: string, password: string) {
     const res = await this.http.post(
-      '/login',
+      `${process.env.XUI_BASE_URL}/api/login`,
       { username, password },
       {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
