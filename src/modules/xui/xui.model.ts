@@ -10,7 +10,7 @@ export interface Client {
   totalGB: number;
   expiryTime: number;
   enable: boolean;
-  tgId: string;
+  tgId: number;
   subId: string;
   comment: ClientDevice;
   reset: number;

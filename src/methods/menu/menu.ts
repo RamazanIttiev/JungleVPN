@@ -44,14 +44,16 @@ export const useMenu = (xuiService: XuiService) => {
     return new Menu(menuId)
       .text('⬅ Назад', goToConnectionsPage)
       .text('Дай новую ссылку', async (ctx) => {
-        const telegramId = String(ctx.from.id);
-        const client = await xuiService.getClientByDevice(telegramId, device);
+        const tgUser = ctx.from;
 
+        if (!tgUser) return;
+
+        const client = await xuiService.getClientByDevice(tgUser.id, device);
         if (!client) return;
 
         await xuiService.deleteClient(client.id);
 
-        const url = await xuiService.getOrIssueSubUrl(telegramId, device);
+        const url = await xuiService.getOrIssueSubUrl(tgUser, device);
         await sendConnectionMessage(ctx, device, url, menus[device]);
       });
   };
@@ -64,21 +66,24 @@ export const useMenu = (xuiService: XuiService) => {
 
   const connectionsMenu = new Menu('connections-menu')
     .text('🍏 IOS ', async (ctx) => {
+      const tgUser = ctx.from;
+      if (!tgUser) return;
       await ctx.answerCallbackQuery();
-      const telegramId = String(ctx.from.id);
-      const url = await xuiService.getOrIssueSubUrl(telegramId, 'ios');
+      const url = await xuiService.getOrIssueSubUrl(tgUser, 'ios');
       await sendConnectionMessage(ctx, 'ios', url, menus.ios);
     })
     .text('🤖 Android ', async (ctx) => {
+      const tgUser = ctx.from;
+      if (!tgUser) return;
       await ctx.answerCallbackQuery();
-      const telegramId = String(ctx.from.id);
-      const url = await xuiService.getOrIssueSubUrl(telegramId, 'android');
+      const url = await xuiService.getOrIssueSubUrl(tgUser, 'android');
       await sendConnectionMessage(ctx, 'android', url, menus.android);
     })
     .text('💻 Macbook', async (ctx) => {
+      const tgUser = ctx.from;
+      if (!tgUser) return;
       await ctx.answerCallbackQuery();
-      const telegramId = String(ctx.from.id);
-      const url = await xuiService.getOrIssueSubUrl(telegramId, 'macbook');
+      const url = await xuiService.getOrIssueSubUrl(tgUser, 'macbook');
       await sendConnectionMessage(ctx, 'macbook', url, menus.macbook);
     })
     .row()

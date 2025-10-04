@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { wrapper } from 'axios-cookiejar-support';
+import { User } from 'grammy/types';
 import { CookieJar } from 'tough-cookie';
 import { Client, ClientDevice, Inbound, InboundId, InboundSettings } from './xui.model';
 import { generateClientBody } from './xui.util';
@@ -73,17 +74,17 @@ export class XuiService {
     });
   }
 
-  async getClients(telegramId: string, inboundId?: InboundId): Promise<Client[]> {
+  async getClients(tgId: number, inboundId?: InboundId): Promise<Client[]> {
     await this.login();
 
     const inbound = await this.getInbound(inboundId || process.env.XUI_INBOUND_ID);
 
     const settings: InboundSettings = inbound && JSON.parse(inbound.settings);
 
-    return settings.clients.filter((client) => client.tgId === telegramId);
+    return settings.clients.filter((client) => client.tgId === tgId);
   }
 
-  async getClientByDevice(tgId: string, device: ClientDevice) {
+  async getClientByDevice(tgId: number, device: ClientDevice) {
     const clients = await this.getClients(tgId);
 
     const iosClient = clients.find((client) => client.comment === 'ios');
@@ -100,8 +101,8 @@ export class XuiService {
     }
   }
 
-  async addClient(tgId: string, device: ClientDevice): Promise<Client> {
-    const body = generateClientBody({ tgId, comment: device });
+  async addClient(tgUser: User, device: ClientDevice): Promise<Client> {
+    const body = generateClientBody({ tgUser, client: { comment: device } });
 
     await this.login();
     await this.fetch({ url: '/inbounds/addClient', body });
@@ -110,12 +111,12 @@ export class XuiService {
     return settings.clients[0];
   }
 
-  async getOrIssueSubUrl(tgId: string, device: ClientDevice) {
-    const existingClient = await this.getClientByDevice(tgId, device);
+  async getOrIssueSubUrl(tgUser: User, device: ClientDevice) {
+    const existingClient = await this.getClientByDevice(tgUser.id, device);
 
     if (existingClient) return this.generateUrl(existingClient.subId);
 
-    const client = await this.addClient(tgId, device);
+    const client = await this.addClient(tgUser, device);
 
     return this.generateUrl(client.subId);
   }

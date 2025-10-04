@@ -1,11 +1,18 @@
 import { randomUUID } from 'node:crypto';
+import { User } from 'grammy/types';
 import { Client, ClientFlow, InboundId } from './xui.model';
 
-export const generateClientBody = (
-  client: Partial<Client>,
-  enable: boolean = true,
-  inboundId?: InboundId,
-) => {
+export const generateClientBody = ({
+  client,
+  tgUser,
+  enable = true,
+  inboundId,
+}: {
+  client: Partial<Client>;
+  tgUser: User;
+  enable?: boolean;
+  inboundId?: InboundId;
+}) => {
   const payload = {
     id: inboundId || Number(process.env.XUI_INBOUND_ID),
     settings: {
@@ -13,12 +20,12 @@ export const generateClientBody = (
         {
           id: randomUUID(),
           flow: (process.env.XUI_CLIENT_FLOW as ClientFlow) || 'xtls-rprx-vision',
-          email: randomUUID(),
+          email: `${tgUser.username}-${randomUUID()}`,
           limitIp: Number(process.env.XUI_LIMIT_IP),
           totalGB: 0,
           expiryTime: 0,
           enable,
-          tgId: client.tgId,
+          tgId: tgUser.id,
           subId: `JungleVPN___________________${randomUUID()}`,
           comment: client.comment,
           reset: 0,
