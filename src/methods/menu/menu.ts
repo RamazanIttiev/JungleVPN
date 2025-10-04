@@ -61,7 +61,7 @@ export const useMenu = (xuiService: XuiService) => {
   const menus = {
     ios: createUpdateMenu('ios'),
     android: createUpdateMenu('android'),
-    macbook: createUpdateMenu('macbook'),
+    macOS: createUpdateMenu('macOS'),
   };
 
   const connectionsMenu = new Menu('connections-menu')
@@ -79,12 +79,12 @@ export const useMenu = (xuiService: XuiService) => {
       const url = await xuiService.getOrIssueSubUrl(tgUser, 'android');
       await sendConnectionMessage(ctx, 'android', url, menus.android);
     })
-    .text('💻 Macbook', async (ctx) => {
+    .text('💻 macOS', async (ctx) => {
       const tgUser = ctx.from;
       if (!tgUser) return;
       await ctx.answerCallbackQuery();
-      const url = await xuiService.getOrIssueSubUrl(tgUser, 'macbook');
-      await sendConnectionMessage(ctx, 'macbook', url, menus.macbook);
+      const url = await xuiService.getOrIssueSubUrl(tgUser, 'macOS');
+      await sendConnectionMessage(ctx, 'macOS', url, menus.macOS);
     })
     .row()
     .text('⬅ Назад', async (ctx) => {
@@ -100,7 +100,7 @@ export const useMenu = (xuiService: XuiService) => {
   mainMenu.register(connectionsMenu);
   mainMenu.register(menus.ios);
   mainMenu.register(menus.android);
-  mainMenu.register(menus.macbook);
+  mainMenu.register(menus.macOS);
 
   return mainMenu;
 };

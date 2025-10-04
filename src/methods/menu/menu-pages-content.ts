@@ -11,7 +11,16 @@ export const getMainPageContent = (options: { username: string | undefined }) =>
 };
 
 export const getConnectionsPageContent = () => {
-  return `📱 <b>Выбери платформу, на которой хочешь настроить VPN:</b>`;
+  return `
+📱 <b>Выбери платформу, на которой хочешь настроить VPN:</b>
+
+___________________________
+
+⚠️ Ознакомься с параметрами
+
+📍 <b>Локация</b>: Амстердам, Нидерланды 🇳🇱 
+🌐 <b>Протокол</b>: VLESS
+`;
 };
 
 export const getDevicePageContent = (options: { device: ClientDevice; url: string }) => {
@@ -57,7 +66,7 @@ export const getDevicePageContent = (options: { device: ClientDevice; url: strin
 
 <span class="tg-spoiler">Одну ссылку можно использовать максимум на 2 устройствах.</span>
   `;
-    case 'macbook':
+    case 'macOS':
       return `
 🔗 <b>Установи приложение <a href="https://apps.apple.com/us/app/happ-proxy-utility/id6504287215">Happ</a></b>
 

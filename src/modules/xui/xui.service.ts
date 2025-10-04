@@ -89,15 +89,15 @@ export class XuiService {
 
     const iosClient = clients.find((client) => client.comment === 'ios');
     const androidClient = clients.find((client) => client.comment === 'android');
-    const macbookClient = clients.find((client) => client.comment === 'macbook');
+    const macOSClient = clients.find((client) => client.comment === 'macOS');
 
     switch (device) {
       case 'ios':
         return iosClient;
       case 'android':
         return androidClient;
-      case 'macbook':
-        return macbookClient;
+      case 'macOS':
+        return macOSClient;
     }
   }
 

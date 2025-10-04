@@ -1,6 +1,6 @@
 export type InboundId = '1';
 export type ClientFlow = 'xtls-rprx-vision';
-export type ClientDevice = 'ios' | 'android' | 'macbook';
+export type ClientDevice = 'ios' | 'android' | 'macOS';
 
 export interface Client {
   id: string;
