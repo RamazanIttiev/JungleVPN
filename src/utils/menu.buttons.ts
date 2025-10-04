@@ -1,3 +1,5 @@
+import { ClientDevice } from '../modules/xui/xui.model';
+
 export const getMainContent = (options: { username: string | undefined }) => {
   return `
 🌴 Добро пожаловать в Jungle, <b>${options.username || ''}</b>!
@@ -12,11 +14,11 @@ export const getConnectionsPage = () => {
   return `📱 <b>Выбери платформу, на которой хочешь настроить VPN:</b>`;
 };
 
-export const getConnectionsContent = (options: { label: 'Mobile' | 'Macbook'; url: string }) => {
+export const getConnectionsContent = (options: { device: ClientDevice; url: string }) => {
   const { url } = options;
 
-  switch (options.label) {
-    case 'Mobile':
+  switch (options.device) {
+    case 'mobile':
       return `
 🔗 <b>Установи приложение Hiddify</b>
 
@@ -37,7 +39,7 @@ export const getConnectionsContent = (options: { label: 'Mobile' | 'Macbook'; ur
 
 <span class="tg-spoiler">Одну ссылку можно использовать максимум на 2 устройствах.</span>
   `;
-    case 'Macbook':
+    case 'laptop':
       return `
 🔗 <b>Установи приложение Happ</b>
 

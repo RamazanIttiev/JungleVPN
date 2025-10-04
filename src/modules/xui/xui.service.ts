@@ -83,6 +83,20 @@ export class XuiService {
     return settings.clients.filter((client) => client.tgId === telegramId);
   }
 
+  async getClientByDevice(tgId: string, device: ClientDevice) {
+    const clients = await this.getClients(tgId);
+
+    const mobileClient = clients.find((client) => client.comment === 'mobile');
+    const laptopClient = clients.find((client) => client.comment === 'laptop');
+
+    switch (device) {
+      case 'mobile':
+        return mobileClient;
+      case 'laptop':
+        return laptopClient;
+    }
+  }
+
   async addClient(tgId: string, device: ClientDevice): Promise<Client> {
     const body = generateClientBody({ tgId, comment: device });
 
@@ -94,13 +108,10 @@ export class XuiService {
   }
 
   async getOrIssueSubUrl(tgId: string, device: ClientDevice) {
-    const clients = await this.getClients(tgId);
+    const existingClient = await this.getClientByDevice(tgId, device);
 
-    const mobileClient = clients.find((client) => client.comment === 'mobile');
-    const laptopClient = clients.find((client) => client.comment === 'laptop');
-
-    if (device === 'mobile' && mobileClient) return this.generateUrl(mobileClient.subId);
-    if (device === 'laptop' && laptopClient) return this.generateUrl(laptopClient.subId);
+    if (device === 'mobile' && existingClient) return this.generateUrl(existingClient.subId);
+    if (device === 'laptop' && existingClient) return this.generateUrl(existingClient.subId);
 
     const client = await this.addClient(tgId, device);
 
