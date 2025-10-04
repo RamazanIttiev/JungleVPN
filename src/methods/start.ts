@@ -5,9 +5,9 @@ import {
   ReplyKeyboardMarkup,
   ReplyKeyboardRemove,
 } from 'grammy/types';
-import { getMainContent } from '../utils/menu.buttons';
+import { getMainPageContent } from './menu/menu-pages-content';
 
-export const executeStartCommand = (
+export const useStartCommand = (
   bot: Bot<Context, Api<RawApi>>,
   reply_markup_options:
     | InlineKeyboardMarkup
@@ -19,7 +19,7 @@ export const executeStartCommand = (
   bot.command('start', async (ctx) => {
     const username = ctx.from?.first_name || ctx.from?.username;
 
-    const content = getMainContent({ username });
+    const content = getMainPageContent({ username });
 
     await ctx.react('🗿');
 

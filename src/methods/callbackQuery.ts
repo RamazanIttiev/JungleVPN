@@ -1,7 +1,7 @@
 import { Api, Bot, Context, RawApi } from 'grammy';
 import { XuiService } from '../modules/xui/xui.service';
 
-export const executeCallbackQuery = (bot: Bot<Context, Api<RawApi>>, xuiService: XuiService) => {
+export const useCallbackQuery = (bot: Bot<Context, Api<RawApi>>, xuiService: XuiService) => {
   bot.callbackQuery(/del:(.+)/, async (ctx) => {
     await ctx.answerCallbackQuery();
     if (!ctx.from) return;

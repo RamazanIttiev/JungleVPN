@@ -1,7 +1,7 @@
 import { Api, Bot, Context, InlineKeyboard, RawApi } from 'grammy';
 import { XuiService } from '../modules/xui/xui.service';
 
-export const executeCommands = (bot: Bot<Context, Api<RawApi>>, xuiService: XuiService) => {
+export const useCommands = (bot: Bot<Context, Api<RawApi>>, xuiService: XuiService) => {
   bot.command('devices', async (ctx) => {
     if (!ctx.from) return;
     const telegramId = String(ctx.from.id);

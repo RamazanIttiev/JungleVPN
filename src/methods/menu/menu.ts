@@ -1,16 +1,19 @@
 import { Menu } from '@grammyjs/menu';
-import { XuiService } from '../modules/xui/xui.service';
-import { getConnectionsContent, getConnectionsPage, getMainContent } from '../utils/menu.buttons';
+import { ClientDevice } from '../../modules/xui/xui.model';
+import { XuiService } from '../../modules/xui/xui.service';
+import {
+  getConnectionsPageContent,
+  getDevicePageContent,
+  getMainPageContent,
+} from './menu-pages-content';
 
 const escapeHtml = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-type DeviceType = 'mobile' | 'laptop';
-
-export const executeMenu = (xuiService: XuiService) => {
+export const useMenu = (xuiService: XuiService) => {
   const goToConnectionsPage = async (ctx: any) => {
     ctx.menu.nav('connections-menu');
-    await ctx.editMessageText(getConnectionsPage(), {
+    await ctx.editMessageText(getConnectionsPageContent(), {
       parse_mode: 'HTML',
       link_preview_options: { is_disabled: true },
     });
@@ -18,11 +21,11 @@ export const executeMenu = (xuiService: XuiService) => {
 
   const sendConnectionMessage = async (
     ctx: any,
-    device: DeviceType,
+    device: ClientDevice,
     url: string,
     replyMenu: Menu,
   ) => {
-    const content = getConnectionsContent({
+    const content = getDevicePageContent({
       device,
       url: escapeHtml(url),
     });
@@ -35,11 +38,11 @@ export const executeMenu = (xuiService: XuiService) => {
     });
   };
 
-  const createUpdateMenu = (device: DeviceType): Menu => {
+  const createUpdateMenu = (device: ClientDevice): Menu => {
     const menuId = `update-${device}-sub-menu`;
 
     return new Menu(menuId)
-      .text('Подключения 📶', goToConnectionsPage)
+      .text('⬅ Назад', goToConnectionsPage)
       .text('Дай новую ссылку', async (ctx) => {
         const telegramId = String(ctx.from.id);
         const client = await xuiService.getClientByDevice(telegramId, device);
@@ -54,28 +57,35 @@ export const executeMenu = (xuiService: XuiService) => {
   };
 
   const menus = {
-    mobile: createUpdateMenu('mobile'),
-    laptop: createUpdateMenu('laptop'),
+    ios: createUpdateMenu('ios'),
+    android: createUpdateMenu('android'),
+    macbook: createUpdateMenu('macbook'),
   };
 
   const connectionsMenu = new Menu('connections-menu')
-    .text('🍏 IOS/Android 🤖', async (ctx) => {
+    .text('🍏 IOS ', async (ctx) => {
       await ctx.answerCallbackQuery();
       const telegramId = String(ctx.from.id);
-      const url = await xuiService.getOrIssueSubUrl(telegramId, 'mobile');
-      await sendConnectionMessage(ctx, 'mobile', url, menus.mobile);
+      const url = await xuiService.getOrIssueSubUrl(telegramId, 'ios');
+      await sendConnectionMessage(ctx, 'ios', url, menus.ios);
+    })
+    .text('🤖 Android ', async (ctx) => {
+      await ctx.answerCallbackQuery();
+      const telegramId = String(ctx.from.id);
+      const url = await xuiService.getOrIssueSubUrl(telegramId, 'android');
+      await sendConnectionMessage(ctx, 'android', url, menus.android);
     })
     .text('💻 Macbook', async (ctx) => {
       await ctx.answerCallbackQuery();
       const telegramId = String(ctx.from.id);
-      const url = await xuiService.getOrIssueSubUrl(telegramId, 'laptop');
-      await sendConnectionMessage(ctx, 'laptop', url, menus.laptop);
+      const url = await xuiService.getOrIssueSubUrl(telegramId, 'macbook');
+      await sendConnectionMessage(ctx, 'macbook', url, menus.macbook);
     })
     .row()
     .text('⬅ Назад', async (ctx) => {
       const username = ctx.from?.first_name || ctx.from?.username;
       ctx.menu.back();
-      await ctx.editMessageText(getMainContent({ username }), {
+      await ctx.editMessageText(getMainPageContent({ username }), {
         parse_mode: 'HTML',
       });
     });
@@ -83,8 +93,9 @@ export const executeMenu = (xuiService: XuiService) => {
   const mainMenu = new Menu('main-menu').text('Подключения 📶', goToConnectionsPage);
 
   mainMenu.register(connectionsMenu);
-  mainMenu.register(menus.mobile);
-  mainMenu.register(menus.laptop);
+  mainMenu.register(menus.ios);
+  mainMenu.register(menus.android);
+  mainMenu.register(menus.macbook);
 
   return mainMenu;
 };

@@ -86,14 +86,17 @@ export class XuiService {
   async getClientByDevice(tgId: string, device: ClientDevice) {
     const clients = await this.getClients(tgId);
 
-    const mobileClient = clients.find((client) => client.comment === 'mobile');
-    const laptopClient = clients.find((client) => client.comment === 'laptop');
+    const iosClient = clients.find((client) => client.comment === 'ios');
+    const androidClient = clients.find((client) => client.comment === 'android');
+    const macbookClient = clients.find((client) => client.comment === 'macbook');
 
     switch (device) {
-      case 'mobile':
-        return mobileClient;
-      case 'laptop':
-        return laptopClient;
+      case 'ios':
+        return iosClient;
+      case 'android':
+        return androidClient;
+      case 'macbook':
+        return macbookClient;
     }
   }
 
@@ -110,8 +113,7 @@ export class XuiService {
   async getOrIssueSubUrl(tgId: string, device: ClientDevice) {
     const existingClient = await this.getClientByDevice(tgId, device);
 
-    if (device === 'mobile' && existingClient) return this.generateUrl(existingClient.subId);
-    if (device === 'laptop' && existingClient) return this.generateUrl(existingClient.subId);
+    if (existingClient) return this.generateUrl(existingClient.subId);
 
     const client = await this.addClient(tgId, device);
 

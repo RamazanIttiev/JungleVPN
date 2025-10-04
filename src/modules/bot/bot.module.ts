@@ -1,9 +1,9 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { Bot, GrammyError, HttpError } from 'grammy';
-import { executeCallbackQuery } from '../../methods/callbackQuery';
-import { executeCommands } from '../../methods/command';
-import { executeMenu } from '../../methods/menu';
-import { executeStartCommand } from '../../methods/start';
+import { useCallbackQuery } from '../../methods/callbackQuery';
+import { useCommands } from '../../methods/command';
+import { useMenu } from '../../methods/menu/menu';
+import { useStartCommand } from '../../methods/start';
 import { XuiService } from '../xui/xui.service';
 
 @Module({
@@ -22,13 +22,13 @@ export class BotModule implements OnModuleInit {
 
     this.bot = new Bot(this.token);
 
-    const mainMenu = executeMenu(this.xuiService);
+    const mainMenu = useMenu(this.xuiService);
 
     this.bot.use(mainMenu);
 
-    executeStartCommand(this.bot, mainMenu);
-    executeCommands(this.bot, this.xuiService);
-    executeCallbackQuery(this.bot, this.xuiService);
+    useStartCommand(this.bot, mainMenu);
+    useCommands(this.bot, this.xuiService);
+    useCallbackQuery(this.bot, this.xuiService);
 
     this.bot.catch((err) => {
       const e = err.error;
