@@ -76,7 +76,7 @@ export class XuiService {
   async getClients(telegramId: string, inboundId?: InboundId): Promise<Client[]> {
     await this.login();
 
-    const inbound = await this.getInbound(inboundId || process.env.XUI_TEST_INBOUND);
+    const inbound = await this.getInbound(inboundId || process.env.XUI_INBOUND_ID);
 
     const settings: InboundSettings = inbound && JSON.parse(inbound.settings);
 
@@ -119,7 +119,7 @@ export class XuiService {
   }
 
   async deleteClient(clientId: string, inboundId?: InboundId): Promise<void> {
-    const id = inboundId || process.env.XUI_TEST_INBOUND;
+    const id = inboundId || process.env.XUI_INBOUND_ID;
 
     if (!id) throw new AxiosError('NO inboundId. Method deleteClient');
 

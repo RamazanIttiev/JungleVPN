@@ -8,7 +8,6 @@ import { XuiService } from '../xui/xui.service';
 
 @Module({
   providers: [XuiService],
-  // imports: [TypeOrmModule.forFeature([Client])],
 })
 export class BotModule implements OnModuleInit {
   token = process.env.TELEGRAM_BOT_TOKEN;

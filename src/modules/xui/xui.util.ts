@@ -7,7 +7,7 @@ export const generateClientBody = (
   inboundId?: InboundId,
 ) => {
   const payload = {
-    id: inboundId || Number(process.env.XUI_TEST_INBOUND),
+    id: inboundId || Number(process.env.XUI_INBOUND_ID),
     settings: {
       clients: [
         {

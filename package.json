@@ -1,11 +1,12 @@
 {
-  "name": "vpn-backend",
+  "name": "JungleVPN",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
-    "build": "nest build"
+    "build": "nest build",
+    "push": "rsync -avz --delete --exclude-from='.rsync-exclude' -e \"ssh -p 1702\" ./ root@144.124.231.221:/root/JungleVPN/"
   },
   "dependencies": {
     "@biomejs/biome": "^2.2.3",
@@ -14,7 +15,7 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
-    "@nestjs/typeorm": "10.0.2",
+    "@nestjs/typeorm": "11.0.0",
     "axios": "^1.12.2",
     "axios-cookiejar-support": "^6.0.4",
     "class-transformer": "^0.5.1",
@@ -32,7 +33,7 @@
   "devDependencies": {
     "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^10.1.2",
-    "@nestjs/testing": "^10.4.7",
+    "@nestjs/testing": "11.1.6",
     "@types/express": "^5.0.3",
     "@types/node": "^20.12.12",
     "ts-node": "^10.9.2",
@@ -41,6 +42,5 @@
   },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  }
 }
