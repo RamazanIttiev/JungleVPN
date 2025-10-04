@@ -1,8 +1,4 @@
-backend/node_modules
-backend/dist/*
-backend/.env
-
-bot/node_modules
-bot/.env
-
+node_modules
+/dist
+.env
 .idea

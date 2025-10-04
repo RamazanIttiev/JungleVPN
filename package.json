@@ -1,11 +1,46 @@
 {
-  "name": "VPN",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
+  "name": "vpn-backend",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "docker compose up -d --build",
-    "push": "rsync -avz --delete --exclude-from='.rsync-exclude' -e 'ssh -i /Users/rittiev/.ssh/vpn_key' ./ root@2.58.98.191:/vpn-app/",
-    "enter:cloud": "ssh -i /Users/rittiev/.ssh/vpn_key root@2.58.98.191"
-  }
+    "start": "node dist/main.js",
+    "start:dev": "nest start --watch",
+    "build": "nest build"
+  },
+  "dependencies": {
+    "@biomejs/biome": "^2.2.3",
+    "@grammyjs/menu": "^1.3.1",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.0",
+    "@nestjs/typeorm": "10.0.2",
+    "axios": "^1.12.2",
+    "axios-cookiejar-support": "^6.0.4",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
+    "grammy": "^1.38.2",
+    "pg": "^8.13.0",
+    "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1",
+    "rxjs": "^7.8.1",
+    "tough-cookie": "^6.0.0",
+    "tweetnacl": "^1.0.3",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.4.5",
+    "@nestjs/schematics": "^10.1.2",
+    "@nestjs/testing": "^10.4.7",
+    "@types/express": "^5.0.3",
+    "@types/node": "^20.12.12",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
