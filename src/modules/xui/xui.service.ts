@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
-import { Inbound, InboundClient, InboundId, InboundSettings } from './xui.entity';
+import { Client, ClientDevice, Inbound, InboundId, InboundSettings } from './xui.model';
 import { generateClientBody } from './xui.util';
 
 interface XuiResponse<T> {
@@ -46,7 +46,7 @@ export class XuiService {
     }
   }
 
-  async login() {
+  private async login() {
     const username = process.env.XUI_USERNAME || '';
     const password = process.env.XUI_PASSWORD || '';
 
@@ -73,7 +73,7 @@ export class XuiService {
     });
   }
 
-  async getClients(telegramId: string, inboundId?: InboundId): Promise<InboundClient[]> {
+  async getClients(telegramId: string, inboundId?: InboundId): Promise<Client[]> {
     await this.login();
 
     const inbound = await this.getInbound(inboundId || process.env.XUI_TEST_INBOUND);
@@ -83,16 +83,28 @@ export class XuiService {
     return settings.clients.filter((client) => client.tgId === telegramId);
   }
 
-  async addClient(tgId: string): Promise<string> {
-    const body = generateClientBody(tgId);
+  async addClient(tgId: string, device: ClientDevice): Promise<Client> {
+    const body = generateClientBody({ tgId, comment: device });
 
     await this.login();
     await this.fetch({ url: '/inbounds/addClient', body });
 
     const settings: InboundSettings = JSON.parse(body.settings);
-    const client = settings.clients.find((client) => client.tgId === tgId);
+    return settings.clients[0];
+  }
 
-    return this.generateUrl(client);
+  async getOrIssueSubUrl(tgId: string, device: ClientDevice) {
+    const clients = await this.getClients(tgId);
+
+    const mobileClient = clients.find((client) => client.comment === 'mobile');
+    const laptopClient = clients.find((client) => client.comment === 'laptop');
+
+    if (device === 'mobile' && mobileClient) return this.generateUrl(mobileClient.subId);
+    if (device === 'laptop' && laptopClient) return this.generateUrl(laptopClient.subId);
+
+    const client = await this.addClient(tgId, device);
+
+    return this.generateUrl(client.subId);
   }
 
   async deleteClient(clientId: string, inboundId?: InboundId): Promise<void> {
@@ -104,7 +116,7 @@ export class XuiService {
     await this.fetch({ url: `/inbounds/${id}/delClient/${clientId}` });
   }
 
-  generateUrl(client: InboundClient | undefined): string {
-    return `${process.env.XUI_SUB_URL}/subscription/${client?.subId}?name=${process.env.XUI_SERVER_NAME}`;
+  generateUrl(subId: string): string {
+    return `${process.env.XUI_SUB_URL}/subscription/${subId}?name=${process.env.XUI_SERVER_NAME}`;
   }
 }

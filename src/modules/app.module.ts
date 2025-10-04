@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BotModule } from './bot/bot.module';
 import { XuiModule } from './xui/xui.module';
 
 @Module({
@@ -14,6 +15,7 @@ import { XuiModule } from './xui/xui.module';
         };
       },
     }),
+    BotModule,
     XuiModule,
   ],
 })

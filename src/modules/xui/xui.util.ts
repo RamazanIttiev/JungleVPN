@@ -1,7 +1,11 @@
 import { randomUUID } from 'node:crypto';
-import { ClientFlow, InboundId } from './xui.entity';
+import { Client, ClientFlow, InboundId } from './xui.model';
 
-export const generateClientBody = (tgId: string, enable: boolean = true, inboundId?: InboundId) => {
+export const generateClientBody = (
+  client: Partial<Client>,
+  enable: boolean = true,
+  inboundId?: InboundId,
+) => {
   const payload = {
     id: inboundId || Number(process.env.XUI_TEST_INBOUND),
     settings: {
@@ -14,9 +18,9 @@ export const generateClientBody = (tgId: string, enable: boolean = true, inbound
           totalGB: 0,
           expiryTime: 0,
           enable,
-          tgId,
+          tgId: client.tgId,
           subId: randomUUID(),
-          comment: '',
+          comment: client.comment,
           reset: 0,
         },
       ],

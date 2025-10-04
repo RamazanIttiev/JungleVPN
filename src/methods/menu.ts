@@ -20,9 +20,11 @@ export const executeMenu = (xuiService: XuiService) => {
 
   const connectionsMenu = new Menu('connections-menu')
     .text('🍏 IOS/Android 🤖', async (ctx) => {
+      await ctx.answerCallbackQuery();
+
       const telegramId = String(ctx.from.id);
 
-      const url = 'await xuiService.addClient(telegramId);';
+      const url = await xuiService.getOrIssueSubUrl(telegramId, 'mobile');
 
       const content = getConnectionsContent({ label: 'Mobile', url: escapeHtml(url) });
 
@@ -36,9 +38,11 @@ export const executeMenu = (xuiService: XuiService) => {
       });
     })
     .text('Macbook 💻', async (ctx) => {
+      await ctx.answerCallbackQuery();
+
       const telegramId = String(ctx.from.id);
 
-      const url = 'await xuiService.addClient(telegramId);';
+      const url = await xuiService.getOrIssueSubUrl(telegramId, 'laptop');
 
       const content = getConnectionsContent({ label: 'Macbook', url: escapeHtml(url) });
 

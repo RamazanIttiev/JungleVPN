@@ -26,19 +26,4 @@ export const executeCommands = (bot: Bot<Context, Api<RawApi>>, xuiService: XuiS
       });
     }
   });
-
-  bot.command('add', async (ctx) => {
-    if (!ctx.from) return;
-    const telegramId = String(ctx.from.id);
-
-    const subUrl = await xuiService.addClient(telegramId);
-
-    function escapeHtml(s: string) {
-      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    await ctx.reply(`<code>${escapeHtml(subUrl)}</code>`, {
-      parse_mode: 'HTML',
-    });
-  });
 };

@@ -1,7 +1,8 @@
 export type InboundId = '1';
 export type ClientFlow = 'xtls-rprx-vision';
+export type ClientDevice = 'mobile' | 'laptop';
 
-export interface InboundClient {
+export interface Client {
   id: string;
   flow: ClientFlow;
   email: string;
@@ -11,12 +12,12 @@ export interface InboundClient {
   enable: boolean;
   tgId: string;
   subId: string;
-  comment: string;
+  comment: ClientDevice;
   reset: number;
 }
 
 export interface InboundSettings {
-  clients: InboundClient[];
+  clients: Client[];
 }
 
 export interface InboundStreamSettings {

@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
-import { runBot } from './bot';
 import { AppModule } from './modules/app.module';
 
 async function bootstrap() {
@@ -10,7 +9,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
 
-  runBot();
   // Swagger setup
   const config = new DocumentBuilder()
     .setTitle('VPN API')
