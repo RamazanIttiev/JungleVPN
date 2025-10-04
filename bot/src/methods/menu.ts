@@ -1,32 +1,65 @@
 import { Menu } from '@grammyjs/menu';
-import { Api, Bot, Context, RawApi } from 'grammy';
+import { getConnectionsContent, getConnectionsPage, getMainContent } from '../utils/menu.buttons';
+import { XuiService } from '../xui/xui.service';
 
-export const executeMenu = (bot: Bot<Context, Api<RawApi>>) => {
-  const mainMenu = new Menu('main-menu', { autoAnswer: false })
-    .text('🔌 Connections', (ctx) => ctx.menu.nav('connections-menu'))
+const escapeHtml = (s: string) => {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+};
+
+export const executeMenu = (xuiService: XuiService) => {
+  const mainMenu = new Menu('main-menu').text('Подключения 📶', async (ctx) => {
+    ctx.menu.nav('connections-menu');
+
+    await ctx.editMessageText(getConnectionsPage(), {
+      parse_mode: 'HTML',
+      link_preview_options: {
+        is_disabled: true,
+      },
+    });
+  });
+
+  const connectionsMenu = new Menu('connections-menu')
+    .text('🍏 IOS/Android 🤖', async (ctx) => {
+      const telegramId = String(ctx.from.id);
+
+      const url = 'await xuiService.addClient(telegramId);';
+
+      const content = getConnectionsContent({ label: 'Mobile', url: escapeHtml(url) });
+
+      await ctx.deleteMessage();
+      await ctx.reply(content, {
+        parse_mode: 'HTML',
+        link_preview_options: {
+          is_disabled: true,
+        },
+        reply_markup: mainMenu,
+      });
+    })
+    .text('Macbook 💻', async (ctx) => {
+      const telegramId = String(ctx.from.id);
+
+      const url = 'await xuiService.addClient(telegramId);';
+
+      const content = getConnectionsContent({ label: 'Macbook', url: escapeHtml(url) });
+
+      await ctx.deleteMessage();
+      await ctx.reply(content, {
+        parse_mode: 'HTML',
+        link_preview_options: {
+          is_disabled: true,
+        },
+        reply_markup: mainMenu,
+      });
+    })
     .row()
-    .text('ℹ️ About', (ctx) => ctx.menu.nav('about-menu'));
+    .text('⬅ Назад', async (ctx) => {
+      const username = ctx.from?.first_name || ctx.from?.username;
 
-  mainMenu.dynamic((ctx, range) => {
-    return range.text('👋 Welcome!\nChoose an option below:');
-  });
-
-  const connectionsMenu = new Menu('connections-menu').text('⬅️ Back', (ctx) => ctx.menu.back());
-
-  connectionsMenu.dynamic((ctx, range) => {
-    return range.text('🔌 Connections Page\n\nHere you will see your servers.');
-  });
-
-  const aboutMenu = new Menu('about-menu').text('⬅️ Back', (ctx) => ctx.menu.back());
-
-  aboutMenu.dynamic((ctx, range) => {
-    return range.text('ℹ️ About Page\n\nThis is a demo of single-message navigation.');
-  });
+      ctx.menu.back();
+      await ctx.editMessageText(getMainContent({ username }), { parse_mode: 'HTML' });
+    });
 
   mainMenu.register(connectionsMenu);
-  mainMenu.register(aboutMenu);
-
-  bot.use(mainMenu);
 
   return mainMenu;
 };

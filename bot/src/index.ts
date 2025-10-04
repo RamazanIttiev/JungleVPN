@@ -15,15 +15,17 @@ if (!token) {
 }
 
 const bot = new Bot(token);
+
 const xuiService = new XuiService();
-const mainMenu = executeMenu(bot);
+const mainMenu = executeMenu(xuiService);
+
+bot.use(mainMenu);
 
 executeStartCommand(bot, mainMenu);
 executeCommands(bot, xuiService);
 executeCallbackQuery(bot, xuiService);
 
 bot.catch((err) => {
-  console.log(err);
   const e = err.error;
   if (e instanceof GrammyError) {
     console.log('GrammyError. Error in request:', e.description);
