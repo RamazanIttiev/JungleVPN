@@ -52,7 +52,7 @@ export class XuiService {
     const password = process.env.XUI_PASSWORD || '';
 
     try {
-      const { data } = await this.backend.post(`${process.env.XUI_BASE_URL}/api/login`, {
+      const { data } = await this.backend.post(`${process.env.XUI_BASE_URL}:2053/api/login`, {
         username,
         password,
       });
@@ -114,11 +114,11 @@ export class XuiService {
   async getOrIssueSubUrl(tgUser: User, device: ClientDevice) {
     const existingClient = await this.getClientByDevice(tgUser.id, device);
 
-    if (existingClient) return this.generateUrl(existingClient.subId);
+    if (existingClient) return this.generateSubUrl(existingClient.subId);
 
     const client = await this.addClient(tgUser, device);
 
-    return this.generateUrl(client.subId);
+    return this.generateSubUrl(client.subId);
   }
 
   async deleteClient(clientId: string, inboundId?: InboundId): Promise<void> {
@@ -130,7 +130,12 @@ export class XuiService {
     await this.fetch({ url: `/inbounds/${id}/delClient/${clientId}` });
   }
 
-  generateUrl(subId: string): string {
-    return `${process.env.XUI_SUB_URL}/subscription/${subId}?name=${process.env.XUI_SERVER_NAME}`;
+  generateSubUrl(subId: string) {
+    const subUrl = `${process.env.XUI_SUB_URL}/subscription/${subId}`;
+
+    return {
+      subUrl,
+      redirectUrl: `${process.env.XUI_BASE_URL}/redirect?link=v2raytun://import/${subUrl}`,
+    };
   }
 }

@@ -33,7 +33,7 @@ export class BotModule implements OnModuleInit {
     this.bot.catch((err) => {
       const e = err.error;
       if (e instanceof GrammyError) {
-        console.log('GrammyError. Error in request:', e.description);
+        console.log('GrammyError. Error in request:', e);
       } else if (e instanceof HttpError) {
         console.log('HttpError. Could not contact Telegram:', e);
       } else {

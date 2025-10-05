@@ -2,6 +2,7 @@ import { Menu } from '@grammyjs/menu';
 import { ClientDevice } from '../../modules/xui/xui.model';
 import { XuiService } from '../../modules/xui/xui.service';
 import {
+  getAppLink,
   getConnectionsPageContent,
   getDevicePageContent,
   getMainPageContent,
@@ -19,15 +20,15 @@ export const useMenu = (xuiService: XuiService) => {
     });
   };
 
-  const sendConnectionMessage = async (
+  const sendDevicesPageContent = async (
     ctx: any,
     device: ClientDevice,
-    url: string,
+    subUrl: string,
     replyMenu: Menu,
   ) => {
     const content = getDevicePageContent({
       device,
-      url: escapeHtml(url),
+      subUrl: escapeHtml(subUrl),
     });
 
     await ctx.deleteMessage();
@@ -43,7 +44,20 @@ export const useMenu = (xuiService: XuiService) => {
 
     return new Menu(menuId)
       .text('⬅ Назад', goToConnectionsPage)
-      .text('Дай новую ссылку', async (ctx) => {
+      .row()
+      .dynamic(async (_, range) => {
+        const url = getAppLink(device);
+
+        range.url('🔽Скачать', url);
+      })
+      .dynamic(async (ctx, range) => {
+        const tgUser = ctx.from;
+        if (!tgUser) return;
+
+        const { redirectUrl } = await xuiService.getOrIssueSubUrl(tgUser, device);
+        range.url('🔐Подключиться', redirectUrl);
+      })
+      .text('🔄Новая ссылка', async (ctx) => {
         const tgUser = ctx.from;
 
         if (!tgUser) return;
@@ -53,8 +67,8 @@ export const useMenu = (xuiService: XuiService) => {
 
         await xuiService.deleteClient(client.id);
 
-        const url = await xuiService.getOrIssueSubUrl(tgUser, device);
-        await sendConnectionMessage(ctx, device, url, menus[device]);
+        const { subUrl } = await xuiService.getOrIssueSubUrl(tgUser, device);
+        await sendDevicesPageContent(ctx, device, subUrl, menus[device]);
       });
   };
 
@@ -68,23 +82,20 @@ export const useMenu = (xuiService: XuiService) => {
     .text('🍏 IOS ', async (ctx) => {
       const tgUser = ctx.from;
       if (!tgUser) return;
-      await ctx.answerCallbackQuery();
-      const url = await xuiService.getOrIssueSubUrl(tgUser, 'ios');
-      await sendConnectionMessage(ctx, 'ios', url, menus.ios);
+      const { subUrl } = await xuiService.getOrIssueSubUrl(tgUser, 'ios');
+      await sendDevicesPageContent(ctx, 'ios', subUrl, menus.ios);
     })
     .text('🤖 Android ', async (ctx) => {
       const tgUser = ctx.from;
       if (!tgUser) return;
-      await ctx.answerCallbackQuery();
-      const url = await xuiService.getOrIssueSubUrl(tgUser, 'android');
-      await sendConnectionMessage(ctx, 'android', url, menus.android);
+      const { subUrl } = await xuiService.getOrIssueSubUrl(tgUser, 'android');
+      await sendDevicesPageContent(ctx, 'android', subUrl, menus.android);
     })
     .text('💻 macOS', async (ctx) => {
       const tgUser = ctx.from;
       if (!tgUser) return;
-      await ctx.answerCallbackQuery();
-      const url = await xuiService.getOrIssueSubUrl(tgUser, 'macOS');
-      await sendConnectionMessage(ctx, 'macOS', url, menus.macOS);
+      const { subUrl } = await xuiService.getOrIssueSubUrl(tgUser, 'macOS');
+      await sendDevicesPageContent(ctx, 'macOS', subUrl, menus.macOS);
     })
     .row()
     .text('⬅ Назад', async (ctx) => {

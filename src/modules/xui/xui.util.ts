@@ -26,7 +26,7 @@ export const generateClientBody = ({
           expiryTime: 0,
           enable,
           tgId: tgUser.id,
-          subId: `JungleVPN___________________${randomUUID()}`,
+          subId: `JungleVPN___${randomUUID()}`,
           comment: client.comment,
           reset: 0,
         },
