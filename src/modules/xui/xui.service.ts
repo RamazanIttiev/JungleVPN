@@ -43,6 +43,7 @@ export class XuiService {
 
       throw new AxiosError('REQUEST ERROR', url);
     } catch (error) {
+      console.log(error);
       console.log('SERVER ERROR', url);
     }
   }
@@ -72,6 +73,15 @@ export class XuiService {
       method: 'GET',
       url: `/inbounds/get/${inboundId}`,
     });
+  }
+
+  async getTgIds() {
+    await this.login();
+
+    const inbounds = await this.getInbound(process.env.XUI_INBOUND_ID);
+    const settings: InboundSettings = inbounds?.settings && JSON.parse(inbounds?.settings);
+
+    return settings.clients.map((x) => x.tgId);
   }
 
   async getClients(tgId: number, inboundId?: InboundId): Promise<Client[]> {

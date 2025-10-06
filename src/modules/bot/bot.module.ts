@@ -12,6 +12,7 @@ import { XuiService } from '../xui/xui.service';
 export class BotModule implements OnModuleInit {
   token = process.env.TELEGRAM_BOT_TOKEN;
   bot: Bot;
+  adminID = process.env.TELEGRAM_ADMIN_ID;
 
   constructor(private readonly xuiService: XuiService) {}
 
@@ -27,7 +28,7 @@ export class BotModule implements OnModuleInit {
     this.bot.use(mainMenu);
 
     useStartCommand(this.bot, mainMenu);
-    useCommands(this.bot, this.xuiService);
+    useCommands(this.bot, this.xuiService, this.adminID);
     useCallbackQuery(this.bot, this.xuiService);
 
     this.bot.catch((err) => {
