@@ -1,4 +1,5 @@
 import { Menu } from '@grammyjs/menu';
+import { Context } from 'grammy';
 import { ClientDevice } from '../../modules/xui/xui.model';
 import { XuiService } from '../../modules/xui/xui.service';
 import {
@@ -21,7 +22,7 @@ export const useMenu = (xuiService: XuiService) => {
   };
 
   const sendDevicesPageContent = async (
-    ctx: any,
+    ctx: Context,
     device: ClientDevice,
     subUrl: string,
     replyMenu: Menu,
@@ -31,7 +32,12 @@ export const useMenu = (xuiService: XuiService) => {
       subUrl: escapeHtml(subUrl),
     });
 
-    await ctx.deleteMessage();
+    try {
+      await ctx.deleteMessage();
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+    }
+
     await ctx.reply(content, {
       parse_mode: 'HTML',
       link_preview_options: { is_disabled: true },
@@ -69,6 +75,60 @@ export const useMenu = (xuiService: XuiService) => {
 
         const { subUrl } = await xuiService.getOrIssueSubUrl(tgUser, device);
         await sendDevicesPageContent(ctx, device, subUrl, menus[device]);
+      })
+      .text('Оплата', async (ctx) => {
+        const telegramId = ctx.from.id;
+        const chatId = ctx.chatId?.toString();
+
+        if (!telegramId || !chatId) return;
+
+        const invoice = {
+          chatId,
+          title: 'Subscription',
+          description: 'Subscription to the service',
+          payload: `invoice-${telegramId}-${Date.now()}`,
+          provider_token: process.env.PAYMENT_TOKEN || '',
+          currency: 'RUB',
+          prices: [{ label: 'Subscription', amount: 50000 }],
+          need_email: false,
+          createdAt: new Date(),
+        };
+
+        const provider_data = {
+          receipt: {
+            items: [
+              {
+                description: invoice.description,
+                quantity: 1,
+                amount: {
+                  value: '500.00',
+                  currency: invoice.currency,
+                },
+                vat_code: 1,
+              },
+            ],
+          },
+        };
+
+        try {
+          const response = await ctx.api.sendInvoice(
+            chatId,
+            invoice.title,
+            invoice.description,
+            invoice.payload,
+            invoice.currency,
+            invoice.prices,
+            {
+              provider_token: invoice.provider_token,
+              provider_data: JSON.stringify(provider_data),
+            },
+          );
+
+          console.log(response);
+        } catch (error) {
+          console.error('Error sending invoice:', error);
+          await ctx.reply('Ошибка при создании счета. Пожалуйста, попробуйте позже.');
+        }
       });
   };
 

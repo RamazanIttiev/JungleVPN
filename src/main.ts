@@ -7,7 +7,6 @@ import { AppModule } from './modules/app.module';
 async function bootstrap() {
   dotenv.config();
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
 
   // Swagger setup
   const config = new DocumentBuilder()
