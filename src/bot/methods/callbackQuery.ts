@@ -1,7 +1,7 @@
-import { Api, Bot, Context, RawApi } from 'grammy';
-import { XuiService } from '../modules/xui/xui.service';
+import { BotContext } from '@bot/bot.model';
+import { Api, Bot, RawApi } from 'grammy';
 
-export const useCallbackQuery = (bot: Bot<Context, Api<RawApi>>, xuiService: XuiService) => {
+export const useCallbackQuery = (bot: Bot<BotContext, Api<RawApi>>) => {
   bot.callbackQuery(/del:(.+)/, async (ctx) => {
     await ctx.answerCallbackQuery();
     if (!ctx.from) return;
@@ -9,7 +9,7 @@ export const useCallbackQuery = (bot: Bot<Context, Api<RawApi>>, xuiService: Xui
     if (!clientId) return;
 
     try {
-      await xuiService.deleteClient(clientId);
+      await ctx.services.xui.deleteClient(clientId);
 
       if (ctx.callbackQuery?.message) {
         const original = ctx.callbackQuery.message;

@@ -1,4 +1,4 @@
-import { PaymentAmount, PaymentPeriod } from '@payments/payment.entity';
+import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { ClientDevice } from '@xui/xui.model';
 import { SessionFlavor as GrammySessionFlavor } from 'grammy';
 

@@ -1,16 +1,12 @@
-import { Api, Bot, Context, InlineKeyboard, RawApi } from 'grammy';
-import { XuiService } from '../modules/xui/xui.service';
+import { BotContext } from '@bot/bot.model';
+import { Api, Bot, InlineKeyboard, RawApi } from 'grammy';
 
-export const useCommands = (
-  bot: Bot<Context, Api<RawApi>>,
-  xuiService: XuiService,
-  adminID: string | undefined,
-) => {
+export const useCommands = (bot: Bot<BotContext, Api<RawApi>>, adminID: string | undefined) => {
   bot.command('devices', async (ctx) => {
     if (!ctx.from) return;
     const telegramId = ctx.from.id;
 
-    const clients = await xuiService.getClients(telegramId);
+    const clients = await ctx.services.xui.getClients(telegramId);
 
     if (!clients.length) {
       await ctx.reply('📱 You don’t have any active devices yet. Run /add to link one.');
@@ -39,7 +35,7 @@ export const useCommands = (
 
     const message = ctx.message.text;
 
-    const userIds = await xuiService.getTgIds();
+    const userIds = await ctx.services.xui.getTgIds();
 
     if (!admin) await ctx.reply('Failed to send a message');
 

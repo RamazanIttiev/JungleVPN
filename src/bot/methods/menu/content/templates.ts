@@ -1,6 +1,27 @@
-import { ClientDevice } from '../../modules/xui/xui.model';
+import { UserDevice } from '@users/users.model';
 
-export const getAppLink = (device: ClientDevice): string => {
+export const mapDeviceLabel = (device: UserDevice) => {
+  switch (device) {
+    case 'ios':
+      return '🍏 IOS';
+    case 'android':
+      return '🤖 Android';
+    case 'macOS':
+      return '💻 macOS';
+    default:
+      return device;
+  }
+};
+
+const toDateString = (timestamp: number) => {
+  return new Date(timestamp).toLocaleDateString('ru-EU', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
+export const getAppLink = (device: UserDevice): string => {
   switch (device) {
     case 'ios':
       return (
@@ -25,9 +46,33 @@ export const getAppLink = (device: ClientDevice): string => {
   }
 };
 
-export const getMainPageContent = (options: { username: string | undefined }) => {
+export const getMainPageContent = (options: {
+  username?: string;
+  validUntil?: number;
+  clients?: Array<{
+    device: UserDevice;
+  }>;
+}) => {
+  const { username, validUntil, clients } = options;
+
+  const formattedClients = clients?.map((client) => `${mapDeviceLabel(client.device)}`).join('\n');
+
   return `
-🌴 Добро пожаловать в Jungle, <b>${options.username || ''}</b>!
+🌴 Добро пожаловать в <b>Jungle</b>, <b>${username || 'Дорогой друг'}</b>!
+
+В <code>JUNGLE</code> скорость и безопасность — на первом месте. ⚡️
+
+📅 <b>Подписка активна до:</b>
+<blockquote>${toDateString(validUntil!)}</blockquote>
+
+<b>Твои активные устройства:</b>
+${formattedClients}
+`;
+};
+
+export const getNewUserMainPageContent = (options: { username: string | undefined }) => {
+  return `
+🌴 Добро пожаловать в Jungle, <b>${options.username || 'Дорогой друг'}</b>!
 
 В <code>JUNGLE</code> скорость и безопасность — на первом месте.  
 
@@ -35,7 +80,7 @@ export const getMainPageContent = (options: { username: string | undefined }) =>
 `;
 };
 
-export const getConnectionsPageContent = () => {
+export const getDevicesPageContent = () => {
   return `
 📱 <b>Выбери платформу, на которой хочешь настроить VPN:</b>
 
@@ -49,12 +94,17 @@ ___________________________
 `;
 };
 
-export const getDevicePageContent = (options: { device: ClientDevice; subUrl: string }) => {
+export const getPaymentPeriodsPage = () => {
+  return `
+<b>На какой срок хочешь подключить VPN?</b>`;
+};
+
+export const getConnectionPageContent = (options: { device: UserDevice; subUrl: string }) => {
   const { subUrl, device } = options;
 
   const appDownloadLink = getAppLink(device);
 
-  switch (options.device) {
+  switch (device) {
     case 'ios':
     case 'android':
     case 'macOS':

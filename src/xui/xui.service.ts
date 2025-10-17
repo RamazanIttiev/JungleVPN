@@ -53,7 +53,7 @@ export class XuiService {
     const password = process.env.XUI_PASSWORD || '';
 
     try {
-      const { data } = await this.backend.post(`${process.env.XUI_BASE_URL}:2053/api/login`, {
+      const { data } = await this.backend.post(`${process.env.XUI_BASE_URL}/api/login`, {
         username,
         password,
       });
@@ -112,23 +112,51 @@ export class XuiService {
   }
 
   async addClient(tgUser: User, device: ClientDevice): Promise<Client> {
-    const body = generateClientBody({ tgUser, client: { comment: device } });
+    const body = generateClientBody({ tgUser, device });
 
     await this.login();
-    await this.fetch({ url: '/inbounds/addClient', body });
+    await this.fetch({
+      url: '/inbounds/addClient',
+      body: {
+        id: Number(process.env.XUI_INBOUND_ID),
+        settings: JSON.stringify({
+          clients: [body],
+        }),
+      },
+    });
 
-    const settings: InboundSettings = JSON.parse(body.settings);
-    return settings.clients[0];
+    return body;
   }
 
-  async getOrIssueSubUrl(tgUser: User, device: ClientDevice) {
+  async updateClient(client: Client, options: Partial<Client>) {
+    await this.login();
+
+    const updatedClient = {
+      ...client,
+      ...options,
+    };
+
+    try {
+      await this.fetch({
+        url: `inbounds/updateClient/${client.id}`,
+        body: {
+          id: Number(process.env.XUI_INBOUND_ID),
+          settings: JSON.stringify({
+            clients: [updatedClient],
+          }),
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getOrIssueUrls(tgUser: User, device: ClientDevice) {
     const existingClient = await this.getClientByDevice(tgUser.id, device);
 
-    if (existingClient) return this.generateSubUrl(existingClient.subId);
+    if (existingClient) return this.generateUrls(existingClient.subId);
 
-    const client = await this.addClient(tgUser, device);
-
-    return this.generateSubUrl(client.subId);
+    // return this.generateUrls(client.subId);
   }
 
   async deleteClient(clientId: string, inboundId?: InboundId): Promise<void> {
@@ -140,8 +168,8 @@ export class XuiService {
     await this.fetch({ url: `/inbounds/${id}/delClient/${clientId}` });
   }
 
-  generateSubUrl(subId: string) {
-    const subUrl = `${process.env.XUI_SUB_URL}/subscription/${subId}`;
+  generateUrls(subId: string) {
+    const subUrl = `${process.env.XUI_SUB_URL}/${subId}`;
 
     return {
       subUrl,
