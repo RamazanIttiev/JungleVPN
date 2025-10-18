@@ -5,6 +5,8 @@ import { SessionFlavor as GrammySessionFlavor } from 'grammy';
 export interface SessionData {
   paymentUrl: string | undefined;
   paymentId: string | undefined;
+  subUrl?: string;
+  redirectUrl?: string;
   selectedDevice?: ClientDevice;
   selectedAmount?: PaymentAmount;
   selectedPeriod?: PaymentPeriod;
@@ -19,5 +21,7 @@ export const initialSession = (): SessionData => {
     selectedDevice: undefined,
     selectedAmount: undefined,
     selectedPeriod: undefined,
+    redirectUrl: undefined,
+    subUrl: undefined,
   };
 };

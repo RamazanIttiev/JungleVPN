@@ -2,6 +2,8 @@ import { BotContext } from '@bot/bot.model';
 import {
   getConnectionPageContent,
   getDevicesPageContent,
+  getMainPageContent,
+  getNewUserMainPageContent,
   getPaymentPeriodsPage,
 } from '@bot/methods/menu/content/templates';
 import { Menu } from '@grammyjs/menu';
@@ -28,16 +30,21 @@ export const goToPaymentPeriodsPage = async (ctx: any) => {
 };
 
 export const goToMainMenu = async (ctx: any) => {
-  const username = ctx.from?.first_name || ctx.from?.username;
-  console.log(ctx.session);
+  const tgUser = ctx.services.bot.validateUser(ctx.from);
+
+  const user = await ctx.services.users.getUser(tgUser.id);
+  const username = tgUser.first_name || tgUser.username;
+
+  const content = !user
+    ? getNewUserMainPageContent({ username })
+    : getMainPageContent({ username, clients: user?.clients, validUntil: user?.expiryTime });
+
   ctx.menu.nav('main-menu');
-  // await ctx.editMessageText(
-  //   getMainPageContent({ username, validUntil: new Date().toISOString(), clients: [] }),
-  //   {
-  //     parse_mode: 'HTML',
-  //     link_preview_options: { is_disabled: true },
-  //   },
-  // );
+
+  await ctx.editMessageText(content, {
+    parse_mode: 'HTML',
+    link_preview_options: { is_disabled: true },
+  });
 };
 
 export const goToPaymentPage = async (
@@ -63,10 +70,13 @@ export const goToConnectionPage = async (ctx: BotContext, replyMenu: Menu<BotCon
   if (!ctx.session.selectedDevice) {
     throw new Error('No device. goToConnectionPage');
   }
+  if (!ctx.session.subUrl) {
+    throw new Error('No device. goToConnectionPage');
+  }
 
   const content = getConnectionPageContent({
     device: ctx.session.selectedDevice,
-    subUrl: escapeHtml(''),
+    subUrl: escapeHtml(ctx.session.subUrl),
   });
 
   try {

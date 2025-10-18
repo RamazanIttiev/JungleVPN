@@ -15,23 +15,18 @@ export const useMenu = () => {
 
   const mainMenu = new Menu<BotContext>('main-menu').dynamic(async (ctx, range) => {
     const tgUser = ctx.services.bot.validateUser(ctx.from);
-    const isNewUser = (await ctx.services.users.getUserStatus(tgUser.id)) === 'new';
+    const user = await ctx.services.users.getUser(tgUser.id);
+    const isExpired = await ctx.services.users.getIsUserExpired(tgUser.id);
 
-    if (isNewUser) {
-      range.text('Подключения 📶', async (ctx) => {
-        await goToDevicesPage(ctx);
-      });
+    if (!user) {
+      range.text('Подключиться 📶', goToDevicesPage);
+      return;
+    }
+
+    if (!isExpired) {
+      range.text('Подключения 📶', goToDevicesPage);
+      range.text('Продлить подписку', goToPaymentPeriodsPage);
     } else {
-      range.text('Подключения 📶', async (ctx) => {
-        const tgUser = ctx.services.bot.validateUser(ctx.from);
-        const status = await ctx.services.users.getUserStatus(tgUser.id);
-
-        if (status === 'expired') {
-          await goToPaymentPeriodsPage(ctx);
-        } else {
-          await goToDevicesPage(ctx);
-        }
-      });
       range.text('Продлить подписку', goToPaymentPeriodsPage);
     }
   });

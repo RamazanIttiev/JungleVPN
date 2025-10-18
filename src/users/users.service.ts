@@ -7,8 +7,10 @@ import { Repository } from 'typeorm';
 interface IUserService {
   getUser: (id: number) => Promise<User | null>;
   getUserStatus: (id: number) => Promise<UserStatus>;
+  getIsUserActive: (id: number) => Promise<boolean>;
+  getIsUserExpired: (id: number) => Promise<boolean>;
   createUser: (user: User) => Promise<User>;
-  updateUser: (id: number, user: Partial<User>) => Promise<void>;
+  updateUser: (id: number, user: Partial<User>) => Promise<User>;
 }
 
 @Injectable()
@@ -26,15 +28,27 @@ export class UsersService implements IUserService {
     return {
       ...user,
       expiryTime: Number(user.expiryTime),
-    };
+    } as User;
   }
 
   async getUserStatus(id: number) {
     const user = await this.getUser(id);
 
-    if (!user) return 'new';
+    if (!user) return 'expired';
 
     return user.status;
+  }
+
+  async getIsUserActive(id: number) {
+    const status = await this.getUserStatus(id);
+
+    return status === 'active';
+  }
+
+  async getIsUserExpired(id: number) {
+    const status = await this.getUserStatus(id);
+
+    return status === 'expired';
   }
 
   async createUser(user: User) {
@@ -42,7 +56,11 @@ export class UsersService implements IUserService {
     return await this.usersRepository.save(data);
   }
 
-  async updateUser(id: number, user: Partial<User>) {
-    await this.usersRepository.update(id, user);
+  async updateUser(id: number, partial: Partial<User>) {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) throw new Error(`User ${id} not found`);
+
+    Object.assign(user, partial);
+    return await this.usersRepository.save(user);
   }
 }

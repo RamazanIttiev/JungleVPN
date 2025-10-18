@@ -21,13 +21,10 @@ export const useStartCommand = (
     const tgUser = ctx.services.bot.validateUser(ctx.from);
 
     const user = await ctx.services.users.getUser(tgUser.id);
-    const isNewUser = !user;
 
-    console.log(user);
+    const username = tgUser.first_name || tgUser.username;
 
-    const username = ctx.from?.first_name || ctx.from?.username;
-
-    const content = isNewUser
+    const content = !user
       ? getNewUserMainPageContent({ username })
       : getMainPageContent({ username, clients: user?.clients, validUntil: user?.expiryTime });
 

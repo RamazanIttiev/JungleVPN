@@ -1,14 +1,16 @@
-import { BotContext } from '@bot/bot.model';
 import { Injectable } from '@nestjs/common';
 import { PaymentPeriod } from '@payments/payments.model';
+import { User } from '@users/users.entity';
+import { UserClient, UserDevice } from '@users/users.model';
 import { UsersService } from '@users/users.service';
-import { ClientDevice } from '@xui/xui.model';
 import { XuiService } from '@xui/xui.service';
-import { randomId } from '@xui/xui.util';
-import { User } from 'grammy/types';
+import { User as GrammyUser } from 'grammy/types';
 
 interface IBotService {
-  handleNewUser: (ctx: BotContext, tgUser: User, device: ClientDevice) => Promise<void>;
+  handleDeviceSelection: (
+    tgUser: GrammyUser,
+    device: UserDevice,
+  ) => Promise<{ user: User; client: UserClient }>;
 }
 
 @Injectable()
@@ -18,27 +20,56 @@ export class BotService implements IBotService {
     private readonly usersService: UsersService,
   ) {}
 
-  async handleNewUser(ctx: BotContext, tgUser: User, device: ClientDevice) {
+  // @ts-expect-error
+  async handleDeviceSelection(tgUser: GrammyUser, device: UserDevice) {
+    // 1️⃣ Fetch user
+    const user = await this.usersService.getUser(tgUser.id);
+
+    // 2️⃣ If user doesn't exist → create trial user with 3-month expiry
+    if (!user) {
+      const client = await this.xuiService.addClient(tgUser, device);
+
+      const newUser = await this.usersService.createUser({
+        id: tgUser.id,
+        first_name: tgUser.first_name,
+        username: tgUser.username,
+        status: 'active',
+        expiryTime: client.expiryTime,
+        clients: [
+          {
+            id: client.id,
+            device,
+            subId: client.subId,
+          },
+        ],
+      });
+
+      return { user: newUser, client };
+    }
+
+    // 3️⃣ If user exists, check if they already have client for this device
+    const existingClient = user.clients.find((c) => c.device === device);
+    if (existingClient) {
+      return { user, client: existingClient };
+    }
+
+    // 4️⃣ Otherwise, add new client (trial or active)
     const client = await this.xuiService.addClient(tgUser, device);
-    await this.usersService.createUser({
-      id: tgUser.id,
-      expiryTime: client.expiryTime,
-      first_name: tgUser.first_name,
-      username: tgUser.username,
-      status: 'active',
+    const updatedUser = await this.usersService.updateUser(tgUser.id, {
       clients: [
+        ...user.clients,
         {
           id: client.id,
-          device: client.comment,
+          device,
           subId: client.subId,
         },
       ],
     });
 
-    ctx.session.selectedDevice = device;
+    return { updatedUser, client };
   }
 
-  validateUser(user: User | undefined) {
+  validateUser(user: GrammyUser | undefined) {
     if (!user) {
       throw new Error('User is not found');
     }
@@ -46,7 +77,7 @@ export class BotService implements IBotService {
     return user;
   }
 
-  async handleExpiredUser(tgUser: User, period: PaymentPeriod, device: ClientDevice) {
+  async handleExpiredUser(tgUser: GrammyUser, period: PaymentPeriod, device: UserDevice) {
     const expiryTime = new Date();
     switch (period) {
       case '1mo':
@@ -61,15 +92,5 @@ export class BotService implements IBotService {
     }
 
     // return this.xuiService.generateUrls(client.subId);
-  }
-
-  async handleActiveUser(ctx: BotContext, tgUser: User, device: ClientDevice) {
-    // const { clients } = await this.getUser(ctx, tgUser.id);
-
-    const client = await this.xuiService.getClientByDevice(tgUser.id, device);
-
-    if (client) {
-      await this.xuiService.updateClient(client, { subId: randomId() });
-    }
   }
 }

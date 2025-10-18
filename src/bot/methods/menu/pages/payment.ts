@@ -20,16 +20,15 @@ export const createPaymentMenu = () => {
         return;
       }
 
-      const isNewUser = (await ctx.services.users.getUserStatus(tgUser.id)) === 'new';
       // const status = await ctx.services.payments.getPaymentStatus(paymentId);
 
-      if (isNewUser) {
-        await goToDevicesPage(ctx);
-      } else {
-        await ctx.reply(
-          'Платеж не найден или не оплачен. Пожалуйста, убедитесь, что вы оплатили подписку.',
-        );
-      }
+      // if (isNewUser) {
+      //   await goToDevicesPage(ctx);
+      // } else {
+      //   await ctx.reply(
+      //     'Платеж не найден или не оплачен. Пожалуйста, убедитесь, что вы оплатили подписку.',
+      //   );
+      // }
     })
     .row()
     .text('⬅ Назад', async (ctx) => goToDevicesPage(ctx));

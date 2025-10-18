@@ -12,19 +12,18 @@ export const createDevicesMenu = (connectionMenu: Record<ClientDevice, MenuConte
   for (const device of devices) {
     menu.text(mapDeviceLabel(device), async (ctx) => {
       const tgUser = ctx.services.bot.validateUser(ctx.from);
-      const isNewUser = (await ctx.services.users.getUserStatus(tgUser.id)) === 'new';
-      // const paymentStatus = await ctx.services.payments.getPaymentStatus()
-      if (isNewUser) {
-        await ctx.services.bot.handleNewUser(ctx, tgUser, device);
-      } else {
-        await ctx.services.bot.handleActiveUser(ctx, tgUser, device);
-      }
+
+      const { client } = await ctx.services.bot.handleDeviceSelection(tgUser, device);
+      const { redirectUrl, subUrl } = ctx.services.xui.generateUrls(client.subId);
+
+      ctx.session.subUrl = subUrl;
+      ctx.session.redirectUrl = redirectUrl;
+      ctx.session.selectedDevice = device;
 
       await goToConnectionPage(ctx, connectionMenu[device]);
     });
   }
 
   menu.row().text('⬅ Назад', goToMainMenu);
-
   return menu;
 };

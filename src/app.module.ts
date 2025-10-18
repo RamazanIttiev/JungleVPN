@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
 import { PaymentsModule } from '@payments/payments.module';
 import { SessionModule } from '@session/session.module';
-import { Client, User } from '@users/users.entity';
+import { User } from '@users/users.entity';
 import { UsersModule } from '@users/users.module';
 import { XuiModule } from '@xui/xui.module';
 
@@ -17,7 +17,7 @@ import { XuiModule } from '@xui/xui.module';
       username: 'postgres',
       password: 'postgres',
       database: 'postgres',
-      entities: [User, Client, Payment],
+      entities: [User, Payment],
       autoLoadEntities: true,
       // Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       synchronize: true,
