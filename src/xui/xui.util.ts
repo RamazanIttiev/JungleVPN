@@ -12,7 +12,7 @@ export const generateClientBody = ({
   device: ClientDevice;
 }): Client => {
   const expiryTime = new Date();
-  expiryTime.setDate(expiryTime.getDate() + 31);
+  expiryTime.setDate(expiryTime.getDate() + 90);
 
   return {
     id: randomId(),
