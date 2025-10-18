@@ -151,6 +151,14 @@ export class XuiService {
     }
   }
 
+  async updateClientsExpiryTime(tgId: number, expiryTime: number) {
+    const clients = await this.getClients(tgId);
+
+    for (const client of clients) {
+      await this.updateClient(client, { expiryTime });
+    }
+  }
+
   async getOrIssueUrls(tgUser: User, device: ClientDevice) {
     const existingClient = await this.getClientByDevice(tgUser.id, device);
 

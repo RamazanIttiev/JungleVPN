@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Payment } from '@payments/payment.entity';
 import {
   CreatePaymentDto,
   IPaymentProvider,
@@ -48,8 +49,6 @@ export class YooKassaProvider implements IPaymentProvider {
       return {
         id: data.id,
         url: data.confirmation.confirmation_url,
-        createdAt: new Date(),
-        provider: 'yookassa',
       };
     } catch (error) {
       console.error('Error creating payment:', error);
@@ -67,6 +66,7 @@ export class YooKassaProvider implements IPaymentProvider {
     }
   }
 
+  updatePayment: (id: string, partial: Partial<Payment>) => Promise<void>;
   async handleWebhook(data: any): Promise<void> {
     // Optionally process webhook callbacks
   }

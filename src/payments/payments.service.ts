@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaymentProviderFactory } from '@payments/payments.factory';
 import {
@@ -24,14 +24,17 @@ export class PaymentsService implements IPaymentProvider {
     const provider = this.factory.getProvider(providerName);
     const session = await provider.createPayment(dto, providerName);
 
-    this.paymentRepository.create({
+    const payment = this.paymentRepository.create({
+      id: session.id,
       userId: dto.userId,
-      provider: session.provider,
-      providerPaymentId: session.id,
+      provider: providerName,
       amount: dto.amount,
       currency: dto.currency,
+      createdAt: new Date(),
       status: 'pending',
     });
+
+    await this.paymentRepository.save(payment);
 
     // const mockPayment = () => {
     //   return {
@@ -43,14 +46,27 @@ export class PaymentsService implements IPaymentProvider {
     // };
     // return Promise.resolve(mockPayment());
 
-    return session;
+    return { id: session.id, url: session.url };
   }
 
-  async checkPaymentStatus(paymentId: string, providerName: PaymentProvider) {
+  async checkPaymentStatus(paymentId: string) {
+    const payment = await this.paymentRepository.findOneBy({ id: paymentId });
+    const providerName = payment?.provider;
+
+    if (!providerName) {
+      throw new NotFoundException('providerName is required, checkPaymentStatus');
+    }
     const provider = this.factory.getProvider(providerName);
     return await provider.checkPaymentStatus(paymentId, providerName);
   }
 
+  async updatePayment(id: string, partial: Partial<Payment>) {
+    const payment = await this.paymentRepository.findOneBy({ id });
+    if (!payment) throw new Error(`Payment ${id} not found`);
+
+    Object.assign(payment, partial);
+    await this.paymentRepository.save(payment);
+  }
   handleWebhook?: ((data: any) => Promise<void>) | undefined;
 }
 

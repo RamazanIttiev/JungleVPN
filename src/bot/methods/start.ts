@@ -21,12 +21,11 @@ export const useStartCommand = (
     const tgUser = ctx.services.bot.validateUser(ctx.from);
 
     const user = await ctx.services.users.getUser(tgUser.id);
-
     const username = tgUser.first_name || tgUser.username;
     const isExpired = await ctx.services.users.getIsUserExpired(tgUser.id);
 
     const content = !user
-      ? getNewUserMainPageContent({ username, isExpired })
+      ? getNewUserMainPageContent({ username, isExpired, isNewUser: !user })
       : getMainPageContent({
           username,
           isExpired,

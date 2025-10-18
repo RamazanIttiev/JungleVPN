@@ -26,6 +26,7 @@ export const createPaymentPeriodsMenu = (paymentMenu: MenuContext) => {
         {
           userId: tgUser.id,
           amount: periodAmounts[period],
+          currency: 'RUB',
         },
         'yookassa',
       );

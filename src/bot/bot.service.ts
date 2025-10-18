@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PaymentPeriod } from '@payments/payments.model';
 import { User } from '@users/users.entity';
 import { UserClient, UserDevice } from '@users/users.model';
 import { UsersService } from '@users/users.service';
@@ -75,22 +74,5 @@ export class BotService implements IBotService {
     }
 
     return user;
-  }
-
-  async handleExpiredUser(tgUser: GrammyUser, period: PaymentPeriod, device: UserDevice) {
-    const expiryTime = new Date();
-    switch (period) {
-      case '1mo':
-        expiryTime.setDate(expiryTime.getDate() + 31);
-        break;
-      case '3mo':
-        expiryTime.setDate(expiryTime.getDate() + 90);
-        break;
-      case '6mo':
-        expiryTime.setDate(expiryTime.getDate() + 180);
-        break;
-    }
-
-    // return this.xuiService.generateUrls(client.subId);
   }
 }

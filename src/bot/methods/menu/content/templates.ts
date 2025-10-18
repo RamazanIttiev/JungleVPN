@@ -68,6 +68,7 @@ ${getPaymentStatusContent(options.isExpired, options.validUntil)}
 export const getNewUserMainPageContent = (options: {
   username: string | undefined;
   isExpired: boolean;
+  isNewUser: boolean;
 }) => {
   return `
 🌴 Добро пожаловать в Jungle, <b>${options.username || 'Дорогой друг'}</b>!
@@ -75,6 +76,8 @@ export const getNewUserMainPageContent = (options: {
 В <code>JUNGLE</code> скорость и безопасность — на первом месте.  
 
 Твои данные здесь под надежной защитой. 🛡️
+
+${options.isNewUser && 'Первые 3 месяца бесплатно❤️'}
 `;
 };
 

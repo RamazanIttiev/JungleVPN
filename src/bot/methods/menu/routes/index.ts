@@ -15,19 +15,19 @@ const escapeHtml = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export const goToDevicesPage = async (ctx: any) => {
-  ctx.menu.nav('devices-menu');
   await ctx.editMessageText(getDevicesPageContent(), {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },
   });
+  ctx.menu.nav('devices-menu');
 };
 
 export const goToPaymentPeriodsPage = async (ctx: any) => {
-  ctx.menu.nav('payment-periods-menu');
   await ctx.editMessageText(getPaymentPeriodsPage(), {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },
   });
+  ctx.menu.nav('payment-periods-menu');
 };
 
 export const goToMainPage = async (ctx: any) => {
@@ -38,7 +38,7 @@ export const goToMainPage = async (ctx: any) => {
   const isExpired = await ctx.services.users.getIsUserExpired(tgUser.id);
 
   const content = !user
-    ? getNewUserMainPageContent({ username, isExpired })
+    ? getNewUserMainPageContent({ username, isExpired, isNewUser: !user })
     : getMainPageContent({
         username,
         isExpired,
@@ -46,12 +46,11 @@ export const goToMainPage = async (ctx: any) => {
         validUntil: user?.expiryTime,
       });
 
-  ctx.menu.nav('main-menu');
-
   await ctx.editMessageText(content, {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },
   });
+  ctx.menu.nav('main-menu');
 };
 
 export const goToPaymentPage = async (

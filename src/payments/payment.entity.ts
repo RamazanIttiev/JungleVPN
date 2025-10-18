@@ -1,9 +1,9 @@
-import { PaymentAmount, PaymentProvider, PaymentStatus } from '@payments/payments.model';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { PaymentProvider, PaymentStatus } from '@payments/payments.model';
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('payments')
 export class Payment {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn()
   id: string;
 
   @Column()
@@ -11,9 +11,6 @@ export class Payment {
 
   @Column()
   provider: PaymentProvider;
-
-  @Column()
-  providerPaymentId: string;
 
   @Column()
   amount: string;
@@ -26,13 +23,11 @@ export class Payment {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @CreateDateColumn()
+  paidAt: Date;
 }
 
-export interface YooKassaPaymentInvoice {
-  value: PaymentAmount;
-}
-
-// @Entity('Invoice')
 // export class Invoice {
 //   @Column() chatId: number;
 //   @Column() title: string;

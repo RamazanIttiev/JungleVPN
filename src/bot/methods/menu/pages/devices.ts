@@ -15,15 +15,20 @@ export const createDevicesMenu = (connectionMenu: Record<ClientDevice, MenuConte
   for (const device of devices) {
     menu.text(mapDeviceLabel(device), async (ctx) => {
       const tgUser = ctx.services.bot.validateUser(ctx.from);
+      const isExpired = await ctx.services.users.getIsUserExpired(tgUser.id);
 
-      const { client } = await ctx.services.bot.handleDeviceSelection(tgUser, device);
-      const { redirectUrl, subUrl } = ctx.services.xui.generateUrls(client.subId);
+      if (!isExpired) {
+        const { client } = await ctx.services.bot.handleDeviceSelection(tgUser, device);
+        const { redirectUrl, subUrl } = ctx.services.xui.generateUrls(client.subId);
 
-      ctx.session.subUrl = subUrl;
-      ctx.session.redirectUrl = redirectUrl;
-      ctx.session.selectedDevice = device;
+        ctx.session.subUrl = subUrl;
+        ctx.session.redirectUrl = redirectUrl;
+        ctx.session.selectedDevice = device;
 
-      await goToConnectionPage(ctx, connectionMenu[device]);
+        await goToConnectionPage(ctx, connectionMenu[device]);
+      } else {
+        await goToMainPage(ctx);
+      }
     });
   }
 

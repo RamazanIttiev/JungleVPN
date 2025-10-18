@@ -11,7 +11,7 @@ export const createConnectionMenu = (menu: MenuContext, device: ClientDevice) =>
     })
     .dynamic(async (ctx, range) => {
       const redirectUrl = ctx.session.redirectUrl;
-      range.url('🔐 Подключиться', redirectUrl || '');
+      if (redirectUrl) range.url('🔐 Подключиться', redirectUrl);
     })
     .row()
     .text('Главное меню', async (ctx) => {
@@ -20,6 +20,7 @@ export const createConnectionMenu = (menu: MenuContext, device: ClientDevice) =>
       ctx.session.selectedDevice = undefined;
       await goToMainPage(ctx);
     });
+  // Todo Новая ссылка
   // .text('🔄 Новая ссылка', async (ctx) => {
   //   const tgUser = ctx.services.bot.validateUser(ctx.from);
   //

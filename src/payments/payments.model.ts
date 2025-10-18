@@ -1,7 +1,10 @@
+import { Payment } from '@payments/payment.entity';
+
 export type PaymentPeriod = '1mo' | '3mo' | '6mo';
 export type PaymentAmount = '199.00' | '599.00' | '999.00';
 export type PaymentStatus = 'pending' | 'succeeded';
 export type PaymentProvider = 'yookassa';
+export type PaymentCurrency = 'RUB';
 
 export interface IPaymentProvider {
   /**
@@ -18,6 +21,8 @@ export interface IPaymentProvider {
    */
   checkPaymentStatus: (paymentId: string, providerName: PaymentProvider) => Promise<PaymentStatus>;
 
+  updatePayment: (id: string, partial: Partial<Payment>) => Promise<void>;
+
   /**
    * Optional: Handles provider webhook callback.
    * Useful for asynchronous confirmation.
@@ -28,7 +33,7 @@ export interface IPaymentProvider {
 export class CreatePaymentDto {
   readonly userId: number;
   readonly amount: string;
-  readonly currency?: string;
+  readonly currency: PaymentCurrency;
   readonly description?: string;
   readonly metadata?: Record<string, any>;
 }
@@ -36,6 +41,4 @@ export class CreatePaymentDto {
 export type PaymentSession = {
   id: string;
   url: string;
-  createdAt: Date;
-  provider: PaymentProvider;
 };

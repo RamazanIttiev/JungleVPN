@@ -1,6 +1,7 @@
 import { BotContext } from '@bot/bot.model';
 import { goToDevicesPage } from '@bot/methods/menu/routes';
 import { Menu } from '@grammyjs/menu';
+import { initialSession } from '@session/session.model';
 
 export const createPaymentMenu = () => {
   const menu = new Menu<BotContext>('payment-menu');
@@ -15,16 +16,19 @@ export const createPaymentMenu = () => {
   menu
     .text('Я оплатил ✅', async (ctx) => {
       const paymentId = ctx.session.paymentId;
-      console.log(paymentId);
+      const tgUser = ctx.services.bot.validateUser(ctx.from);
+
       if (!paymentId) {
         await ctx.reply('Это кажется старое сообщение');
         return;
       }
 
-      const status = await ctx.services.payments.checkPaymentStatus(paymentId, 'yookassa');
+      const status = await ctx.services.payments.checkPaymentStatus(paymentId);
 
       if (status === 'succeeded') {
-        ctx.session.paymentUrl = undefined;
+        await ctx.services.users.updateExpiryTime(tgUser.id, ctx.session.selectedPeriod!);
+        await ctx.services.payments.updatePayment(paymentId, { status, paidAt: new Date() });
+        ctx.session = initialSession();
         await goToDevicesPage(ctx);
       } else {
         await ctx.reply('Платеж не найден или не оплачен. Уверен, что ты оплатил подписку?');
