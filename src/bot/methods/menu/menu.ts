@@ -1,6 +1,5 @@
-import { BotContext } from '@bot/bot.model';
 import { createPaymentPeriodsMenu } from '@bot/methods/menu/pages/createPaymentPeriodsMenu';
-import { Menu } from '@grammyjs/menu';
+import { Menu } from '@bot/navigation/menu';
 import { createConnectionMenu } from './pages/connection';
 import { createDevicesMenu } from './pages/devices';
 import { createPaymentMenu } from './pages/payment';
@@ -8,16 +7,12 @@ import { goToDevicesPage, goToPaymentPeriodsPage } from './routes';
 
 export const useMenu = () => {
   const connectionMenu = {
-    ios: new Menu<BotContext>('ios-connection-menu'),
-    android: new Menu<BotContext>('android-connection-menu'),
-    macOS: new Menu<BotContext>('macOS-connection-menu'),
+    ios: new Menu('ios-connection-menu'),
+    android: new Menu('android-connection-menu'),
+    macOS: new Menu('macOS-connection-menu'),
   };
 
-  const mainMenu = new Menu<BotContext>('main-menu', {
-    onMenuOutdated: async (ctx) => {
-      await ctx.reply('Что-то изменилось, попробуй заного /start');
-    },
-  }).dynamic(async (ctx, range) => {
+  const mainMenu = new Menu('main-menu').dynamic(async (ctx, range) => {
     const tgUser = ctx.services.bot.validateUser(ctx.from);
     const user = await ctx.services.users.getUser(tgUser.id);
     const isExpired = await ctx.services.users.getIsUserExpired(tgUser.id);

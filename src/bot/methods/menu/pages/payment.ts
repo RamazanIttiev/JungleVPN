@@ -1,10 +1,10 @@
 import { BotContext } from '@bot/bot.model';
 import { goToDevicesPage } from '@bot/methods/menu/routes';
-import { Menu } from '@grammyjs/menu';
+import { Menu } from '@bot/navigation/menu';
 import { initialSession } from '@session/session.model';
 
 export const createPaymentMenu = () => {
-  const menu = new Menu<BotContext>('payment-menu');
+  const menu = new Menu('payment-menu');
 
   menu.dynamic(async (ctx, range) => {
     const paymentUrl = ctx.session.paymentUrl;

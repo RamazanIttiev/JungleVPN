@@ -19,7 +19,8 @@
       "@xui/*": ["src/xui/*"],
       "@payments/*": ["src/payments/*"],
       "@users/*": ["src/users/*"],
-      "@session/*": ["src/session/*"]
+      "@session/*": ["src/session/*"],
+      "@assets/*": ["src/assets/*"]
     }
   },
   "include": ["src/**/*"],

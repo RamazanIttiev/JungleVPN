@@ -1,5 +1,5 @@
 import { BotService } from '@bot/bot.service';
-import { Menu } from '@grammyjs/menu';
+import { Menu } from '@bot/navigation/menu';
 import { PaymentsService } from '@payments/payments.service';
 import { SessionFlavor } from '@session/session.model';
 import { UsersService } from '@users/users.service';
@@ -15,4 +15,4 @@ export interface BotContext extends Context, SessionFlavor {
   };
 }
 
-export type MenuContext = Menu<BotContext>;
+export type MenuContext = Menu;

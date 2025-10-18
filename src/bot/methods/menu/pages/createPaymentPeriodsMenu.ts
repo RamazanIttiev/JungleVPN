@@ -1,7 +1,7 @@
 import { BotContext, MenuContext } from '@bot/bot.model';
 import { goToMainPage, goToPaymentPage } from '@bot/methods/menu/routes';
 import { mapPeriodLabelToPriceLabel } from '@bot/methods/utils';
-import { Menu } from '@grammyjs/menu';
+import { Menu } from '@bot/navigation/menu';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 
 const periods: PaymentPeriod[] = JSON.parse(process.env.PAYMENT_PERIODS || '["1mo", "3mo", "6mo"]');
@@ -17,7 +17,7 @@ const periodAmounts = periods.reduce(
 );
 
 export const createPaymentPeriodsMenu = (paymentMenu: MenuContext) => {
-  const menu = new Menu<BotContext>('payment-periods-menu');
+  const menu = new Menu('payment-periods-menu');
 
   periods.forEach((period) => {
     menu.row().text(mapPeriodLabelToPriceLabel(period), async (ctx) => {

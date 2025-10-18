@@ -48,7 +48,7 @@ export const getMainPageContent = (options: {
       }>
     | undefined;
 }) => {
-  const { username, validUntil, clients } = options;
+  const { username, validUntil, clients, isExpired } = options;
 
   const formattedClients = clients?.map((client) => `${mapDeviceLabel(client.device)}`).join('\n');
 
@@ -57,7 +57,7 @@ export const getMainPageContent = (options: {
 
 В <code>JUNGLE</code> скорость и безопасность — на первом месте. ⚡️
 
-${getPaymentStatusContent(options.isExpired, options.validUntil)}
+${getPaymentStatusContent(isExpired, validUntil)}
 
 
 <b>Твои подключенные устройства:</b>

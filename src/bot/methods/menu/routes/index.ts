@@ -1,4 +1,4 @@
-import { BotContext } from '@bot/bot.model';
+import { BotContext, MenuContext } from '@bot/bot.model';
 import {
   getConnectionPageContent,
   getDevicesPageContent,
@@ -7,7 +7,6 @@ import {
   getPaymentPageContent,
   getPaymentPeriodsPage,
 } from '@bot/methods/menu/content/templates';
-import { Menu } from '@grammyjs/menu';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { Context } from 'grammy';
 
@@ -15,19 +14,19 @@ const escapeHtml = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export const goToDevicesPage = async (ctx: any) => {
+  ctx.menu.nav('devices-menu');
   await ctx.editMessageText(getDevicesPageContent(), {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },
   });
-  ctx.menu.nav('devices-menu');
 };
 
 export const goToPaymentPeriodsPage = async (ctx: any) => {
+  ctx.menu.nav('payment-periods-menu');
   await ctx.editMessageText(getPaymentPeriodsPage(), {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },
   });
-  ctx.menu.nav('payment-periods-menu');
 };
 
 export const goToMainPage = async (ctx: any) => {
@@ -46,18 +45,18 @@ export const goToMainPage = async (ctx: any) => {
         validUntil: user?.expiryTime,
       });
 
+  ctx.menu.nav('main-menu');
   await ctx.editMessageText(content, {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },
   });
-  ctx.menu.nav('main-menu');
 };
 
 export const goToPaymentPage = async (
   ctx: Context,
   period: PaymentPeriod,
   amount: PaymentAmount,
-  replyMenu: Menu<BotContext>,
+  replyMenu: MenuContext,
 ) => {
   try {
     await ctx.deleteMessage();
@@ -72,7 +71,7 @@ export const goToPaymentPage = async (
   });
 };
 
-export const goToConnectionPage = async (ctx: BotContext, replyMenu: Menu<BotContext>) => {
+export const goToConnectionPage = async (ctx: BotContext, replyMenu: MenuContext) => {
   if (!ctx.session.selectedDevice) {
     throw new Error('No device. goToConnectionPage');
   }

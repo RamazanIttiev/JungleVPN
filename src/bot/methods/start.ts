@@ -35,6 +35,7 @@ export const useStartCommand = (
 
     await ctx.react('🗿');
 
+    // await ctx.api.sendPhoto(ctx.chatId, new InputFile(Logo));
     await ctx.reply(content, {
       reply_markup: reply_markup_options,
       parse_mode: 'HTML',
