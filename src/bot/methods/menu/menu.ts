@@ -13,7 +13,11 @@ export const useMenu = () => {
     macOS: new Menu<BotContext>('macOS-connection-menu'),
   };
 
-  const mainMenu = new Menu<BotContext>('main-menu').dynamic(async (ctx, range) => {
+  const mainMenu = new Menu<BotContext>('main-menu', {
+    onMenuOutdated: async (ctx) => {
+      await ctx.reply('Что-то изменилось, попробуй заного /start');
+    },
+  }).dynamic(async (ctx, range) => {
     const tgUser = ctx.services.bot.validateUser(ctx.from);
     const user = await ctx.services.users.getUser(tgUser.id);
     const isExpired = await ctx.services.users.getIsUserExpired(tgUser.id);
@@ -25,9 +29,9 @@ export const useMenu = () => {
 
     if (!isExpired) {
       range.text('Подключения 📶', goToDevicesPage);
-      range.text('Продлить подписку', goToPaymentPeriodsPage);
+      range.text('Продлить 💰', goToPaymentPeriodsPage);
     } else {
-      range.text('Продлить подписку', goToPaymentPeriodsPage);
+      range.text('Продлить 💰', goToPaymentPeriodsPage);
     }
   });
 

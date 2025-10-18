@@ -35,10 +35,16 @@ export const goToMainPage = async (ctx: any) => {
 
   const user = await ctx.services.users.getUser(tgUser.id);
   const username = tgUser.first_name || tgUser.username;
+  const isExpired = await ctx.services.users.getIsUserExpired(tgUser.id);
 
   const content = !user
-    ? getNewUserMainPageContent({ username })
-    : getMainPageContent({ username, clients: user?.clients, validUntil: user?.expiryTime });
+    ? getNewUserMainPageContent({ username, isExpired })
+    : getMainPageContent({
+        username,
+        isExpired,
+        clients: user?.clients,
+        validUntil: user?.expiryTime,
+      });
 
   ctx.menu.nav('main-menu');
 

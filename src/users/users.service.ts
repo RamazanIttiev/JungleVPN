@@ -36,7 +36,8 @@ export class UsersService implements IUserService {
 
     if (!user) return 'expired';
 
-    return user.status;
+    const expired = user.expiryTime < Date.now();
+    return expired ? 'expired' : 'active';
   }
 
   async getIsUserActive(id: number) {
@@ -47,7 +48,7 @@ export class UsersService implements IUserService {
 
   async getIsUserExpired(id: number) {
     const status = await this.getUserStatus(id);
-    // Todo check ecpiry date
+
     return status === 'expired';
   }
 

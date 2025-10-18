@@ -27,12 +27,26 @@ export const getAppLink = (device: UserDevice): string => {
   }
 };
 
+const getPaymentStatusContent = (isExpired: boolean, validUntil: number | undefined) => {
+  if (!isExpired) {
+    return `📅 <b>Подписка активна до:</b>
+<blockquote>${toDateString(validUntil!)}</blockquote>`;
+  } else {
+    return `
+🆘🆘🆘
+<b>У тебя закончилась подписка 🥲</b>`;
+  }
+};
+
 export const getMainPageContent = (options: {
-  username?: string;
-  validUntil?: number;
-  clients?: Array<{
-    device: UserDevice;
-  }>;
+  username: string | undefined;
+  validUntil: number | undefined;
+  isExpired: boolean;
+  clients:
+    | Array<{
+        device: UserDevice;
+      }>
+    | undefined;
 }) => {
   const { username, validUntil, clients } = options;
 
@@ -43,15 +57,18 @@ export const getMainPageContent = (options: {
 
 В <code>JUNGLE</code> скорость и безопасность — на первом месте. ⚡️
 
-📅 <b>Подписка активна до:</b>
-<blockquote>${toDateString(validUntil!)}</blockquote>
+${getPaymentStatusContent(options.isExpired, options.validUntil)}
 
-<b>Твои активные устройства:</b>
-${formattedClients}
+
+<b>Твои подключенные устройства:</b>
+<blockquote>${formattedClients}</blockquote>
 `;
 };
 
-export const getNewUserMainPageContent = (options: { username: string | undefined }) => {
+export const getNewUserMainPageContent = (options: {
+  username: string | undefined;
+  isExpired: boolean;
+}) => {
   return `
 🌴 Добро пожаловать в Jungle, <b>${options.username || 'Дорогой друг'}</b>!
 
@@ -77,7 +94,10 @@ ___________________________
 
 export const getPaymentPeriodsPage = () => {
   return `
-<b>На какой срок хочешь подключить VPN?</b>`;
+<b>На какой срок хочешь подключить VPN?</b>
+
+Если подписка активна, что оплаченный период добавится к текущему
+`;
 };
 
 export const getPaymentPageContent = (period: PaymentPeriod, amount: PaymentAmount) => {
