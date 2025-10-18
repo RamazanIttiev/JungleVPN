@@ -33,6 +33,16 @@ export class PaymentsService implements IPaymentProvider {
       status: 'pending',
     });
 
+    // const mockPayment = () => {
+    //   return {
+    //     id: `${randomId()}`,
+    //     url: `https://google.com`,
+    //     createdAt: new Date(),
+    //     provider: 'yookassa',
+    //   } as PaymentSession;
+    // };
+    // return Promise.resolve(mockPayment());
+
     return session;
   }
 

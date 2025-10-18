@@ -1,10 +1,13 @@
+import * as process from 'node:process';
 import { BotContext, MenuContext } from '@bot/bot.model';
-import { mapDeviceLabel } from '@bot/methods/menu/content/templates';
+import { mapDeviceLabel } from '@bot/methods/utils';
 import { Menu } from '@grammyjs/menu';
 import { ClientDevice } from '@xui/xui.model';
-import { goToConnectionPage, goToMainMenu } from '../routes';
+import { goToConnectionPage, goToMainPage } from '../routes';
 
-const devices: ClientDevice[] = ['ios', 'android', 'macOS'];
+const devices: ClientDevice[] = JSON.parse(
+  process.env.USER_DEVICES || '["ios", "android", "macOS"]',
+);
 
 export const createDevicesMenu = (connectionMenu: Record<ClientDevice, MenuContext>) => {
   const menu = new Menu<BotContext>('devices-menu');
@@ -24,6 +27,6 @@ export const createDevicesMenu = (connectionMenu: Record<ClientDevice, MenuConte
     });
   }
 
-  menu.row().text('⬅ Назад', goToMainMenu);
+  menu.row().text('⬅ Назад', goToMainPage);
   return menu;
 };

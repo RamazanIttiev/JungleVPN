@@ -1,25 +1,6 @@
+import { mapAmountLabel, mapDeviceLabel, mapPeriodLabel, toDateString } from '@bot/methods/utils';
+import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@users/users.model';
-
-export const mapDeviceLabel = (device: UserDevice) => {
-  switch (device) {
-    case 'ios':
-      return '🍏 IOS';
-    case 'android':
-      return '🤖 Android';
-    case 'macOS':
-      return '💻 macOS';
-    default:
-      return device;
-  }
-};
-
-const toDateString = (timestamp: number) => {
-  return new Date(timestamp).toLocaleDateString('ru-EU', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
 
 export const getAppLink = (device: UserDevice): string => {
   switch (device) {
@@ -97,6 +78,14 @@ ___________________________
 export const getPaymentPeriodsPage = () => {
   return `
 <b>На какой срок хочешь подключить VPN?</b>`;
+};
+
+export const getPaymentPageContent = (period: PaymentPeriod, amount: PaymentAmount) => {
+  return `
+<b>Как только оплатишь, возвращайся обратно, чтоб получить ссылку на подключение</b>
+
+<blockquote>Ты платишь <b>${mapAmountLabel(amount)}₽</b> за <b>${mapPeriodLabel(period)}</b></blockquote>
+  `;
 };
 
 export const getConnectionPageContent = (options: { device: UserDevice; subUrl: string }) => {

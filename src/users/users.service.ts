@@ -47,7 +47,7 @@ export class UsersService implements IUserService {
 
   async getIsUserExpired(id: number) {
     const status = await this.getUserStatus(id);
-
+    // Todo check ecpiry date
     return status === 'expired';
   }
 

@@ -1,7 +1,7 @@
 import { MenuContext } from '@bot/bot.model';
 import { getAppLink } from '@bot/methods/menu/content/templates';
 import { ClientDevice } from '@xui/xui.model';
-import { goToMainMenu } from '../routes';
+import { goToMainPage } from '../routes';
 
 export const createConnectionMenu = (menu: MenuContext, device: ClientDevice) => {
   return menu
@@ -11,15 +11,14 @@ export const createConnectionMenu = (menu: MenuContext, device: ClientDevice) =>
     })
     .dynamic(async (ctx, range) => {
       const redirectUrl = ctx.session.redirectUrl;
-      if (!redirectUrl) throw new Error('Missing cached redirectUrl');
-      range.url('🔐 Подключиться', redirectUrl);
+      range.url('🔐 Подключиться', redirectUrl || '');
     })
     .row()
     .text('Главное меню', async (ctx) => {
       ctx.session.subUrl = undefined;
       ctx.session.redirectUrl = undefined;
       ctx.session.selectedDevice = undefined;
-      await goToMainMenu(ctx);
+      await goToMainPage(ctx);
     });
   // .text('🔄 Новая ссылка', async (ctx) => {
   //   const tgUser = ctx.services.bot.validateUser(ctx.from);
