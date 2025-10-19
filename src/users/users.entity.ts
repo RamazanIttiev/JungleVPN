@@ -1,7 +1,7 @@
 import { UserClient, UserStatus } from '@users/users.model';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity('user')
+@Entity('users')
 export class User {
   @PrimaryColumn({ default: 0 }) id: number;
   @Column({ nullable: true, type: 'bigint' }) expiryTime: number;

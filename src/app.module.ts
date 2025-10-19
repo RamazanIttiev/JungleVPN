@@ -1,24 +1,22 @@
 import { BotModule } from '@bot/bot.module';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Payment } from '@payments/payment.entity';
 import { PaymentsModule } from '@payments/payments.module';
 import { SessionModule } from '@session/session.module';
-import { User } from '@users/users.entity';
 import { UsersModule } from '@users/users.module';
 import { XuiModule } from '@xui/xui.module';
+import typeorm from './config/typeorm';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      autoLoadEntities: true,
-      entities: [User, Payment],
-      synchronize: process.env.NODE_ENV !== 'production',
-      migrationsRun: process.env.NODE_ENV === 'production',
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [typeorm],
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => configService.get('typeorm')!,
     }),
     BotModule,
     XuiModule,
