@@ -7,8 +7,8 @@ export const dataSourceOptions: DataSourceOptions = {
   // @ts-expect-error
   type: process.env.DB_TYPE,
   url: process.env.DB_URL,
-  entities: ['src/**/*.entity.js'],
-  migrations: ['src/db/migrations/*.js'],
+  entities: ['src/**/*.entity.ts'],
+  migrations: ['src/db/migrations/*.ts'],
   migrationsTableName: 'migrations',
   migrationsRun: false,
   synchronize: false,

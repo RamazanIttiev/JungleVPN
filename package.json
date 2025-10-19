@@ -6,11 +6,10 @@
     "start:prod": "pm2 stop JungleVPN && bunx nest build && pm2 start JungleVPN",
     "start:dev": "bunx nest start --watch",
     "build": "bunx nest build",
-    "typeorm": "typeorm-ts-node-commonjs -d db/migrations/datasource.ts",
-    "migration:generate": "bun run build && bun run typeorm -- migration:generate db/migrations/datasource.ts",
-    "migration:run": "bun run typeorm -- migration:run",
-    "migration:revert": "bun run typeorm -- migration:revert",
-    "migration:show": "bun run typeorm -- migration:show"
+    "typeorm": "bunx ts-node node_modules/typeorm/cli",
+    "migration:generate": "bun run typeorm migration:generate db/migrations/Init.ts -d db/migrations/datasource.ts",
+    "migration:create": "bun run typeorm migration:create db/migrations/Init.ts",
+    "migration:run": "bun run typeorm migration:run -d db/migrations/datasource.ts"
   },
   "dependencies": {
     "@biomejs/biome": "^2.2.3",
