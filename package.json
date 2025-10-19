@@ -6,7 +6,7 @@
     "start:prod": "pm2 stop JungleVPN && bunx nest build && pm2 start JungleVPN",
     "start:dev": "bunx nest start --watch",
     "build": "bunx nest build",
-    "typeorm": "bunx ts-node node_modules/typeorm/cli",
+    "typeorm": "bunx ts-node -r tsconfig-paths/register node_modules/typeorm/cli",
     "migration:generate": "bun run typeorm migration:generate db/migrations/Init.ts -d db/migrations/datasource.ts",
     "migration:create": "bun run typeorm migration:create db/migrations/Init.ts",
     "migration:run": "bun run typeorm migration:run -d db/migrations/datasource.ts"

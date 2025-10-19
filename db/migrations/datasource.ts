@@ -1,3 +1,5 @@
+import { Payment } from '@payments/payment.entity';
+import { User } from '@users/users.entity';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
@@ -7,8 +9,8 @@ export const dataSourceOptions: DataSourceOptions = {
   // @ts-expect-error
   type: process.env.DB_TYPE,
   url: process.env.DB_URL,
-  entities: ['src/**/*.entity.ts'],
-  migrations: ['src/db/migrations/*.ts'],
+  entities: [User, Payment],
+  migrations: [],
   migrationsTableName: 'migrations',
   migrationsRun: false,
   synchronize: false,
