@@ -1,5 +1,6 @@
 import { BotModule } from '@bot/bot.module';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
 import { PaymentsModule } from '@payments/payments.module';
@@ -10,17 +11,14 @@ import { XuiModule } from '@xui/xui.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'postgres',
-      entities: [User, Payment],
+      url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      // Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
-      synchronize: true,
+      entities: [User, Payment],
+      synchronize: process.env.NODE_ENV !== 'production',
+      migrationsRun: process.env.NODE_ENV === 'production',
     }),
     BotModule,
     XuiModule,
