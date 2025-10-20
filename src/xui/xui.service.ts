@@ -150,14 +150,6 @@ export class XuiService {
     }
   }
 
-  async getOrIssueUrls(tgUser: User, device: ClientDevice) {
-    const existingClient = await this.getClientByDevice(tgUser.id, device);
-
-    if (existingClient) return this.generateUrls(existingClient.subId);
-
-    // return this.generateUrls(client.subId);
-  }
-
   async deleteClient(clientId: string, inboundId?: InboundId): Promise<void> {
     const id = inboundId || process.env.XUI_INBOUND_ID;
 

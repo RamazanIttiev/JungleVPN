@@ -1,5 +1,5 @@
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
-import { ClientDevice } from '@xui/xui.model';
+import { UserDevice } from '@users/users.model';
 import { SessionFlavor as GrammySessionFlavor } from 'grammy';
 
 export interface SessionData {
@@ -7,7 +7,7 @@ export interface SessionData {
   paymentId: string | undefined;
   subUrl?: string;
   redirectUrl?: string;
-  selectedDevice?: ClientDevice;
+  selectedDevice?: UserDevice;
   selectedAmount?: PaymentAmount;
   selectedPeriod?: PaymentPeriod;
 }

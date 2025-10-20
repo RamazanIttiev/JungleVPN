@@ -1,9 +1,10 @@
 import { MenuContext } from '@bot/bot.model';
 import { getAppLink } from '@bot/methods/menu/content/templates';
-import { ClientDevice } from '@xui/xui.model';
-import { goToMainPage } from '../routes';
+import { UserDevice } from '@users/users.model';
+import { randomId } from '@xui/xui.util';
+import { goToConnectionPage, goToMainPage } from '../routes';
 
-export const createConnectionMenu = (menu: MenuContext, device: ClientDevice) => {
+export const createConnectionMenu = (menu: MenuContext, device: UserDevice) => {
   return menu
     .dynamic(async (_, range) => {
       const url = getAppLink(device);
@@ -13,6 +14,23 @@ export const createConnectionMenu = (menu: MenuContext, device: ClientDevice) =>
       const redirectUrl = ctx.session.redirectUrl;
       if (redirectUrl) range.url('🔐 Подключиться', redirectUrl);
     })
+    .text('🔄 Новая ссылка', async (ctx) => {
+      const tgUser = ctx.services.bot.validateUser(ctx.from);
+      const client = await ctx.services.xui.getClientByDevice(tgUser.id, device);
+      if (!client) return;
+
+      const newSubId = randomId();
+
+      const { subUrl, redirectUrl } = ctx.services.xui.generateUrls(newSubId);
+
+      await ctx.services.users.updateUserClient(tgUser.id, device, { subId: newSubId });
+      await ctx.services.xui.updateClient(client, { subId: newSubId });
+
+      ctx.session.subUrl = subUrl;
+      ctx.session.redirectUrl = redirectUrl;
+
+      await goToConnectionPage(ctx, menu);
+    })
     .row()
     .text('Главное меню', async (ctx) => {
       ctx.session.subUrl = undefined;
@@ -20,15 +38,4 @@ export const createConnectionMenu = (menu: MenuContext, device: ClientDevice) =>
       ctx.session.selectedDevice = undefined;
       await goToMainPage(ctx);
     });
-  // Todo Новая ссылка
-  // .text('🔄 Новая ссылка', async (ctx) => {
-  //   const tgUser = ctx.services.bot.validateUser(ctx.from);
-  //
-  //   const client = await ctx.services.xui.getClientByDevice(tgUser.id, device);
-  //   if (!client) return;
-  //
-  //   await ctx.services.xui.deleteClient(client.id);
-  //
-  //   await goToConnectionPage(ctx, menu);
-  // });
 };

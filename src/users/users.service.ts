@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaymentPeriod } from '@payments/payments.model';
 import { User } from '@users/users.entity';
-import { UserStatus } from '@users/users.model';
+import { UserClient, UserStatus } from '@users/users.model';
 import { XuiService } from '@xui/xui.service';
 import { Repository } from 'typeorm';
 
@@ -16,6 +16,7 @@ interface IUserService {
   createUser: (user: User) => Promise<User>;
   updateUser: (id: number, user: Partial<User>) => Promise<User>;
   updateExpiryTime: (id: number, period: PaymentPeriod) => Promise<void>;
+  updateUserClient: (id: number, device: string, updateData: Partial<UserClient>) => Promise<void>;
 }
 
 @Injectable()
@@ -82,6 +83,17 @@ export class UsersService implements IUserService {
 
     Object.assign(user, partial);
     return await this.usersRepository.save(user);
+  }
+
+  async updateUserClient(id: number, device: string, updateData: Partial<UserClient>) {
+    const user = await this.getUser(id);
+    if (!user) throw new Error(`User ${id} not found`);
+
+    user.clients = user.clients.map((client) =>
+      client.device === device ? { ...client, ...updateData } : client,
+    );
+
+    await this.usersRepository.save(user);
   }
 
   async updateExpiryTime(id: number, period: PaymentPeriod) {

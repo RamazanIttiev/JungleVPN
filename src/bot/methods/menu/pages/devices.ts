@@ -1,15 +1,14 @@
-import * as process from 'node:process';
-import { BotContext, MenuContext } from '@bot/bot.model';
+import { MenuContext } from '@bot/bot.model';
 import { mapDeviceLabel } from '@bot/methods/utils';
 import { Menu } from '@bot/navigation/menu';
-import { ClientDevice } from '@xui/xui.model';
+import { UserDevice } from '@users/users.model';
 import { goToConnectionPage, goToMainPage } from '../routes';
 
-const devices: ClientDevice[] = JSON.parse(
-  process.env.USER_DEVICES || '["ios", "android", "macOS"]',
-);
+export const createDevicesMenu = (connectionMenu: Record<UserDevice, MenuContext>) => {
+  const devices: UserDevice[] = JSON.parse(
+    process.env.USER_DEVICES || '["ios", "android", "macOS"]',
+  );
 
-export const createDevicesMenu = (connectionMenu: Record<ClientDevice, MenuContext>) => {
   const menu = new Menu('devices-menu');
 
   for (const device of devices) {
