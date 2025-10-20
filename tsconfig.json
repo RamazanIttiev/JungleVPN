@@ -13,8 +13,16 @@
     "baseUrl": ".",
     "incremental": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@bot/*": ["src/bot/*"],
+      "@xui/*": ["src/xui/*"],
+      "@payments/*": ["src/payments/*"],
+      "@users/*": ["src/users/*"],
+      "@session/*": ["src/session/*"],
+      "@assets/*": ["src/assets/*"]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "db/**/*"],
   "exclude": ["node_modules", "dist"]
 }
