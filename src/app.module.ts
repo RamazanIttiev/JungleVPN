@@ -6,7 +6,7 @@ import { PaymentsModule } from '@payments/payments.module';
 import { SessionModule } from '@session/session.module';
 import { UsersModule } from '@users/users.module';
 import { XuiModule } from '@xui/xui.module';
-import { dataSourceOptions } from '../db/migrations/datasource';
+import { dataSourceOptions } from '../db/datasource';
 
 @Module({
   imports: [

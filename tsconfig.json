@@ -23,6 +23,6 @@
       "@assets/*": ["src/assets/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "db/**/*"],
   "exclude": ["node_modules", "dist"]
 }
