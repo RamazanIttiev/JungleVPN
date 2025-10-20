@@ -1,6 +1,10 @@
-import { UserClient, UserStatus } from '@users/users.model';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-
+export type UserStatus = 'trial' | 'expired' | 'active';
+export type UserClient = {
+  id: string;
+  device: string;
+  subId: string;
+};
 @Entity('users')
 export class User {
   @PrimaryColumn({ default: 0 }) id: number;

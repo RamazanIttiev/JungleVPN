@@ -1,5 +1,6 @@
-import { PaymentProvider, PaymentStatus } from '@payments/payments.model';
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+export type PaymentProvider = 'yookassa';
+export type PaymentStatus = 'pending' | 'succeeded';
 
 @Entity('payments')
 export class Payment {
