@@ -7,7 +7,7 @@ export type UserClient = {
 };
 @Entity('users')
 export class User {
-  @PrimaryColumn({ default: 0 }) id: number;
+  @PrimaryColumn({ default: 0, type: 'bigint' }) id: number;
   @Column({ nullable: true, type: 'bigint' }) expiryTime: number;
   @Column({ default: 'active' }) status: UserStatus;
   @Column({ type: 'jsonb', nullable: true })

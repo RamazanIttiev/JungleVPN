@@ -30,7 +30,7 @@ export const useCommands = (bot: Bot<BotContext, Api<RawApi>>, adminID: string |
   bot.on('message', async (ctx) => {
     const fromId = ctx.from.id;
     const admin = Number(adminID);
-
+    console.log('admin', admin);
     if (fromId !== admin) return;
 
     const message = ctx.message.text;
@@ -38,7 +38,7 @@ export const useCommands = (bot: Bot<BotContext, Api<RawApi>>, adminID: string |
     const userIds = await ctx.services.xui.getTgIds();
 
     if (!admin) await ctx.reply('Failed to send a message');
-
+    console.log(userIds);
     // Prevent accidental broadcast of commands
     if (message?.startsWith('/')) return;
 

@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start:prod": "forever start -c bun -a -l forever.log -o out.log -e err.log dist/src/main.js",
+    "start:prod": "bunx nest build && forever stopall && forever start -c bun -a -l forever.log -o out.log -e err.log dist/src/main.js",
     "start:dev": "bunx nest start --watch",
+    "stop": "forever stopall",
     "build": "bunx nest build",
     "typeorm": "bun run build && bunx ts-node -r tsconfig-paths/register node_modules/typeorm/cli",
     "migration:generate": "bun run typeorm migration:generate db/migrations/Migration -d dist/db/datasource.js",
