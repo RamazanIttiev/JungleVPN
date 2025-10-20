@@ -28,6 +28,8 @@ export const mapAmountLabel = (amount: PaymentAmount) => {
 
 export const mapPeriodLabel = (period: PaymentPeriod) => {
   switch (period) {
+    case '1d':
+      return '1 day';
     case '1mo':
       return '1 месяц';
     case '3mo':
@@ -39,6 +41,8 @@ export const mapPeriodLabel = (period: PaymentPeriod) => {
 
 export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
   switch (period) {
+    case '1d':
+      return '1';
     case '1mo':
       return '1 месяц (199 ₽)';
     case '3mo':
