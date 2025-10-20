@@ -75,15 +75,6 @@ export class XuiService {
     });
   }
 
-  async getTgIds() {
-    await this.login();
-
-    const inbounds = await this.getInbound(process.env.XUI_INBOUND_ID);
-    const settings: InboundSettings = inbounds?.settings && JSON.parse(inbounds?.settings);
-
-    return settings.clients.filter((client) => typeof client.tgId === 'number').map((x) => x.tgId);
-  }
-
   async getClients(tgId: number, inboundId?: InboundId): Promise<Client[]> {
     await this.login();
 

@@ -27,7 +27,7 @@ export const getAppLink = (device: UserDevice): string => {
   }
 };
 
-const getPaymentStatusContent = (isExpired: boolean, validUntil: number | undefined) => {
+const getPaymentStatusContent = (isExpired: boolean, validUntil: string | undefined) => {
   if (!isExpired) {
     return `📅 <b>Подписка активна до:</b>
 <blockquote>${toDateString(validUntil!)}</blockquote>`;
@@ -40,7 +40,7 @@ const getPaymentStatusContent = (isExpired: boolean, validUntil: number | undefi
 
 export const getMainPageContent = (options: {
   username: string | undefined;
-  validUntil: number | undefined;
+  validUntil: string | undefined;
   isExpired: boolean;
   clients:
     | Array<{

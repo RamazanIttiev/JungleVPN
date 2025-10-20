@@ -30,15 +30,14 @@ export const useCommands = (bot: Bot<BotContext, Api<RawApi>>, adminID: string |
   bot.on('message', async (ctx) => {
     const fromId = ctx.from.id;
     const admin = Number(adminID);
-    console.log('admin', admin);
+
     if (fromId !== admin) return;
 
     const message = ctx.message.text;
 
-    const userIds = await ctx.services.xui.getTgIds();
+    const userIds = await ctx.services.users.getAllUserIds();
 
     if (!admin) await ctx.reply('Failed to send a message');
-    console.log(userIds);
     // Prevent accidental broadcast of commands
     if (message?.startsWith('/')) return;
 
@@ -47,7 +46,7 @@ export const useCommands = (bot: Bot<BotContext, Api<RawApi>>, adminID: string |
       try {
         await ctx.api.sendMessage(id, message || '');
       } catch (e) {
-        console.error(`Failed to send to ${id}:`);
+        console.log(`Failed to send to ${id}:`);
       }
     }
 

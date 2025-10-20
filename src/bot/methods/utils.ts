@@ -14,8 +14,8 @@ export const mapDeviceLabel = (device: UserDevice) => {
   }
 };
 
-export const toDateString = (timestamp: number) => {
-  return new Date(timestamp).toLocaleDateString('ru-EU', {
+export const toDateString = (timestamp: string) => {
+  return new Date(Number(timestamp)).toLocaleDateString('ru-EU', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

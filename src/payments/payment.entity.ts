@@ -7,8 +7,8 @@ export class Payment {
   @PrimaryColumn()
   id: string;
 
-  @Column({ type: 'bigint', nullable: true })
-  userId: number;
+  @Column({ nullable: true })
+  userId: string;
 
   @Column()
   provider: PaymentProvider;

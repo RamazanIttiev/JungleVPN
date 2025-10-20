@@ -29,11 +29,11 @@ export class BotService implements IBotService {
       const client = await this.xuiService.addClient(tgUser, device);
 
       const newUser = await this.usersService.createUser({
-        id: tgUser.id,
+        id: tgUser.id.toString(),
         first_name: tgUser.first_name,
         username: tgUser.username,
         status: 'active',
-        expiryTime: client.expiryTime,
+        expiryTime: client.expiryTime.toString(),
         clients: [
           {
             id: client.id,

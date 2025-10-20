@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 
 interface IUserService {
   getUser: (id: number) => Promise<User | null>;
+  getAllUserIds: () => Promise<number[]>;
   getUserStatus: (id: number) => Promise<UserStatus>;
   getIsUserOnTrial: (id: number) => Promise<boolean>;
   getIsUserActive: (id: number) => Promise<boolean>;
@@ -26,14 +27,19 @@ export class UsersService implements IUserService {
   ) {}
 
   async getUser(id: number) {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ id: id.toString() });
 
     if (!user) return null;
 
-    return {
-      ...user,
-      expiryTime: Number(user.expiryTime),
-    } as User;
+    return user;
+  }
+
+  async getAllUserIds() {
+    const users = await this.usersRepository.find({
+      select: ['id'],
+    });
+
+    return users.map((u) => Number(u.id));
   }
 
   async getUserStatus(id: number) {
@@ -41,7 +47,9 @@ export class UsersService implements IUserService {
 
     if (!user) return 'trial';
 
-    const expired = user.expiryTime < Date.now();
+    const userExpiryTime = Number(user.expiryTime);
+
+    const expired = userExpiryTime < Date.now();
     return expired ? 'expired' : 'active';
   }
 
@@ -80,8 +88,10 @@ export class UsersService implements IUserService {
     const user = await this.getUser(id);
     if (!user) throw new Error(`User ${id} not found`);
 
+    const userExpiryTime = Number(user.expiryTime);
+
     const now = Date.now();
-    const base = user.expiryTime > now ? user.expiryTime : now;
+    const base = userExpiryTime > now ? userExpiryTime : now;
     const expiryTime = new Date(base);
 
     switch (period) {
@@ -97,6 +107,6 @@ export class UsersService implements IUserService {
     }
 
     await this.xuiService.updateClientsExpiryTime(id, expiryTime.getTime());
-    await this.updateUser(id, { expiryTime: expiryTime.getTime() });
+    await this.updateUser(id, { expiryTime: expiryTime.getTime().toString() });
   }
 }
