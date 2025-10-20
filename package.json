@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start:prod": "bunx nest build && forever stopall && forever start -c bun -a -l forever.log -o out.log -e err.log dist/src/main.js",
+    "start:prod": "bunx nest build && forever stopall && forever start --minUptime 1000 --spinSleepTime 2000 -c bun -a -l forever.log -o out.log -e err.log dist/src/main.js",
     "start:dev": "bunx nest start --watch",
     "stop": "forever stopall",
     "build": "bunx nest build",
