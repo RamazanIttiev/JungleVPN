@@ -3,7 +3,7 @@ import { Menu } from '@bot/navigation/menu';
 import { createConnectionMenu } from './pages/connection';
 import { createDevicesMenu } from './pages/devices';
 import { createPaymentMenu } from './pages/payment';
-import { goToDevicesPage, goToPaymentPeriodsPage } from './routes';
+import { goToDevicesPage } from './routes';
 
 export const useMenu = () => {
   const connectionMenu = {
@@ -24,9 +24,9 @@ export const useMenu = () => {
 
     if (!isExpired) {
       range.text('Подключения 📶', goToDevicesPage);
-      range.text('Продлить 💰', goToPaymentPeriodsPage);
+      // range.text('Продлить 💰', goToPaymentPeriodsPage);
     } else {
-      range.text('Продлить 💰', goToPaymentPeriodsPage);
+      // range.text('Продлить 💰', goToPaymentPeriodsPage);
     }
   });
 
