@@ -6,31 +6,39 @@ import { goToConnectionPage, goToMainPage } from '../routes';
 
 export const createDevicesMenu = (connectionMenu: Record<UserDevice, MenuContext>) => {
   const devices: UserDevice[] = JSON.parse(
-    process.env.USER_DEVICES || '["ios", "android", "macOS"]',
+    process.env.USER_DEVICES || '["ios", "android", "macOS", "windows"]',
   );
 
   const menu = new Menu('devices-menu');
 
-  for (const device of devices) {
-    menu.text(mapDeviceLabel(device), async (ctx) => {
-      const tgUser = ctx.services.bot.validateUser(ctx.from);
-      const isExpired = await ctx.services.users.getIsUserExpired(tgUser.id);
+  const handleDeviceClick = async (ctx: any, device: UserDevice) => {
+    const tgUser = ctx.services.bot.validateUser(ctx.from);
+    const isExpired = await ctx.services.users.getIsUserExpired(tgUser.id);
 
-      if (!isExpired) {
-        const { client } = await ctx.services.bot.handleDeviceSelection(tgUser, device);
-        const { redirectUrl, subUrl } = ctx.services.xui.generateUrls(client.subId);
+    if (isExpired) {
+      await goToMainPage(ctx);
+      return;
+    }
 
-        ctx.session.subUrl = subUrl;
-        ctx.session.redirectUrl = redirectUrl;
-        ctx.session.selectedDevice = device;
+    const { client } = await ctx.services.bot.handleDeviceSelection(tgUser, device);
+    const { redirectUrl, subUrl } = ctx.services.xui.generateUrls(client.subId);
 
-        await goToConnectionPage(ctx, connectionMenu[device]);
-      } else {
-        await goToMainPage(ctx);
-      }
-    });
-  }
+    ctx.session = {
+      ...ctx.session,
+      subUrl,
+      redirectUrl,
+      selectedDevice: device,
+    };
+
+    await goToConnectionPage(ctx, connectionMenu[device]);
+  };
+
+  devices.forEach((device, index) => {
+    if (index > 0 && index % 2 === 0) menu.row();
+    menu.text(mapDeviceLabel(device), (ctx) => handleDeviceClick(ctx, device));
+  });
 
   menu.row().text('⬅ Назад', goToMainPage);
+
   return menu;
 };

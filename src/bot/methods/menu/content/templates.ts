@@ -1,6 +1,6 @@
 import { mapAmountLabel, mapDeviceLabel, mapPeriodLabel, toDateString } from '@bot/methods/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
-import { UserDevice } from '@users/users.model';
+import { UserClient, UserDevice } from '@users/users.model';
 
 export const getAppLink = (device: UserDevice): string => {
   switch (device) {
@@ -18,6 +18,10 @@ export const getAppLink = (device: UserDevice): string => {
       return (
         process.env.ANDROID_APP_DOWNLOAD_LINK ||
         'https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ruB'
+      );
+    case 'windows':
+      return (
+        process.env.WINDOWS_APP_DOWNLOAD_LINK || 'https://storage.v2raytun.com/v2RayTun_Setup.exe'
       );
     default:
       return (
@@ -43,9 +47,7 @@ export const getMainPageContent = (options: {
   validUntil: string | undefined;
   isExpired: boolean;
   clients:
-    | Array<{
-        device: UserDevice;
-      }>
+    | Array<UserClient>
     | undefined;
 }) => {
   const { username, validUntil, clients, isExpired } = options;
@@ -120,6 +122,7 @@ export const getConnectionPageContent = (options: { device: UserDevice; subUrl: 
     case 'ios':
     case 'android':
     case 'macOS':
+    case 'windows':
       return `
 <b>Установи приложение  <a href='${appDownloadLink}'>v2rayTun</a></b>
 

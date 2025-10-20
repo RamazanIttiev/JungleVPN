@@ -9,6 +9,8 @@ export const mapDeviceLabel = (device: UserDevice) => {
       return '🤖 Android';
     case 'macOS':
       return '💻 macOS';
+      case 'windows':
+      return '🖥 windows';
     default:
       return device;
   }

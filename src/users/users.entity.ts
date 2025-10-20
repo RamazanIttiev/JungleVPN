@@ -1,9 +1,10 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 type UserStatus = 'trial' | 'expired' | 'active';
+type UserDevice = 'ios' | 'android' | 'macOS' | 'windows';
 type UserClient = {
   id: string;
-  device: string;
+  device: UserDevice;
   subId: string;
 };
 

@@ -58,13 +58,24 @@ export const goToPaymentPage = async (
   amount: PaymentAmount,
   replyMenu: MenuContext,
 ) => {
+  const content = getPaymentPageContent(period, amount)
+
+  const editMessage = async () => {
+    await ctx.editMessageText(content, {
+      parse_mode: 'HTML',
+      link_preview_options: { is_disabled: true },
+      reply_markup: replyMenu,
+    });
+  }
+
   try {
     await ctx.deleteMessage();
   } catch (error) {
+    await editMessage()
     console.error('Failed to delete message:', error);
   }
 
-  await ctx.reply(getPaymentPageContent(period, amount), {
+  await ctx.reply(content, {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },
     reply_markup: replyMenu,
@@ -84,9 +95,18 @@ export const goToConnectionPage = async (ctx: BotContext, replyMenu: MenuContext
     subUrl: escapeHtml(ctx.session.subUrl),
   });
 
+  const editMessage = async () => {
+    await ctx.editMessageText(content, {
+      parse_mode: 'HTML',
+      link_preview_options: { is_disabled: true },
+      reply_markup: replyMenu,
+    });
+  }
+
   try {
     await ctx.deleteMessage();
   } catch (error) {
+    await editMessage()
     console.error('Failed to delete message:', error);
   }
 

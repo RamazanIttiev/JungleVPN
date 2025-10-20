@@ -10,6 +10,7 @@ export const useMenu = () => {
     ios: new Menu('ios-connection-menu'),
     android: new Menu('android-connection-menu'),
     macOS: new Menu('macOS-connection-menu'),
+    windows: new Menu('windows-connection-menu'),
   };
 
   const mainMenu = new Menu('main-menu').dynamic(async (ctx, range) => {
@@ -37,11 +38,13 @@ export const useMenu = () => {
   createConnectionMenu(connectionMenu.ios, 'ios');
   createConnectionMenu(connectionMenu.android, 'android');
   createConnectionMenu(connectionMenu.macOS, 'macOS');
+  createConnectionMenu(connectionMenu.windows, 'windows');
 
   mainMenu.register(devicesMenu);
   mainMenu.register(connectionMenu.ios);
   mainMenu.register(connectionMenu.android);
   mainMenu.register(connectionMenu.macOS);
+  mainMenu.register(connectionMenu.windows);
   mainMenu.register(paymentMenu);
   mainMenu.register(paymentPeriodsMenu);
 
