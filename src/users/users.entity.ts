@@ -12,7 +12,7 @@ type UserClient = {
 export class User {
   @PrimaryColumn() id: string;
   @Column({ nullable: true }) expiryTime: string;
-  @Column({ default: 'active' }) status: UserStatus;
+  @Column({ default: 'active', type: 'varchar' }) status: UserStatus;
   @Column({ type: 'jsonb', nullable: true })
   clients: UserClient[];
   @Column({ nullable: true }) first_name: string;
