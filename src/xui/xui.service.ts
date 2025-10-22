@@ -15,7 +15,7 @@ export class XuiService {
   private jar = new CookieJar();
   private backend: AxiosInstance = wrapper(
     axios.create({
-      baseURL: process.env.XUI_FETCH_URL,
+      baseURL: process.env.XUI_BASE_URL,
       withCredentials: true,
       jar: this.jar,
       validateStatus: () => true,
@@ -53,7 +53,7 @@ export class XuiService {
     const password = process.env.XUI_PASSWORD || '';
 
     try {
-      const { data } = await this.backend.post(`${process.env.XUI_BASE_URL}/api/login`, {
+      const { data } = await this.backend.post(`${process.env.XUI_BASE_URL}/login`, {
         username,
         password,
       });
@@ -71,7 +71,7 @@ export class XuiService {
 
     return await this.fetch<Inbound>({
       method: 'GET',
-      url: `/inbounds/get/${inboundId}`,
+      url: `/api/inbounds/get/${inboundId}`,
     });
   }
 
@@ -110,7 +110,7 @@ export class XuiService {
 
     await this.login();
     await this.fetch({
-      url: '/inbounds/addClient',
+      url: '/api/inbounds/addClient',
       body: {
         id: Number(process.env.XUI_INBOUND_ID),
         settings: JSON.stringify({
@@ -132,7 +132,7 @@ export class XuiService {
 
     try {
       await this.fetch({
-        url: `inbounds/updateClient/${client.id}`,
+        url: `/api/inbounds/updateClient/${client.id}`,
         body: {
           id: Number(process.env.XUI_INBOUND_ID),
           settings: JSON.stringify({
@@ -159,11 +159,11 @@ export class XuiService {
     if (!id) throw new AxiosError('NO inboundId. Method deleteClient');
 
     await this.login();
-    await this.fetch({ url: `/inbounds/${id}/delClient/${clientId}` });
+    await this.fetch({ url: `/api/inbounds/${id}/delClient/${clientId}` });
   }
 
   generateUrls(subId: string) {
-    const subUrl = `${process.env.XUI_SUB_URL}/${subId}`;
+    const subUrl = `${process.env.XUI_BASE_URL}/sub/${subId}`;
 
     return {
       subUrl,
