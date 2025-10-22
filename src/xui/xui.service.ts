@@ -69,10 +69,14 @@ export class XuiService {
   private async getInbound(inboundId: string | undefined): Promise<Inbound | undefined> {
     if (!inboundId) throw new AxiosError('NO inboundId. Method getInbound');
 
-    return await this.fetch<Inbound>({
-      method: 'GET',
-      url: `/api/inbounds/get/${inboundId}`,
-    });
+    try {
+      return await this.fetch<Inbound>({
+        method: 'GET',
+        url: `/inbounds/get/${inboundId}`,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getClients(tgId: number, inboundId?: InboundId): Promise<Client[]> {
@@ -110,7 +114,7 @@ export class XuiService {
 
     await this.login();
     await this.fetch({
-      url: '/api/inbounds/addClient',
+      url: '/inbounds/addClient',
       body: {
         id: Number(process.env.XUI_INBOUND_ID),
         settings: JSON.stringify({
@@ -132,7 +136,7 @@ export class XuiService {
 
     try {
       await this.fetch({
-        url: `/api/inbounds/updateClient/${client.id}`,
+        url: `/inbounds/updateClient/${client.id}`,
         body: {
           id: Number(process.env.XUI_INBOUND_ID),
           settings: JSON.stringify({
@@ -159,7 +163,7 @@ export class XuiService {
     if (!id) throw new AxiosError('NO inboundId. Method deleteClient');
 
     await this.login();
-    await this.fetch({ url: `/api/inbounds/${id}/delClient/${clientId}` });
+    await this.fetch({ url: `/inbounds/${id}/delClient/${clientId}` });
   }
 
   generateUrls(subId: string) {
