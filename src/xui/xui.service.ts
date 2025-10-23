@@ -54,7 +54,14 @@ export class XuiService {
     await this.login();
 
     try {
-      const res = await this.backend.request({ method, url, data: body });
+      const res = await this.backend.request({
+        method,
+        url,
+        data: body,
+        headers: {
+          Cookie: await this.jar.getCookieString(this.backend.defaults.baseURL!),
+        },
+      });
 
       const data: XuiResponse<Data> = res.data;
 
