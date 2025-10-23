@@ -22,6 +22,25 @@ export class XuiService {
     }),
   );
 
+  private async login() {
+    const username = process.env.XUI_USERNAME || '';
+    const password = process.env.XUI_PASSWORD || '';
+
+    try {
+      const { data } = await this.backend.post('/login', {
+        username,
+        password,
+      });
+
+      if (!data.success) {
+        throw new AxiosError('BOT. Please login. Method login', data.msg);
+      }
+    } catch (error) {
+      console.log(error);
+      throw new AxiosError('BOT. SERVER ERROR. Method login');
+    }
+  }
+
   private async fetch<Data>({
     method = 'POST',
     url,
@@ -32,6 +51,8 @@ export class XuiService {
     method?: 'GET' | 'POST';
     body?: unknown;
   }): Promise<Data | undefined> {
+    await this.login();
+
     try {
       const res = await this.backend.request({ method, url, data: body });
 
@@ -48,31 +69,13 @@ export class XuiService {
     }
   }
 
-  private async login() {
-    const username = process.env.XUI_USERNAME || '';
-    const password = process.env.XUI_PASSWORD || '';
-
-    try {
-      const { data } = await this.backend.post(`${process.env.XUI_BASE_URL}/login`, {
-        username,
-        password,
-      });
-
-      if (!data.success) {
-        throw new AxiosError('BOT. Please login. Method login', data.msg);
-      }
-    } catch (error) {
-      throw new AxiosError('BOT. SERVER ERROR. Method login');
-    }
-  }
-
   private async getInbound(inboundId: string | undefined): Promise<Inbound | undefined> {
     if (!inboundId) throw new AxiosError('NO inboundId. Method getInbound');
 
     try {
       return await this.fetch<Inbound>({
         method: 'GET',
-        url: `/inbounds/get/${inboundId}`,
+        url: `/panel/api/inbounds/get/${inboundId}`,
       });
     } catch (error) {
       console.log(error);
@@ -80,8 +83,6 @@ export class XuiService {
   }
 
   async getClients(tgId: number, inboundId?: InboundId): Promise<Client[]> {
-    await this.login();
-
     const inbound = await this.getInbound(inboundId || process.env.XUI_INBOUND_ID);
 
     const settings: InboundSettings = inbound && JSON.parse(inbound.settings);
@@ -111,10 +112,8 @@ export class XuiService {
 
   async addClient(tgUser: User, device: ClientDevice): Promise<Client> {
     const body = generateClientBody({ tgUser, device });
-
-    await this.login();
     await this.fetch({
-      url: '/inbounds/addClient',
+      url: '/panel/api/inbounds/addClient',
       body: {
         id: Number(process.env.XUI_INBOUND_ID),
         settings: JSON.stringify({
@@ -127,8 +126,6 @@ export class XuiService {
   }
 
   async updateClient(client: Client, options: Partial<Client>) {
-    await this.login();
-
     const updatedClient = {
       ...client,
       ...options,
@@ -136,7 +133,7 @@ export class XuiService {
 
     try {
       await this.fetch({
-        url: `/inbounds/updateClient/${client.id}`,
+        url: `/panel/api/inbounds/updateClient/${client.id}`,
         body: {
           id: Number(process.env.XUI_INBOUND_ID),
           settings: JSON.stringify({
@@ -162,8 +159,7 @@ export class XuiService {
 
     if (!id) throw new AxiosError('NO inboundId. Method deleteClient');
 
-    await this.login();
-    await this.fetch({ url: `/inbounds/${id}/delClient/${clientId}` });
+    await this.fetch({ url: `/panel/api/inbounds/${id}/delClient/${clientId}` });
   }
 
   generateUrls(subId: string) {
