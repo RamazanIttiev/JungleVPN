@@ -27,10 +27,16 @@ export class XuiService {
     const password = process.env.XUI_PASSWORD || '';
 
     try {
-      const { data } = await this.backend.post('/login', {
+      const { data, headers } = await this.backend.post('/login', {
         username,
         password,
       });
+
+      const cookies = headers['set-cookie'];
+
+      if (cookies) {
+        await this.jar.setCookie(cookies[0], this.backend.defaults.baseURL!);
+      }
 
       if (!data.success) {
         throw new AxiosError('BOT. Please login. Method login', data.msg);
