@@ -175,12 +175,7 @@ export class XuiService {
     await this.fetch({ url: `/panel/api/inbounds/${id}/delClient/${clientId}` });
   }
 
-  generateUrls(subId: string) {
-    const subUrl = `${process.env.XUI_BASE_URL}/sub/${subId}`;
-
-    return {
-      subUrl,
-      redirectUrl: `${process.env.XUI_BASE_URL}/redirect?link=v2raytun://import/${subUrl}`,
-    };
+  generateRedirectUrl(subUrl: string) {
+    return `v2raytun://import/${subUrl}`;
   }
 }

@@ -1,4 +1,3 @@
-import { BotContext } from '@bot/bot.model';
 import { goToDevicesPage } from '@bot/methods/menu/routes';
 import { Menu } from '@bot/navigation/menu';
 import { initialSession } from '@session/session.model';
@@ -26,7 +25,7 @@ export const createPaymentMenu = () => {
       const status = await ctx.services.payments.checkPaymentStatus(paymentId);
 
       if (status === 'succeeded') {
-        await ctx.services.users.updateExpiryTime(tgUser.id, ctx.session.selectedPeriod!);
+        // await ctx.services.users.updateExpiryTime(tgUser.id, ctx.session.selectedPeriod!);
         await ctx.services.payments.updatePayment(paymentId, { status, paidAt: new Date() });
         ctx.session = initialSession();
         await goToDevicesPage(ctx);

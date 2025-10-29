@@ -1,7 +1,6 @@
 import { MenuContext } from '@bot/bot.model';
 import { getAppLink } from '@bot/methods/menu/content/templates';
 import { UserDevice } from '@users/users.model';
-import { randomId } from '@xui/xui.util';
 import { goToConnectionPage, goToMainPage } from '../routes';
 
 export const createConnectionMenu = (menu: MenuContext, device: UserDevice) => {
@@ -16,18 +15,11 @@ export const createConnectionMenu = (menu: MenuContext, device: UserDevice) => {
     })
     .text('🔄 Новая ссылка', async (ctx) => {
       const tgUser = ctx.services.bot.validateUser(ctx.from);
-      const client = await ctx.services.xui.getClientByDevice(tgUser.id, device);
-      if (!client) return;
-
-      const newSubId = randomId();
-
-      const { subUrl, redirectUrl } = ctx.services.xui.generateUrls(newSubId);
-
-      await ctx.services.users.updateUserClient(tgUser.id, device, { subId: newSubId });
-      await ctx.services.xui.updateClient(client, { subId: newSubId });
+      const user = await ctx.services.remna.getUserByTgId(tgUser.id);
+      const subUrl = await ctx.services.remna.revokeSub(user?.uuid!);
 
       ctx.session.subUrl = subUrl;
-      ctx.session.redirectUrl = redirectUrl;
+      ctx.session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${subUrl}`;
 
       await goToConnectionPage(ctx, menu);
     })

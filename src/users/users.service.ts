@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaymentPeriod } from '@payments/payments.model';
 import { User } from '@users/users.entity';
 import { UserClient, UserStatus } from '@users/users.model';
-import { XuiService } from '@xui/xui.service';
 import { Repository } from 'typeorm';
 
 interface IUserService {
@@ -24,7 +23,6 @@ export class UsersService implements IUserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private xuiService: XuiService,
   ) {}
 
   async getUser(id: number) {
@@ -118,7 +116,7 @@ export class UsersService implements IUserService {
         break;
     }
 
-    await this.xuiService.updateClientsExpiryTime(id, expiryTime.getTime());
+    // await this.xuiService.updateClientsExpiryTime(id, expiryTime.getTime());
     await this.updateUser(id, { expiryTime: expiryTime.getTime().toString() });
   }
 }

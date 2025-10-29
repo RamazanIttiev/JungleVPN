@@ -1,6 +1,6 @@
-import { mapAmountLabel, mapDeviceLabel, mapPeriodLabel, toDateString } from '@bot/methods/utils';
+import { mapAmountLabel, mapPeriodLabel } from '@bot/methods/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
-import { UserClient, UserDevice } from '@users/users.model';
+import { UserDevice } from '@users/users.model';
 
 export const getAppLink = (device: UserDevice): string => {
   switch (device) {
@@ -31,10 +31,10 @@ export const getAppLink = (device: UserDevice): string => {
   }
 };
 
-const getPaymentStatusContent = (isExpired: boolean, validUntil: string | undefined) => {
+const getSubStatusContent = (isExpired: boolean, validUntil: string | undefined) => {
   if (!isExpired) {
     return `📅 <b>Подписка активна до:</b>
-<blockquote>${toDateString(validUntil!)}</blockquote>`;
+<blockquote>${validUntil!}</blockquote>`;
   } else {
     return `
 🆘🆘🆘
@@ -42,32 +42,46 @@ const getPaymentStatusContent = (isExpired: boolean, validUntil: string | undefi
   }
 };
 
-export const getMainPageContent = (options: {
+export const handleMainPageContent = async (ctx: any): Promise<string> => {
+  const tgUser = ctx.services.bot.validateUser(ctx.from);
+
+  const user = await ctx.services.remna.getUserByTgId(tgUser.id);
+  const username = tgUser.first_name || tgUser.username;
+  const isExpired = user ? Date.now() > new Date(user?.expireAt).getTime() : true;
+
+  if (!user) {
+    await ctx.services.remna.createUser({
+      username: tgUser.username || tgUser.first_name,
+      telegramId: tgUser.id,
+    });
+  }
+
+  return !user
+    ? getNewUserMainPageContent({ username, isExpired, isNewUser: !user })
+    : getMainPageContent({
+        username,
+        isExpired,
+        validUntil: user?.expireAt,
+      });
+};
+
+const getMainPageContent = (options: {
   username: string | undefined;
   validUntil: string | undefined;
   isExpired: boolean;
-  clients:
-    | Array<UserClient>
-    | undefined;
 }) => {
-  const { username, validUntil, clients, isExpired } = options;
-
-  const formattedClients = clients?.map((client) => `${mapDeviceLabel(client.device)}`).join('\n');
+  const { username, validUntil, isExpired } = options;
 
   return `
 🌴 Добро пожаловать в <b>Jungle</b>, <b>${username || 'Дорогой друг'}</b>!
 
 В <code>JUNGLE</code> скорость и безопасность — на первом месте. ⚡️
 
-${getPaymentStatusContent(isExpired, validUntil)}
-
-
-<b>Твои подключенные устройства:</b>
-<blockquote>${formattedClients}</blockquote>
+${getSubStatusContent(isExpired, validUntil)}
 `;
 };
 
-export const getNewUserMainPageContent = (options: {
+const getNewUserMainPageContent = (options: {
   username: string | undefined;
   isExpired: boolean;
   isNewUser: boolean;

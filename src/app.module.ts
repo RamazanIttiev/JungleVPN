@@ -3,9 +3,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaymentsModule } from '@payments/payments.module';
+import { RemnaModule } from '@remna/remna.module';
 import { SessionModule } from '@session/session.module';
 import { UsersModule } from '@users/users.module';
-import { XuiModule } from '@xui/xui.module';
 import { dataSourceOptions } from '../db/datasource';
 
 @Module({
@@ -15,10 +15,10 @@ import { dataSourceOptions } from '../db/datasource';
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
     BotModule,
-    XuiModule,
     PaymentsModule,
     UsersModule,
     SessionModule,
+    RemnaModule,
   ],
 })
 export class AppModule {}

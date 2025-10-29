@@ -9,15 +9,15 @@ export const mapDeviceLabel = (device: UserDevice) => {
       return '🤖 Android';
     case 'macOS':
       return '💻 macOS';
-      case 'windows':
+    case 'windows':
       return '🖥 windows';
     default:
       return device;
   }
 };
 
-export const toDateString = (timestamp: string) => {
-  return new Date(Number(timestamp)).toLocaleDateString('ru-EU', {
+export const toDateString = (value: string) => {
+  return new Date(value).toLocaleDateString('ru-EU', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
