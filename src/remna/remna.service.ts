@@ -1,4 +1,4 @@
-import { toDateString } from '@bot/methods/utils';
+import { toDateString } from '@bot/utils/utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { CreateUserDTO, RemnaResponse, User } from './remna.model';
 

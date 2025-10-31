@@ -1,4 +1,4 @@
-import { BotContext } from '@bot/bot.model';
+import { BotContext } from '@bot/bot.types';
 import { Injectable } from '@nestjs/common';
 import { SessionData } from '@session/session.model';
 

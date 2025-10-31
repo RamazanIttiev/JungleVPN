@@ -1,37 +1,43 @@
-import { useCommands } from '@bot/methods/command';
-import { useMenu } from '@bot/methods/menu/menu';
-import { useStartCommand } from '@bot/methods/start';
+import { StartCommand } from '@bot/commands/start.command';
+import { ConversationModule } from '@bot/navigation/core/conversations/conversations.module';
+import { ConversationService } from '@bot/navigation/core/conversations/conversations.service';
+import { MenuModule } from '@bot/navigation/core/menu/menu.module';
+import { MenuTree } from '@bot/navigation/core/menu/menu.tree';
+import { conversations, createConversation } from '@grammyjs/conversations';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { PaymentsModule } from '@payments/payments.module';
-import { PaymentsService } from '@payments/payments.service';
 import { RemnaModule } from '@remna/remna.module';
-import { RemnaService } from '@remna/remna.service';
 import { initialSession } from '@session/session.model';
 import { SessionModule } from '@session/session.module';
 import { UsersModule } from '@users/users.module';
-import { UsersService } from '@users/users.service';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
-import { BotContext } from './bot.model';
 import { BotService } from './bot.service';
+import { BotContext } from './bot.types';
+import { BroadcastCommand } from './commands/broadcast.command';
 
 @Module({
-  imports: [UsersModule, PaymentsModule, SessionModule, RemnaModule],
+  imports: [
+    UsersModule,
+    PaymentsModule,
+    SessionModule,
+    RemnaModule,
+    MenuModule,
+    ConversationModule,
+  ],
   providers: [BotService],
   exports: [BotService],
 })
 export class BotModule implements OnModuleInit {
   token = process.env.TELEGRAM_BOT_TOKEN;
   bot: Bot<BotContext>;
-  adminID = process.env.TELEGRAM_ADMIN_ID;
 
   constructor(
-    private readonly paymentsService: PaymentsService,
-    private readonly botService: BotService,
-    private readonly usersService: UsersService,
-    private readonly remnaService: RemnaService,
+    private readonly conversationService: ConversationService,
+    private readonly menuTree: MenuTree,
+    private readonly startCommand: StartCommand,
   ) {}
 
-  onModuleInit() {
+  async onModuleInit() {
     if (!this.token) {
       throw new Error('TELEGRAM_BOT_TOKEN missing');
     }
@@ -40,28 +46,32 @@ export class BotModule implements OnModuleInit {
 
     this.bot.use(session({ initial: initialSession }));
 
-    this.bot.use(async (ctx, next) => {
-      ctx.services = {
-        payments: this.paymentsService,
-        bot: this.botService,
-        users: this.usersService,
-        remna: this.remnaService,
-      };
-      await next();
-    });
+    this.bot.use(conversations());
+
+    const menuTree = this.menuTree.init();
+
+    const convMap = {
+      main: this.conversationService.main.bind(this.conversationService),
+      devices: this.conversationService.devices.bind(this.conversationService),
+      subscription: this.conversationService.subscription.bind(this.conversationService),
+      clientApp: this.conversationService.clientApp.bind(this.conversationService),
+      revokeSub: this.conversationService.revokeSub.bind(this.conversationService),
+    };
+
+    for (const [id, handler] of Object.entries(convMap)) {
+      this.bot.use(createConversation(handler, { id }));
+    }
+
+    this.bot.use(menuTree);
 
     this.bot.on('pre_checkout_query', (ctx) => ctx.answerPreCheckoutQuery(true));
-
-    const mainMenu = useMenu();
-
-    this.bot.use(mainMenu);
 
     this.bot.on(':successful_payment', async (ctx) => {
       await ctx.reply('✅ Оплата прошла успешно! Спасибо за вашу поддержку.');
     });
 
-    useStartCommand(this.bot, mainMenu);
-    useCommands(this.bot, this.adminID);
+    this.startCommand.register(this.bot);
+    new BroadcastCommand().register(this.bot);
 
     this.bot.catch((err) => {
       const e = err.error;

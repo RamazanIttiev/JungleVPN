@@ -1,8 +1,8 @@
-import { mapAmountLabel, mapPeriodLabel } from '@bot/methods/utils';
+import { mapAmountLabel, mapPeriodLabel } from '@bot/utils/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@users/users.model';
 
-export const getAppLink = (device: UserDevice): string => {
+export const getAppLink = (device: UserDevice | undefined): string => {
   switch (device) {
     case 'ios':
       return (
@@ -42,30 +42,7 @@ const getSubStatusContent = (isExpired: boolean, validUntil: string | undefined)
   }
 };
 
-export const handleMainPageContent = async (ctx: any): Promise<string> => {
-  const tgUser = ctx.services.bot.validateUser(ctx.from);
-
-  const user = await ctx.services.remna.getUserByTgId(tgUser.id);
-  const username = tgUser.first_name || tgUser.username;
-  const isExpired = user ? Date.now() > new Date(user?.expireAt).getTime() : true;
-
-  if (!user) {
-    await ctx.services.remna.createUser({
-      username: tgUser.username || tgUser.first_name,
-      telegramId: tgUser.id,
-    });
-  }
-
-  return !user
-    ? getNewUserMainPageContent({ username, isExpired, isNewUser: !user })
-    : getMainPageContent({
-        username,
-        isExpired,
-        validUntil: user?.expireAt,
-      });
-};
-
-const getMainPageContent = (options: {
+export const getMainPageContent = (options: {
   username: string | undefined;
   validUntil: string | undefined;
   isExpired: boolean;
@@ -81,7 +58,7 @@ ${getSubStatusContent(isExpired, validUntil)}
 `;
 };
 
-const getNewUserMainPageContent = (options: {
+export const getNewUserMainPageContent = (options: {
   username: string | undefined;
   isExpired: boolean;
   isNewUser: boolean;
@@ -127,7 +104,10 @@ export const getPaymentPageContent = (period: PaymentPeriod, amount: PaymentAmou
   `;
 };
 
-export const getConnectionPageContent = (options: { device: UserDevice; subUrl: string }) => {
+export const getSubscriptionPageContent = (options: {
+  device: UserDevice | undefined;
+  subUrl: string | undefined;
+}) => {
   const { subUrl, device } = options;
 
   const appDownloadLink = getAppLink(device);
@@ -149,6 +129,6 @@ export const getConnectionPageContent = (options: { device: UserDevice; subUrl: 
 <span class="tg-spoiler">Одну ссылку можно использовать максимум на 2 устройствах.</span>
   `;
     default:
-      return subUrl;
+      return subUrl || '';
   }
 };

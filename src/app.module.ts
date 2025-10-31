@@ -1,4 +1,5 @@
 import { BotModule } from '@bot/bot.module';
+import { MenuModule } from '@bot/navigation/core/menu/menu.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -19,6 +20,7 @@ import { dataSourceOptions } from '../db/datasource';
     UsersModule,
     SessionModule,
     RemnaModule,
+    MenuModule,
   ],
 })
 export class AppModule {}

@@ -1,3 +1,4 @@
+import { RouterLocation } from '@bot/navigation/core/conversations/conversations.types';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@users/users.model';
 import { SessionFlavor as GrammySessionFlavor } from 'grammy';
@@ -10,6 +11,7 @@ export interface SessionData {
   selectedDevice?: UserDevice;
   selectedAmount?: PaymentAmount;
   selectedPeriod?: PaymentPeriod;
+  location: RouterLocation;
 }
 
 export type SessionFlavor = GrammySessionFlavor<SessionData>;
@@ -23,5 +25,6 @@ export const initialSession = (): SessionData => {
     selectedPeriod: undefined,
     redirectUrl: undefined,
     subUrl: undefined,
+    location: 'main',
   };
 };
