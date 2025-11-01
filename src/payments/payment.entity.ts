@@ -1,15 +1,16 @@
-import { PaymentProvider, PaymentStatus } from '@payments/payments.model';
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+export type PaymentProvider = 'yookassa';
+export type PaymentStatus = 'pending' | 'succeeded';
 
 @Entity('payments')
 export class Payment {
   @PrimaryColumn()
   id: string;
 
-  @Column()
-  userId: number;
+  @Column({ nullable: true })
+  userId: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   provider: PaymentProvider;
 
   @Column()
@@ -18,7 +19,7 @@ export class Payment {
   @Column()
   currency: string;
 
-  @Column({ default: 'pending' })
+  @Column({ default: 'pending', type: 'varchar' })
   status: PaymentStatus;
 
   @CreateDateColumn()

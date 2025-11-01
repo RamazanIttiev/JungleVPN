@@ -26,7 +26,7 @@ export class PaymentsService implements IPaymentProvider {
 
     const payment = this.paymentRepository.create({
       id: session.id,
-      userId: dto.userId,
+      userId: dto.userId.toString(),
       provider: providerName,
       amount: dto.amount,
       currency: dto.currency,
