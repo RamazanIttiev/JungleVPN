@@ -13,23 +13,23 @@ export abstract class Base {
   protected readonly botService: BotService;
   protected readonly remnaService: RemnaService;
 
-  constructor(botService: BotService, remnaService: RemnaService) {
+  protected constructor(botService: BotService, remnaService: RemnaService) {
     this.botService = botService;
     this.remnaService = remnaService;
   }
 
-  protected async render(ctx: Context, text: string, replyMarkup: any) {
+  protected async render(ctx: Context, text: string, reply_markup: any) {
     try {
       await ctx.editMessageText(text, {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
-        reply_markup: replyMarkup,
+        reply_markup,
       });
     } catch {
       await ctx.reply(text, {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
-        reply_markup: replyMarkup,
+        reply_markup,
       });
     }
   }

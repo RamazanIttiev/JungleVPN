@@ -74,7 +74,7 @@ export class BotModule implements OnModuleInit {
       }
     });
 
-    this.bot.start();
+    await this.bot.start();
 
     console.log('🤖 Telegram bot started');
   }

@@ -1,6 +1,4 @@
-import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { Base } from '@bot/navigation/core/conversations/conversations.base';
 import { ClientAppConversation } from '@bot/navigation/core/conversations/features/clientApp.conversation';
 import { DevicesConversation } from '@bot/navigation/core/conversations/features/devices.conversation';
 import { MainConversation } from '@bot/navigation/core/conversations/features/main.conversation';
@@ -11,11 +9,10 @@ import { RevokeSubConversation } from '@bot/navigation/core/conversations/featur
 import { SubscriptionConversation } from '@bot/navigation/core/conversations/features/subscription.conversation';
 import { createConversation } from '@grammyjs/conversations';
 import { Injectable } from '@nestjs/common';
-import { RemnaService } from '@remna/remna.service';
 import { Bot } from 'grammy';
 
 @Injectable()
-export class ConversationService extends Base {
+export class ConversationService {
   constructor(
     private readonly main: MainConversation,
     private readonly devices: DevicesConversation,
@@ -25,12 +22,7 @@ export class ConversationService extends Base {
     private readonly payment: PaymentConversation,
     private readonly paymentStatus: PaymentStatusConversation,
     private readonly paymentPeriods: PaymentPeriodsConversation,
-
-    readonly botService: BotService,
-    readonly remnaService: RemnaService,
-  ) {
-    super(botService, remnaService);
-  }
+  ) {}
   registerAll(bot: Bot<BotContext>) {
     bot.use(createConversation(this.main.init.bind(this.main), 'main'));
     bot.use(
