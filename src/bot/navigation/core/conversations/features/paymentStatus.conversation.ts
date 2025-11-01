@@ -1,12 +1,11 @@
 import { BotService } from '@bot/bot.service';
-import { BotContext } from '@bot/bot.types';
+import { BotContext, initialSession } from '@bot/bot.types';
 import { Base } from '@bot/navigation/core/conversations/conversations.base';
 import { mapPeriodToDate } from '@bot/utils/utils';
 import { Conversation } from '@grammyjs/conversations';
 import { Injectable } from '@nestjs/common';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
-import { initialSession } from '@session/session.model';
 import { add } from 'date-fns';
 import { Context, InlineKeyboard } from 'grammy';
 

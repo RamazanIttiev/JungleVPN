@@ -5,8 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaymentsModule } from '@payments/payments.module';
 import { RemnaModule } from '@remna/remna.module';
-import { SessionModule } from '@session/session.module';
-import { UsersModule } from '@users/users.module';
 import { dataSourceOptions } from '../db/datasource';
 
 @Module({
@@ -17,8 +15,6 @@ import { dataSourceOptions } from '../db/datasource';
     TypeOrmModule.forRoot(dataSourceOptions),
     BotModule,
     PaymentsModule,
-    UsersModule,
-    SessionModule,
     RemnaModule,
     MenuModule,
   ],

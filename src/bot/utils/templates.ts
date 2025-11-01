@@ -1,6 +1,6 @@
+import { UserDevice } from '@bot/bot.types';
 import { mapAmountLabel, mapPeriodLabel } from '@bot/utils/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
-import { UserDevice } from '@users/users.model';
 
 export const getAppLink = (device: UserDevice | undefined): string => {
   switch (device) {

@@ -8,23 +8,13 @@ import { conversations } from '@grammyjs/conversations';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { PaymentsModule } from '@payments/payments.module';
 import { RemnaModule } from '@remna/remna.module';
-import { initialSession } from '@session/session.model';
-import { SessionModule } from '@session/session.module';
-import { UsersModule } from '@users/users.module';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
 import { BotService } from './bot.service';
-import { BotContext } from './bot.types';
+import { BotContext, initialSession } from './bot.types';
 import { BroadcastCommand } from './commands/broadcast.command';
 
 @Module({
-  imports: [
-    UsersModule,
-    PaymentsModule,
-    SessionModule,
-    RemnaModule,
-    MenuModule,
-    ConversationModule,
-  ],
+  imports: [PaymentsModule, RemnaModule, MenuModule, ConversationModule],
   providers: [BotService],
   exports: [BotService],
 })

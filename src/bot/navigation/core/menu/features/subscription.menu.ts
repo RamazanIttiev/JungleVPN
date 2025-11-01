@@ -1,10 +1,10 @@
 import { BotService } from '@bot/bot.service';
+import { initialSession } from '@bot/bot.types';
 import { Base } from '@bot/navigation/core/conversations/conversations.base';
 import { Menu } from '@bot/navigation/core/menu';
 import { getAppLink } from '@bot/utils/templates';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
-import { initialSession } from '@session/session.model';
 
 @Injectable()
 export class SubscriptionMenu extends Base {

@@ -1,5 +1,4 @@
 import { Payment } from '@payments/payment.entity';
-import { User } from '@users/users.entity';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
@@ -13,7 +12,7 @@ export const dataSourceOptions: DataSourceOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [User, Payment],
+  entities: [Payment],
   migrations: ['db/migrations/**'],
   migrationsRun: true,
   logging: process.env.ENV === 'development',

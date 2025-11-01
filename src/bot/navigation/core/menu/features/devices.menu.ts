@@ -1,11 +1,10 @@
 import { BotService } from '@bot/bot.service';
-import { BotContext } from '@bot/bot.types';
+import { BotContext, UserDevice } from '@bot/bot.types';
 import { Base } from '@bot/navigation/core/conversations/conversations.base';
 import { Menu } from '@bot/navigation/core/menu';
 import { mapDeviceLabel } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
-import { UserDevice } from '@users/users.model';
 
 @Injectable()
 export class DevicesMenu extends Base {

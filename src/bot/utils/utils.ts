@@ -1,5 +1,5 @@
+import { UserDevice } from '@bot/bot.types';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
-import { UserDevice } from '@users/users.model';
 
 export const escapeHtml = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
