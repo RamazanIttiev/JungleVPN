@@ -1,8 +1,8 @@
-import { mapAmountLabel, mapDeviceLabel, mapPeriodLabel, toDateString } from '@bot/methods/utils';
+import { mapAmountLabel, mapPeriodLabel } from '@bot/utils/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@users/users.model';
 
-export const getAppLink = (device: UserDevice): string => {
+export const getAppLink = (device: UserDevice | undefined): string => {
   switch (device) {
     case 'ios':
       return (
@@ -19,6 +19,10 @@ export const getAppLink = (device: UserDevice): string => {
         process.env.ANDROID_APP_DOWNLOAD_LINK ||
         'https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ruB'
       );
+    case 'windows':
+      return (
+        process.env.WINDOWS_APP_DOWNLOAD_LINK || 'https://storage.v2raytun.com/v2RayTun_Setup.exe'
+      );
     default:
       return (
         process.env.IPHONE_APP_DOWNLOAD_LINK ||
@@ -27,10 +31,10 @@ export const getAppLink = (device: UserDevice): string => {
   }
 };
 
-const getPaymentStatusContent = (isExpired: boolean, validUntil: number | undefined) => {
+const getSubStatusContent = (isExpired: boolean, validUntil: string | undefined) => {
   if (!isExpired) {
     return `📅 <b>Подписка активна до:</b>
-<blockquote>${toDateString(validUntil!)}</blockquote>`;
+<blockquote>${validUntil!}</blockquote>`;
   } else {
     return `
 🆘🆘🆘
@@ -40,28 +44,17 @@ const getPaymentStatusContent = (isExpired: boolean, validUntil: number | undefi
 
 export const getMainPageContent = (options: {
   username: string | undefined;
-  validUntil: number | undefined;
+  validUntil: string | undefined;
   isExpired: boolean;
-  clients:
-    | Array<{
-        device: UserDevice;
-      }>
-    | undefined;
 }) => {
-  const { username, validUntil, clients, isExpired } = options;
-
-  const formattedClients = clients?.map((client) => `${mapDeviceLabel(client.device)}`).join('\n');
+  const { username, validUntil, isExpired } = options;
 
   return `
 🌴 Добро пожаловать в <b>Jungle</b>, <b>${username || 'Дорогой друг'}</b>!
 
 В <code>JUNGLE</code> скорость и безопасность — на первом месте. ⚡️
 
-${getPaymentStatusContent(isExpired, validUntil)}
-
-
-<b>Твои подключенные устройства:</b>
-<blockquote>${formattedClients}</blockquote>
+${getSubStatusContent(isExpired, validUntil)}
 `;
 };
 
@@ -111,7 +104,10 @@ export const getPaymentPageContent = (period: PaymentPeriod, amount: PaymentAmou
   `;
 };
 
-export const getConnectionPageContent = (options: { device: UserDevice; subUrl: string }) => {
+export const getSubscriptionPageContent = (options: {
+  device: UserDevice | undefined;
+  subUrl: string | undefined;
+}) => {
   const { subUrl, device } = options;
 
   const appDownloadLink = getAppLink(device);
@@ -120,6 +116,7 @@ export const getConnectionPageContent = (options: { device: UserDevice; subUrl: 
     case 'ios':
     case 'android':
     case 'macOS':
+    case 'windows':
       return `
 <b>Установи приложение  <a href='${appDownloadLink}'>v2rayTun</a></b>
 
@@ -132,6 +129,6 @@ export const getConnectionPageContent = (options: { device: UserDevice; subUrl: 
 <span class="tg-spoiler">Одну ссылку можно использовать максимум на 2 устройствах.</span>
   `;
     default:
-      return subUrl;
+      return subUrl || '';
   }
 };

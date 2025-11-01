@@ -1,15 +1,18 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-export type UserStatus = 'trial' | 'expired' | 'active';
-export type UserClient = {
+
+type UserStatus = 'trial' | 'expired' | 'active';
+type UserDevice = 'ios' | 'android' | 'macOS' | 'windows';
+type UserClient = {
   id: string;
-  device: string;
+  device: UserDevice;
   subId: string;
 };
+
 @Entity('users')
 export class User {
-  @PrimaryColumn({ default: 0, type: 'bigint' }) id: number;
-  @Column({ nullable: true, type: 'bigint' }) expiryTime: number;
-  @Column({ default: 'active' }) status: UserStatus;
+  @PrimaryColumn() id: string;
+  @Column({ nullable: true }) expiryTime: string;
+  @Column({ default: 'active', type: 'varchar' }) status: UserStatus;
   @Column({ type: 'jsonb', nullable: true })
   clients: UserClient[];
   @Column({ nullable: true }) first_name: string;

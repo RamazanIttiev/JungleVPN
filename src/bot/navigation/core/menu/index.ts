@@ -1,4 +1,4 @@
-import { BotContext } from '@bot/bot.model';
+import { BotContext } from '@bot/bot.types';
 import { Menu as GrammyMenu, type MenuOptions } from '@grammyjs/menu';
 
 export class Menu extends GrammyMenu<BotContext> {

@@ -15,12 +15,37 @@ export class XuiService {
   private jar = new CookieJar();
   private backend: AxiosInstance = wrapper(
     axios.create({
-      baseURL: process.env.XUI_FETCH_URL,
+      baseURL: process.env.XUI_BASE_URL,
       withCredentials: true,
       jar: this.jar,
       validateStatus: () => true,
     }),
   );
+
+  private async login() {
+    const username = process.env.XUI_USERNAME || '';
+    const password = process.env.XUI_PASSWORD || '';
+
+    try {
+      const { data, headers } = await this.backend.post('/login', {
+        username,
+        password,
+      });
+
+      const cookies = headers['set-cookie'];
+
+      if (cookies) {
+        await this.jar.setCookie(cookies[0], this.backend.defaults.baseURL!);
+      }
+
+      if (!data.success) {
+        throw new AxiosError('BOT. Please login. Method login', data.msg);
+      }
+    } catch (error) {
+      console.log(error);
+      throw new AxiosError('BOT. SERVER ERROR. Method login');
+    }
+  }
 
   private async fetch<Data>({
     method = 'POST',
@@ -32,8 +57,17 @@ export class XuiService {
     method?: 'GET' | 'POST';
     body?: unknown;
   }): Promise<Data | undefined> {
+    await this.login();
+
     try {
-      const res = await this.backend.request({ method, url, data: body });
+      const res = await this.backend.request({
+        method,
+        url,
+        data: body,
+        headers: {
+          Cookie: await this.jar.getCookieString(this.backend.defaults.baseURL!),
+        },
+      });
 
       const data: XuiResponse<Data> = res.data;
 
@@ -48,45 +82,20 @@ export class XuiService {
     }
   }
 
-  private async login() {
-    const username = process.env.XUI_USERNAME || '';
-    const password = process.env.XUI_PASSWORD || '';
-
-    try {
-      const { data } = await this.backend.post(`${process.env.XUI_BASE_URL}/api/login`, {
-        username,
-        password,
-      });
-
-      if (!data.success) {
-        throw new AxiosError('BOT. Please login. Method login', data.msg);
-      }
-    } catch (error) {
-      throw new AxiosError('BOT. SERVER ERROR. Method login');
-    }
-  }
-
   private async getInbound(inboundId: string | undefined): Promise<Inbound | undefined> {
     if (!inboundId) throw new AxiosError('NO inboundId. Method getInbound');
 
-    return await this.fetch<Inbound>({
-      method: 'GET',
-      url: `/inbounds/get/${inboundId}`,
-    });
-  }
-
-  async getTgIds() {
-    await this.login();
-
-    const inbounds = await this.getInbound(process.env.XUI_INBOUND_ID);
-    const settings: InboundSettings = inbounds?.settings && JSON.parse(inbounds?.settings);
-
-    return settings.clients.filter((client) => typeof client.tgId === 'number').map((x) => x.tgId);
+    try {
+      return await this.fetch<Inbound>({
+        method: 'GET',
+        url: `/panel/api/inbounds/get/${inboundId}`,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getClients(tgId: number, inboundId?: InboundId): Promise<Client[]> {
-    await this.login();
-
     const inbound = await this.getInbound(inboundId || process.env.XUI_INBOUND_ID);
 
     const settings: InboundSettings = inbound && JSON.parse(inbound.settings);
@@ -100,6 +109,7 @@ export class XuiService {
     const iosClient = clients.find((client) => client.comment === 'ios');
     const androidClient = clients.find((client) => client.comment === 'android');
     const macOSClient = clients.find((client) => client.comment === 'macOS');
+    const windowsOSClient = clients.find((client) => client.comment === 'windows');
 
     switch (device) {
       case 'ios':
@@ -108,15 +118,15 @@ export class XuiService {
         return androidClient;
       case 'macOS':
         return macOSClient;
+      case 'windows':
+        return windowsOSClient;
     }
   }
 
   async addClient(tgUser: User, device: ClientDevice): Promise<Client> {
     const body = generateClientBody({ tgUser, device });
-
-    await this.login();
     await this.fetch({
-      url: '/inbounds/addClient',
+      url: '/panel/api/inbounds/addClient',
       body: {
         id: Number(process.env.XUI_INBOUND_ID),
         settings: JSON.stringify({
@@ -129,8 +139,6 @@ export class XuiService {
   }
 
   async updateClient(client: Client, options: Partial<Client>) {
-    await this.login();
-
     const updatedClient = {
       ...client,
       ...options,
@@ -138,7 +146,7 @@ export class XuiService {
 
     try {
       await this.fetch({
-        url: `inbounds/updateClient/${client.id}`,
+        url: `/panel/api/inbounds/updateClient/${client.id}`,
         body: {
           id: Number(process.env.XUI_INBOUND_ID),
           settings: JSON.stringify({
@@ -159,29 +167,15 @@ export class XuiService {
     }
   }
 
-  async getOrIssueUrls(tgUser: User, device: ClientDevice) {
-    const existingClient = await this.getClientByDevice(tgUser.id, device);
-
-    if (existingClient) return this.generateUrls(existingClient.subId);
-
-    // return this.generateUrls(client.subId);
-  }
-
   async deleteClient(clientId: string, inboundId?: InboundId): Promise<void> {
     const id = inboundId || process.env.XUI_INBOUND_ID;
 
     if (!id) throw new AxiosError('NO inboundId. Method deleteClient');
 
-    await this.login();
-    await this.fetch({ url: `/inbounds/${id}/delClient/${clientId}` });
+    await this.fetch({ url: `/panel/api/inbounds/${id}/delClient/${clientId}` });
   }
 
-  generateUrls(subId: string) {
-    const subUrl = `${process.env.XUI_SUB_URL}/${subId}`;
-
-    return {
-      subUrl,
-      redirectUrl: `${process.env.XUI_BASE_URL}/redirect?link=v2raytun://import/${subUrl}`,
-    };
+  generateRedirectUrl(subUrl: string) {
+    return `v2raytun://import/${subUrl}`;
   }
 }

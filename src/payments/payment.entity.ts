@@ -7,10 +7,10 @@ export class Payment {
   @PrimaryColumn()
   id: string;
 
-  @Column({ type: 'bigint', nullable: true })
-  userId: number;
+  @Column({ nullable: true })
+  userId: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   provider: PaymentProvider;
 
   @Column()
@@ -19,7 +19,7 @@ export class Payment {
   @Column()
   currency: string;
 
-  @Column({ default: 'pending' })
+  @Column({ default: 'pending', type: 'varchar' })
   status: PaymentStatus;
 
   @CreateDateColumn()

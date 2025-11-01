@@ -1,6 +1,9 @@
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@users/users.model';
 
+export const escapeHtml = (s: string): string =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 export const mapDeviceLabel = (device: UserDevice) => {
   switch (device) {
     case 'ios':
@@ -8,14 +11,16 @@ export const mapDeviceLabel = (device: UserDevice) => {
     case 'android':
       return '🤖 Android';
     case 'macOS':
-      return '💻 macOS';
+      return '💻 MacOS';
+    case 'windows':
+      return '🖥 Windows';
     default:
       return device;
   }
 };
 
-export const toDateString = (timestamp: number) => {
-  return new Date(timestamp).toLocaleDateString('ru-EU', {
+export const toDateString = (value: string) => {
+  return new Date(value).toLocaleDateString('ru-EU', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
