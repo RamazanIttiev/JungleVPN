@@ -1,23 +1,22 @@
 import { BotService } from '@bot/bot.service';
+import { BotContext } from '@bot/bot.types';
+import { Base } from '@bot/navigation/core/conversations/conversations.base';
 import { Menu } from '@bot/navigation/core/menu';
-import { BaseMenu } from '@bot/navigation/core/menu/base.menu';
-import { getPaymentPageContent } from '@bot/utils/templates';
-import { mapPeriodLabelToPriceLabel } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
 
 @Injectable()
-export class PaymentsPeriodsMenu extends BaseMenu {
-  menu = new Menu('paymentPeriods-menu');
+export class PaymentsPeriodsMenu extends Base {
+  readonly menu = new Menu('paymentPeriods-menu');
   private readonly periodAmounts: Record<PaymentPeriod, PaymentAmount>;
 
-  private periods: PaymentPeriod[] = JSON.parse(
+  private readonly periods: PaymentPeriod[] = JSON.parse(
     process.env.PAYMENT_PERIODS || '["1mo", "3mo", "6mo"]',
   );
-  private amounts: PaymentAmount[] = JSON.parse(
-    process.env.PAYMENT_AMOUNTS || '["199.0", "599.00", "999.00"]',
+  private readonly amounts: PaymentAmount[] = JSON.parse(
+    process.env.PAYMENT_AMOUNTS || '["199.00", "599.00", "999.00"]',
   );
 
   constructor(
@@ -26,60 +25,55 @@ export class PaymentsPeriodsMenu extends BaseMenu {
     readonly remnaService: RemnaService,
   ) {
     super(botService, remnaService);
+
     this.periodAmounts = this.periods.reduce(
-      (acc, period, index) => {
-        acc[period] = this.amounts[index];
+      (acc, period, i) => {
+        acc[period] = this.amounts[i];
         return acc;
       },
       {} as Record<PaymentPeriod, PaymentAmount>,
     );
+
+    this.menu
+      .text('1 месяц (199 ₽)', async (ctx: BotContext) => {
+        await this.handlePaymentPeriod(ctx, '1mo');
+      })
+      .row()
+      .text('3 месяца (599 ₽)', async (ctx: BotContext) => {
+        await this.handlePaymentPeriod(ctx, '3mo');
+      })
+      .row()
+      .text('6 месяцев (999 ₽)', async (ctx: BotContext) => {
+        await this.handlePaymentPeriod(ctx, '6mo');
+      })
+      .row();
+
+    this.menu.back('⬅ Назад', async (ctx) => {
+      await this.navigateTo(ctx, 'main');
+    });
   }
 
-  create(paymentMenu: Menu) {
-    this.periods.forEach((period) => {
-      this.menu.row().text(mapPeriodLabelToPriceLabel(period), async (ctx) => {
-        const tgUser = this.botService.validateUser(ctx.from);
-        const { url, id } = await this.paymentsService.createPayment(
-          {
-            userId: tgUser.id,
-            amount: this.periodAmounts[period],
-            currency: 'RUB',
-          },
-          'yookassa',
-        );
+  async handlePaymentPeriod(ctx: BotContext, period: PaymentPeriod) {
+    const tgUser = this.botService.validateUser(ctx.from);
 
-        ctx.session.paymentId = id;
-        ctx.session.paymentUrl = url;
-        ctx.session.selectedAmount = this.periodAmounts[period];
-        ctx.session.selectedPeriod = period;
+    const { url, id } = await this.paymentsService.createPayment(
+      {
+        userId: tgUser.id,
+        amount: this.periodAmounts[period],
+        currency: 'RUB',
+      },
+      'yookassa',
+    );
 
-        const content = getPaymentPageContent(period, this.periodAmounts[period]);
+    ctx.session.paymentId = id;
+    ctx.session.paymentUrl = url;
+    ctx.session.selectedAmount = this.periodAmounts[period];
+    ctx.session.selectedPeriod = period;
 
-        const editMessage = async () => {
-          await ctx.editMessageText(content, {
-            parse_mode: 'HTML',
-            link_preview_options: { is_disabled: true },
-            reply_markup: paymentMenu,
-          });
-        };
+    await this.navigateTo(ctx, 'payment');
+  }
 
-        try {
-          await ctx.deleteMessage();
-        } catch (error) {
-          await editMessage();
-          console.error('Failed to delete message:', error);
-        }
-
-        await ctx.reply(content, {
-          parse_mode: 'HTML',
-          link_preview_options: { is_disabled: true },
-          reply_markup: paymentMenu,
-        });
-      });
-    });
-
-    // this.menu.row().text('⬅ Назад', (ctx) => this.goToMain(ctx));
-
+  create() {
     return this.menu;
   }
 }

@@ -1,11 +1,11 @@
 import { BotService } from '@bot/bot.service';
+import { Base } from '@bot/navigation/core/conversations/conversations.base';
 import { Menu } from '@bot/navigation/core/menu';
-import { BaseMenu } from '@bot/navigation/core/menu/base.menu';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 
 @Injectable()
-export class MainMenu extends BaseMenu {
+export class MainMenu extends Base {
   readonly menu = new Menu('main-menu');
 
   constructor(
@@ -14,15 +14,17 @@ export class MainMenu extends BaseMenu {
   ) {
     super(botService, remnaService);
 
-    this.menu.text('Подключиться 📶', async (ctx) => {
-      const { user } = await this.loadUser(ctx);
+    this.menu
+      .text('Подключиться 📶', async (ctx) => {
+        const { user } = await this.loadUser(ctx);
+        const isExpired = this.isExpired(user?.expireAt);
 
-      const isExpired = user ? Date.now().toString() > user?.expireAt : false;
-      if (isExpired) {
+        if (isExpired) await this.navigateTo(ctx, 'subscription');
+        else await this.navigateTo(ctx, 'devices');
+      })
+      .text('Продлить подписку', async (ctx) => {
         await this.navigateTo(ctx, 'paymentPeriods');
-      }
-      await this.navigateTo(ctx, 'devices');
-    });
+      });
   }
 
   create() {

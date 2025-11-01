@@ -21,7 +21,7 @@ export class MenuTree {
     const subscriptionMenu = this.subscriptionMenu.create();
     const devices = this.devicesMenu.create();
     const paymentMenu = this.paymentMenu.create();
-    const paymentsPeriodsMenu = this.paymentsPeriodsMenu.create(paymentMenu);
+    const paymentsPeriodsMenu = this.paymentsPeriodsMenu.create();
 
     main.register(devices);
     main.register(paymentMenu);

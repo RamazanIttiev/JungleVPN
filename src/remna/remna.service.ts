@@ -1,4 +1,3 @@
-import { toDateString } from '@bot/utils/utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { CreateUserDTO, RemnaResponse, User } from './remna.model';
 
@@ -75,10 +74,7 @@ export class RemnaService {
         return null;
       }
 
-      return {
-        ...data[0],
-        expireAt: toDateString(data[0].expireAt),
-      };
+      return data[0];
     } catch (error) {
       console.error(error);
       throw new AxiosError('SERVER ERROR. getUserByTgId');

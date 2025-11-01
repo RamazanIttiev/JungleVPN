@@ -5,7 +5,8 @@ export type RouterLocation =
   | 'payment'
   | 'subscription'
   | 'clientApp'
-  | 'revokeSub';
+  | 'revokeSub'
+  | 'paymentStatus';
 export type RouterMenus =
   | 'main-menu'
   | 'devices-menu'

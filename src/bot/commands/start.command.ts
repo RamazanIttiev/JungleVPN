@@ -7,7 +7,7 @@ export class StartCommand {
   register(bot: Bot<BotContext>) {
     bot.command('start', async (ctx) => {
       await ctx.react('🗿');
-      await this.navigateTo(ctx,'main');
+      await ctx.conversation.enter('main');
     });
   }
 }

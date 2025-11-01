@@ -54,12 +54,15 @@ export class BotModule implements OnModuleInit {
       main: this.conversationService.main.bind(this.conversationService),
       devices: this.conversationService.devices.bind(this.conversationService),
       subscription: this.conversationService.subscription.bind(this.conversationService),
+      payment: this.conversationService.payment.bind(this.conversationService),
       clientApp: this.conversationService.clientApp.bind(this.conversationService),
       revokeSub: this.conversationService.revokeSub.bind(this.conversationService),
+      paymentPeriods: this.conversationService.paymentPeriods.bind(this.conversationService),
+      paymentStatus: this.conversationService.paymentStatus.bind(this.conversationService),
     };
 
     for (const [id, handler] of Object.entries(convMap)) {
-      this.bot.use(createConversation(handler, { id }));
+      this.bot.use(createConversation(handler, { id, parallel: id === 'devices' }));
     }
 
     this.bot.use(menuTree);

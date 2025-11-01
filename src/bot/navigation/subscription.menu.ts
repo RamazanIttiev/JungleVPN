@@ -1,13 +1,13 @@
 import { BotService } from '@bot/bot.service';
+import { Base } from '@bot/navigation/core/conversations/conversations.base';
 import { Menu } from '@bot/navigation/core/menu';
-import { BaseMenu } from '@bot/navigation/core/menu/base.menu';
 import { getAppLink } from '@bot/utils/templates';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { initialSession } from '@session/session.model';
 
 @Injectable()
-export class SubscriptionMenu extends BaseMenu {
+export class SubscriptionMenu extends Base {
   menu = new Menu('subscription-menu');
   constructor(
     readonly botService: BotService,
@@ -17,7 +17,6 @@ export class SubscriptionMenu extends BaseMenu {
 
     this.menu
       .dynamic(async (ctx, range) => {
-        console.log('URL');
         const url = getAppLink(ctx.session.selectedDevice);
         range.url('🔽Скачать', url);
       })
@@ -25,13 +24,14 @@ export class SubscriptionMenu extends BaseMenu {
         const redirectUrl = ctx.session.redirectUrl;
         if (redirectUrl) range.url('🔐 Подключиться', redirectUrl);
       })
+      .row()
       .text('🔄 Новая ссылка', async (ctx) => {
-        await this.navigateTo(ctx,'revokeSub');
+        await this.navigateTo(ctx, 'revokeSub');
       })
       .row()
       .text('Главное меню', async (ctx) => {
         ctx.session = initialSession();
-        await this.navigateTo(ctx,'main');
+        await this.navigateTo(ctx, 'main');
       });
   }
 

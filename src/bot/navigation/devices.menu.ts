@@ -1,14 +1,16 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
+import { Base } from '@bot/navigation/core/conversations/conversations.base';
 import { Menu } from '@bot/navigation/core/menu';
-import { BaseMenu } from '@bot/navigation/core/menu/base.menu';
+import { mapDeviceLabel } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { UserDevice } from '@users/users.model';
 
 @Injectable()
-export class DevicesMenu extends BaseMenu {
+export class DevicesMenu extends Base {
   readonly menu = new Menu('devices-menu');
+  private devices = JSON.parse(process.env.USER_DEVICES || '["ios","android","macOS","windows"]');
 
   constructor(
     readonly botService: BotService,
@@ -16,56 +18,28 @@ export class DevicesMenu extends BaseMenu {
   ) {
     super(botService, remnaService);
 
-    this.menu
-      .text('ios', async (ctx) => {
-        await this.handleClick(ctx, 'ios');
-      })
-      .text('android', async (ctx) => {
-        await this.handleClick(ctx, 'android');
-      })
-      .row()
-      .text('macOS', async (ctx) => {
-        await this.handleClick(ctx, 'macOS');
-      })
-      .text('windows', async (ctx) => {
-        await this.handleClick(ctx, 'windows');
-      })
-      .row()
-      .back('Назад', async (ctx) => {
-        await this.navigateTo(ctx,'main');
-      });
+    for (const [i, device] of this.devices.entries()) {
+      if (i > 0 && i % 2 === 0) this.menu.row();
+      this.menu.text(mapDeviceLabel(device), async (ctx) => await this.selectDevice(ctx, device));
+    }
+
+    this.menu.row().back('⬅ Назад', async (ctx) => {
+      await this.navigateTo(ctx, 'main');
+    });
   }
 
-  async handleClick(ctx: BotContext, device: UserDevice) {
+  private async selectDevice(ctx: BotContext, device: UserDevice) {
     const { user, tgUser } = await this.loadUser(ctx);
-
-    const now = Date.now();
-    const expireAt = new Date(now);
-    expireAt.setDate(expireAt.getDate() + 90);
-
-    if (!user) {
+    if (!user)
       await this.remnaService.createUser({
         username: tgUser.username || tgUser.first_name,
-        expireAt: expireAt.toISOString(),
         telegramId: tgUser.id,
       });
-    }
 
-    const isExpired = user ? Date.now().toString() > user?.expireAt : false;
-
-    if (isExpired) {
-      await this.navigateTo(ctx,'main');
-      return;
-    }
-
-    ctx.session = {
-      ...ctx.session,
-      subUrl: user?.subscriptionUrl,
-      redirectUrl: `https://in.thejungle.pro/redirect?link=v2raytun://import/${user?.subscriptionUrl}`,
-      selectedDevice: device,
-    };
-
-    await this.navigateTo(ctx,'subscription');
+    ctx.session.selectedDevice = device;
+    ctx.session.subUrl = user?.subscriptionUrl;
+    ctx.session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${user?.subscriptionUrl}`;
+    await this.navigateTo(ctx, 'subscription');
   }
 
   create() {
