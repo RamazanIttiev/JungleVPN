@@ -53,7 +53,7 @@ export class PaymentsPeriodsMenu extends Base {
     });
   }
 
-  async handlePaymentPeriod(ctx: BotContext, period: PaymentPeriod) {
+  async handlePaymentPeriod(ctx: any, period: PaymentPeriod) {
     const tgUser = this.botService.validateUser(ctx.from);
 
     const { url, id } = await this.paymentsService.createPayment(
