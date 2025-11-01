@@ -28,7 +28,12 @@ export class ConversationService {
     bot.use(
       createConversation(this.devices.init.bind(this.devices), { id: 'devices', parallel: true }),
     );
-    bot.use(createConversation(this.subscription.init.bind(this.subscription), 'subscription'));
+    bot.use(
+      createConversation(this.subscription.init.bind(this.subscription), {
+        id: 'subscription',
+        parallel: true,
+      }),
+    );
     bot.use(createConversation(this.clientApp.init.bind(this.clientApp), 'clientApp'));
     bot.use(createConversation(this.revokeSub.init.bind(this.revokeSub), 'revokeSub'));
     bot.use(createConversation(this.payment.init.bind(this.payment), 'payment'));

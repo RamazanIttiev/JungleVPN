@@ -29,16 +29,8 @@ export class DevicesMenu extends Base {
   }
 
   private async selectDevice(ctx: BotContext, device: UserDevice) {
-    const { user, tgUser } = await this.loadUser(ctx);
-    if (!user)
-      await this.remnaService.createUser({
-        username: tgUser.username || tgUser.first_name,
-        telegramId: tgUser.id,
-      });
-
     ctx.session.selectedDevice = device;
-    ctx.session.subUrl = user?.subscriptionUrl;
-    ctx.session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${user?.subscriptionUrl}`;
+
     await this.navigateTo(ctx, 'subscription');
   }
 

@@ -19,7 +19,7 @@ export class MainMenu extends Base {
         const { user } = await this.loadUser(ctx);
         const isExpired = this.isExpired(user?.expireAt);
 
-        if (isExpired) await this.navigateTo(ctx, 'subscription');
+        if (isExpired) await this.navigateTo(ctx, 'paymentPeriods');
         else await this.navigateTo(ctx, 'devices');
       })
       .text('Продлить подписку', async (ctx) => {

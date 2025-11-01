@@ -24,6 +24,8 @@ export const toDateString = (value: string) => {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
@@ -41,6 +43,21 @@ export const mapPeriodLabel = (period: PaymentPeriod) => {
       return '3 месяца';
     case '6mo':
       return '6 месяцев';
+  }
+};
+
+export const mapPeriodToDate = (period: PaymentPeriod | undefined) => {
+  switch (period) {
+    case '1d':
+      return 1;
+    case '1mo':
+      return 1;
+    case '3mo':
+      return 3;
+    case '6mo':
+      return 6;
+    default:
+      return 1;
   }
 };
 

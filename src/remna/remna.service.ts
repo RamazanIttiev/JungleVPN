@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
-import { CreateUserDTO, RemnaResponse, User } from './remna.model';
+import { CreateUserDTO, RemnaResponse, UpdateUserDTO, User } from './remna.model';
 
 export class RemnaService {
   private backend: AxiosInstance = axios.create({
@@ -19,7 +19,7 @@ export class RemnaService {
   }: {
     url: string;
     sessionCookie?: string;
-    method?: 'GET' | 'POST';
+    method?: 'GET' | 'POST' | 'PATCH';
     body?: unknown;
   }): Promise<Data | undefined> {
     try {
@@ -44,10 +44,10 @@ export class RemnaService {
     expiryTime.setDate(expiryTime.getDate() + 90);
 
     const body = {
+      ...data,
       expireAt: expiryTime.toISOString(),
       activeInternalSquads: [process.env.REMNA_INTERNAL_SQUAD],
       status: 'ACTIVE',
-      ...data,
     };
 
     try {
@@ -60,6 +60,20 @@ export class RemnaService {
     } catch (error) {
       console.error(error);
       throw new AxiosError('SERVER ERROR. createUser');
+    }
+  }
+
+  async updateUser(body: Partial<UpdateUserDTO>): Promise<User> {
+    try {
+      const data = await this.fetch<User>({ method: 'PATCH', url: '/users', body });
+      if (!data) {
+        throw new AxiosError('REQUEST ERROR. updateUser', data);
+      }
+
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw new AxiosError('SERVER ERROR. updateUser');
     }
   }
 

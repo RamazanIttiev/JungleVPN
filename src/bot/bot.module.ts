@@ -1,3 +1,4 @@
+import { PaymentSuccessCommand } from '@bot/commands/paymentSuccess.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { ConversationModule } from '@bot/navigation/core/conversations/conversations.module';
 import { ConversationService } from '@bot/navigation/core/conversations/conversations.service';
@@ -62,6 +63,7 @@ export class BotModule implements OnModuleInit {
 
     this.startCommand.register(this.bot);
     new BroadcastCommand().register(this.bot);
+    new PaymentSuccessCommand().register(this.bot);
 
     this.bot.catch((err) => {
       const e = err.error;

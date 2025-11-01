@@ -1,14 +1,14 @@
-// conversations/paymentStatus.conversation.ts
-
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { Base } from '@bot/navigation/core/conversations/conversations.base';
+import { mapPeriodToDate } from '@bot/utils/utils';
 import { Conversation } from '@grammyjs/conversations';
 import { Injectable } from '@nestjs/common';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
 import { initialSession } from '@session/session.model';
-import { Context } from 'grammy';
+import { add } from 'date-fns';
+import { Context, InlineKeyboard } from 'grammy';
 
 type MyConversation = Conversation<BotContext>;
 
@@ -24,8 +24,9 @@ export class PaymentStatusConversation extends Base {
 
   async init(conversation: MyConversation, ctx: Context) {
     const session = await conversation.external((ctx) => ctx.session);
-    const { paymentId, paymentUrl } = session;
-    console.log(session);
+    const { user } = await conversation.external((ctx) => this.loadUser(ctx));
+    const { paymentId, paymentUrl, selectedPeriod } = session;
+
     if (!paymentUrl) {
       await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
       await this.stop(conversation);
@@ -44,14 +45,23 @@ export class PaymentStatusConversation extends Base {
 
     if (status === 'succeeded') {
       await this.paymentService.updatePayment(paymentId, { status, paidAt: new Date() });
-
-      await conversation.external((ctx) => {
-        ctx.session = initialSession();
+      await this.remnaService.updateUser({
+        uuid: user?.uuid,
+        expireAt: add(user?.expireAt || new Date(), {
+          months: mapPeriodToDate(selectedPeriod),
+        }).toISOString(),
+        status: 'ACTIVE',
       });
 
       await conversation.external(async (ctx) => {
-        await ctx.reply('✅ Оплата прошла успешно!');
-        await ctx.conversation.enter('devices');
+        await ctx.deleteMessage();
+        await ctx.replyWithSticker(process.env.PAYMENT_SUCCESS_STICKER || '', {
+          reply_markup: new InlineKeyboard().text('Подключиться 📶', 'paymentSuccess'),
+        });
+      });
+
+      await conversation.external((ctx) => {
+        ctx.session = initialSession();
       });
     } else {
       await ctx.reply('❗ Платеж еще не оплачен.');

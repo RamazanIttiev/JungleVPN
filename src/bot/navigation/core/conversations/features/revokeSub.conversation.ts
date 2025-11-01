@@ -21,7 +21,7 @@ export class RevokeSubConversation extends Base {
 
   async init(conversation: MyConversation, ctx: Context) {
     const { user } = await this.loadUser(ctx);
-    if (!user) return;
+    if (!user?.uuid) return;
 
     const subUrl = await this.remnaService.revokeSub(user.uuid);
     const session = await conversation.external(async (ctx: BotContext) => {

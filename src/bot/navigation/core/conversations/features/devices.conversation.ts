@@ -19,6 +19,8 @@ export class DevicesConversation extends Base {
   }
 
   async init(conversation: MyConversation, ctx: Context) {
+    const session = await conversation.external((ctx) => ctx.session);
+
     const devicesMenu = conversation
       .menu('devices-menu')
       .text('🍏 IOS')
@@ -28,6 +30,23 @@ export class DevicesConversation extends Base {
       .text('🖥 Windows')
       .row()
       .back('⬅ Назад');
+
+    const { user, tgUser } = await this.loadUser(ctx);
+
+    if (!user)
+      await this.remnaService.createUser({
+        username: tgUser.username || tgUser.first_name,
+        telegramId: tgUser.id,
+        expireAt: '0',
+        status: 'ACTIVE',
+      });
+
+    session.subUrl = user?.subscriptionUrl;
+    session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${user?.subscriptionUrl}`;
+
+    await conversation.external((ctx) => {
+      ctx.session = session;
+    });
 
     await this.render(ctx, getDevicesPageContent(), devicesMenu);
     await this.stop(conversation);
