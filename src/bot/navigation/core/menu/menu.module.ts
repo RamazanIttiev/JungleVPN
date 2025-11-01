@@ -1,10 +1,10 @@
 import { BotService } from '@bot/bot.service';
 import { StartCommand } from '@bot/commands/start.command';
-import { DevicesMenu } from '@bot/navigation/devices.menu';
-import { MainMenu } from '@bot/navigation/main.menu';
-import { PaymentMenu } from '@bot/navigation/payment.menu';
-import { PaymentsPeriodsMenu } from '@bot/navigation/payment-periods.menu';
-import { SubscriptionMenu } from '@bot/navigation/subscription.menu';
+import { DevicesMenu } from '@bot/navigation/core/menu/features/devices.menu';
+import { MainMenu } from '@bot/navigation/core/menu/features/main.menu';
+import { PaymentMenu } from '@bot/navigation/core/menu/features/payment.menu';
+import { PaymentsPeriodsMenu } from '@bot/navigation/core/menu/features/payment-periods.menu';
+import { SubscriptionMenu } from '@bot/navigation/core/menu/features/subscription.menu';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';

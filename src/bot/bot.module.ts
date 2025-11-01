@@ -3,7 +3,7 @@ import { ConversationModule } from '@bot/navigation/core/conversations/conversat
 import { ConversationService } from '@bot/navigation/core/conversations/conversations.service';
 import { MenuModule } from '@bot/navigation/core/menu/menu.module';
 import { MenuTree } from '@bot/navigation/core/menu/menu.tree';
-import { conversations, createConversation } from '@grammyjs/conversations';
+import { conversations } from '@grammyjs/conversations';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { PaymentsModule } from '@payments/payments.module';
 import { RemnaModule } from '@remna/remna.module';
@@ -50,20 +50,7 @@ export class BotModule implements OnModuleInit {
 
     const menuTree = this.menuTree.init();
 
-    const convMap = {
-      main: this.conversationService.main.bind(this.conversationService),
-      devices: this.conversationService.devices.bind(this.conversationService),
-      subscription: this.conversationService.subscription.bind(this.conversationService),
-      payment: this.conversationService.payment.bind(this.conversationService),
-      clientApp: this.conversationService.clientApp.bind(this.conversationService),
-      revokeSub: this.conversationService.revokeSub.bind(this.conversationService),
-      paymentPeriods: this.conversationService.paymentPeriods.bind(this.conversationService),
-      paymentStatus: this.conversationService.paymentStatus.bind(this.conversationService),
-    };
-
-    for (const [id, handler] of Object.entries(convMap)) {
-      this.bot.use(createConversation(handler, { id, parallel: id === 'devices' }));
-    }
+    this.conversationService.registerAll(this.bot);
 
     this.bot.use(menuTree);
 
