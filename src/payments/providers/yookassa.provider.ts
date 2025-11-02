@@ -35,7 +35,7 @@ export class YooKassaProvider implements IPaymentProvider {
           capture: true,
           confirmation: {
             type: 'redirect',
-            return_url: 'https://t.me/ten_vpn_bot',
+            return_url: process.env.YOOKASSA_RETURN_URL,
           },
           description: '',
         },

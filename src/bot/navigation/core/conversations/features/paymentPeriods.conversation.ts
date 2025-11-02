@@ -19,6 +19,8 @@ export class PaymentPeriodsConversation extends Base {
   async init(conversation: MyConversation, ctx: Context) {
     const menu = conversation
       .menu('paymentPeriods-menu')
+      .text('1 rub')
+      .row()
       .text('1 месяц (199 ₽)')
       .row()
       .text('3 месяца (599 ₽)')

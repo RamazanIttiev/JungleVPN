@@ -17,6 +17,19 @@ export class PaymentsService implements IPaymentProvider {
     private readonly factory: PaymentProviderFactory,
   ) {}
 
+  async isPaymentValid(id: string) {
+    const payment = await this.paymentRepository.findOneBy({ id, status: 'pending' });
+
+    if (!payment || !payment.createdAt) return null;
+
+    const expiresAt = payment.createdAt.getTime() + 10 * 60 * 1000;
+    if (Date.now() < expiresAt) {
+      return payment;
+    } else {
+      return null;
+    }
+  }
+
   async createPayment(
     dto: CreatePaymentDto,
     providerName: PaymentProvider,
@@ -32,19 +45,10 @@ export class PaymentsService implements IPaymentProvider {
       currency: dto.currency,
       createdAt: new Date(),
       status: 'pending',
+      url: session.url,
     });
 
     await this.paymentRepository.save(payment);
-
-    // const mockPayment = () => {
-    //   return {
-    //     id: `${randomId()}`,
-    //     url: `https://google.com`,
-    //     createdAt: new Date(),
-    //     provider: 'yookassa',
-    //   } as PaymentSession;
-    // };
-    // return Promise.resolve(mockPayment());
 
     return { id: session.id, url: session.url };
   }

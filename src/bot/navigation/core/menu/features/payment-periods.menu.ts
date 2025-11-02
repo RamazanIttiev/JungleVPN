@@ -35,6 +35,10 @@ export class PaymentsPeriodsMenu extends Base {
     );
 
     this.menu
+      .text('1 rub', async (ctx: BotContext) => {
+        await this.handlePaymentPeriod(ctx, '1d');
+      })
+      .row()
       .text('1 месяц (199 ₽)', async (ctx: BotContext) => {
         await this.handlePaymentPeriod(ctx, '1mo');
       })
@@ -53,10 +57,25 @@ export class PaymentsPeriodsMenu extends Base {
     });
   }
 
+  updateSession(ctx: any, id: string, url: string, period: PaymentPeriod) {
+    ctx.session.paymentId = id;
+    ctx.session.paymentUrl = url;
+    ctx.session.selectedAmount = this.periodAmounts[period];
+    ctx.session.selectedPeriod = period;
+  }
+
   async handlePaymentPeriod(ctx: any, period: PaymentPeriod) {
     const tgUser = this.botService.validateUser(ctx.from);
+    const isValidPayment = await this.paymentsService.isPaymentValid(ctx.session.paymentId);
+    console.log(period);
+    if (isValidPayment) {
+      const { id, url } = isValidPayment;
+      this.updateSession(ctx, id, url, period);
+      await this.navigateTo(ctx, 'payment');
+      return;
+    }
 
-    const { url, id } = await this.paymentsService.createPayment(
+    const { id, url } = await this.paymentsService.createPayment(
       {
         userId: tgUser.id,
         amount: this.periodAmounts[period],
@@ -65,10 +84,7 @@ export class PaymentsPeriodsMenu extends Base {
       'yookassa',
     );
 
-    ctx.session.paymentId = id;
-    ctx.session.paymentUrl = url;
-    ctx.session.selectedAmount = this.periodAmounts[period];
-    ctx.session.selectedPeriod = period;
+    this.updateSession(ctx, id, url, period);
 
     await this.navigateTo(ctx, 'payment');
   }

@@ -27,6 +27,9 @@ export class Payment {
 
   @CreateDateColumn()
   paidAt: Date;
+
+  @Column({ nullable: true })
+  url: string;
 }
 
 // export class Invoice {
