@@ -16,11 +16,8 @@
     "skipLibCheck": true,
     "paths": {
       "@bot/*": ["src/bot/*"],
-      "@xui/*": ["src/xui/*"],
       "@remna/*": ["src/remna/*"],
       "@payments/*": ["src/payments/*"],
-      "@users/*": ["src/users/*"],
-      "@session/*": ["src/session/*"],
       "@assets/*": ["src/assets/*"]
     }
   },

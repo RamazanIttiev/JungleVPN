@@ -13,8 +13,9 @@ export const dataSourceOptions: DataSourceOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [Payment],
-  migrations: ['db/migrations/**'],
-  migrationsRun: true,
+  migrations: ['dist/db/migrations/**/*.js'],
+  migrationsRun: process.env.NODE_ENV === 'production',
+  synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.ENV === 'development',
 };
 
