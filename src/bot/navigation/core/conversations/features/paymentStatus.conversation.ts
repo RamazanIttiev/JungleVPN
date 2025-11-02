@@ -23,7 +23,7 @@ export class PaymentStatusConversation extends Base {
 
   async init(conversation: MyConversation, ctx: Context) {
     const session = await conversation.external((ctx) => ctx.session);
-    const { user } = await conversation.external((ctx) => this.loadUser(ctx));
+    const { uuid, expireAt } = session.user;
     const { paymentId, paymentUrl, selectedPeriod } = session;
 
     if (!paymentUrl) {
@@ -45,8 +45,8 @@ export class PaymentStatusConversation extends Base {
     if (status === 'succeeded') {
       await this.paymentService.updatePayment(paymentId, { status, paidAt: new Date() });
       await this.remnaService.updateUser({
-        uuid: user?.uuid,
-        expireAt: add(user?.expireAt || new Date(), {
+        uuid,
+        expireAt: add(expireAt || new Date(), {
           months: mapPeriodToDate(selectedPeriod),
         }).toISOString(),
         status: 'ACTIVE',

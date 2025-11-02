@@ -2,6 +2,7 @@ import { BotContext } from '@bot/bot.types';
 import { ClientAppConversation } from '@bot/navigation/core/conversations/features/clientApp.conversation';
 import { DevicesConversation } from '@bot/navigation/core/conversations/features/devices.conversation';
 import { MainConversation } from '@bot/navigation/core/conversations/features/main.conversation';
+import { MainNewUserConversation } from '@bot/navigation/core/conversations/features/mainNewUser.conversation';
 import { PaymentConversation } from '@bot/navigation/core/conversations/features/payment.conversation';
 import { PaymentPeriodsConversation } from '@bot/navigation/core/conversations/features/paymentPeriods.conversation';
 import { PaymentStatusConversation } from '@bot/navigation/core/conversations/features/paymentStatus.conversation';
@@ -15,6 +16,7 @@ import { Bot } from 'grammy';
 export class ConversationService {
   constructor(
     private readonly main: MainConversation,
+    private readonly mainNewUser: MainNewUserConversation,
     private readonly devices: DevicesConversation,
     private readonly subscription: SubscriptionConversation,
     private readonly clientApp: ClientAppConversation,
@@ -25,6 +27,7 @@ export class ConversationService {
   ) {}
   registerAll(bot: Bot<BotContext>) {
     bot.use(createConversation(this.main.init.bind(this.main), 'main'));
+    bot.use(createConversation(this.mainNewUser.init.bind(this.mainNewUser), 'mainNewUser'));
     bot.use(
       createConversation(this.devices.init.bind(this.devices), { id: 'devices', parallel: true }),
     );

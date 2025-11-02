@@ -20,6 +20,7 @@ export class DevicesConversation extends Base {
 
   async init(conversation: MyConversation, ctx: Context) {
     const session = await conversation.external((ctx) => ctx.session);
+    const tgUser = this.botService.validateUser(ctx.from);
 
     const devicesMenu = conversation
       .menu('devices-menu')
@@ -31,22 +32,27 @@ export class DevicesConversation extends Base {
       .row()
       .back('⬅ Назад');
 
-    const { user, tgUser } = await this.loadUser(ctx);
+    const { telegramId } = session.user;
 
-    if (!user)
-      await this.remnaService.createUser({
-        username: tgUser.username || tgUser.first_name,
-        telegramId: tgUser.id,
-        expireAt: '0',
-        status: 'ACTIVE',
-      });
+    if (!telegramId) {
+      const user = await conversation.external((ctx) => this.loadUser(ctx));
 
-    session.subUrl = user?.subscriptionUrl;
-    session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${user?.subscriptionUrl}`;
+      if (!user) {
+        const data = await this.remnaService.createUser({
+          username: tgUser.username || tgUser.first_name,
+          telegramId: tgUser.id,
+          expireAt: '0',
+          status: 'ACTIVE',
+        });
 
-    await conversation.external((ctx) => {
-      ctx.session = session;
-    });
+        session.user.subscriptionUrl = data.subscriptionUrl;
+        session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${data.subscriptionUrl}`;
+
+        await conversation.external((ctx) => {
+          ctx.session = session;
+        });
+      }
+    }
 
     await this.render(ctx, getDevicesPageContent(), devicesMenu);
     await this.stop(conversation);

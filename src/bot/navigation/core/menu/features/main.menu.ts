@@ -16,11 +16,14 @@ export class MainMenu extends Base {
 
     this.menu
       .text('Подключиться 📶', async (ctx) => {
-        const { user } = await this.loadUser(ctx);
-        const isExpired = this.isExpired(user?.expireAt);
+        const isExpired = this.isExpired(ctx.session.user?.expireAt);
 
-        if (isExpired) await this.navigateTo(ctx, 'paymentPeriods');
-        else await this.navigateTo(ctx, 'devices');
+        if (isExpired) {
+          await this.navigateTo(ctx, 'paymentPeriods');
+          return;
+        }
+
+        await this.navigateTo(ctx, 'devices');
       })
       .text('Продлить подписку', async (ctx) => {
         await this.navigateTo(ctx, 'paymentPeriods');

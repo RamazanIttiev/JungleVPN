@@ -1,6 +1,7 @@
 import { Menu } from '@bot/navigation/core/menu';
 import { DevicesMenu } from '@bot/navigation/core/menu/features/devices.menu';
 import { MainMenu } from '@bot/navigation/core/menu/features/main.menu';
+import { MainNewUserMenu } from '@bot/navigation/core/menu/features/mainNewUser.menu';
 import { PaymentMenu } from '@bot/navigation/core/menu/features/payment.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/core/menu/features/payment-periods.menu';
 import { SubscriptionMenu } from '@bot/navigation/core/menu/features/subscription.menu';
@@ -10,6 +11,7 @@ import { Injectable } from '@nestjs/common';
 export class MenuTree {
   constructor(
     private readonly mainMenu: MainMenu,
+    private readonly mainNewUserMenu: MainNewUserMenu,
     private readonly devicesMenu: DevicesMenu,
     private readonly paymentMenu: PaymentMenu,
     private readonly paymentsPeriodsMenu: PaymentsPeriodsMenu,
@@ -18,6 +20,7 @@ export class MenuTree {
 
   init(): Menu {
     const main = this.mainMenu.create();
+    const mainNewUserMenu = this.mainNewUserMenu.create();
     const subscriptionMenu = this.subscriptionMenu.create();
     const devices = this.devicesMenu.create();
     const paymentMenu = this.paymentMenu.create();
@@ -27,6 +30,7 @@ export class MenuTree {
     main.register(paymentMenu);
     main.register(paymentsPeriodsMenu);
     main.register(subscriptionMenu);
+    main.register(mainNewUserMenu);
 
     return main;
   }

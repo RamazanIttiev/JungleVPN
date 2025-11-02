@@ -20,22 +20,23 @@ export class RevokeSubConversation extends Base {
   }
 
   async init(conversation: MyConversation, ctx: Context) {
-    const { user } = await this.loadUser(ctx);
+    const { user } = await conversation.external((ctx) => ctx.session);
+
     if (!user?.uuid) return;
 
     const subUrl = await this.remnaService.revokeSub(user.uuid);
     const session = await conversation.external(async (ctx: BotContext) => {
-      ctx.session.subUrl = subUrl;
+      ctx.session.user.subscriptionUrl = subUrl;
       ctx.session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${subUrl}`;
       return ctx.session;
     });
 
-    const { appUrl, redirectUrl } = this.buildUrls(session.subUrl);
+    const { appUrl, redirectUrl } = this.buildUrls(session.user.subscriptionUrl);
     const menu = this.buildSubscriptionMenu(conversation, appUrl, redirectUrl);
 
     const content = getSubscriptionPageContent({
       device: session.selectedDevice!,
-      subUrl: escapeHtml(session.subUrl!),
+      subUrl: escapeHtml(session.user.subscriptionUrl!),
     });
 
     await this.render(ctx, content, menu);

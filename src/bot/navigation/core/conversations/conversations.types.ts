@@ -1,5 +1,6 @@
 export type RouterLocation =
   | 'main'
+  | 'mainNewUser'
   | 'devices'
   | 'paymentPeriods'
   | 'payment'

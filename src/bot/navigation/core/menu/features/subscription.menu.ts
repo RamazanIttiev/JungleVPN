@@ -16,21 +16,18 @@ export class SubscriptionMenu extends Base {
     super(botService, remnaService);
 
     this.menu
-      .dynamic(async (ctx, range) => {
-        const url = getAppLink(ctx.session.selectedDevice);
-        range.url('🔽Скачать', url);
-      })
-      .dynamic(async (ctx, range) => {
-        const redirectUrl = ctx.session.redirectUrl;
-        if (redirectUrl) range.url('🔐 Подключиться', redirectUrl);
-      })
+      .url('🔽Скачать', (ctx) => getAppLink(ctx.session.selectedDevice))
+      .url('🔐 Подключиться', (ctx) =>  ctx.session.redirectUrl!)
       .row()
       .text('🔄 Новая ссылка', async (ctx) => {
         await this.navigateTo(ctx, 'revokeSub');
       })
       .row()
       .text('Главное меню', async (ctx) => {
-        ctx.session = initialSession();
+        ctx.session = {
+          ...initialSession(),
+          user: ctx.session.user,
+        };
         await this.navigateTo(ctx, 'main');
       });
   }

@@ -20,7 +20,8 @@ export class SubscriptionConversation extends Base {
 
   async init(conversation: MyConversation, ctx: Context) {
     const session = await conversation.external((ctx) => ctx.session);
-    const { redirectUrl } = this.buildUrls(session.subUrl);
+
+    const { redirectUrl } = this.buildUrls(session.user.subscriptionUrl);
     const menu = this.buildSubscriptionMenu(
       conversation,
       getAppLink(session.selectedDevice),
@@ -29,7 +30,7 @@ export class SubscriptionConversation extends Base {
 
     const text = getSubscriptionPageContent({
       device: session.selectedDevice,
-      subUrl: session.subUrl,
+      subUrl: session.user.subscriptionUrl,
     });
 
     await this.render(ctx, text, menu);

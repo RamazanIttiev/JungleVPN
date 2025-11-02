@@ -29,7 +29,7 @@ export class RemnaService {
         data: body,
       });
       const data: RemnaResponse<Data> = res.data;
-
+      console.log(url);
       if (data) return data.response;
 
       throw new AxiosError('REQUEST ERROR', url);
@@ -43,24 +43,22 @@ export class RemnaService {
     const expiryTime = new Date();
     expiryTime.setDate(expiryTime.getDate() + 90);
 
+    const isValidUsername = this.isValidUsername(data.username);
+
     const body = {
       ...data,
+      username: isValidUsername ? `${data.username}_${data.telegramId}` : `${data.telegramId}`,
       expireAt: expiryTime.toISOString(),
       activeInternalSquads: [process.env.REMNA_INTERNAL_SQUAD],
       status: 'ACTIVE',
     };
 
-    try {
-      const data = await this.fetch<User>({ url: '/users', body });
-      if (!data) {
-        throw new AxiosError('REQUEST ERROR. createUser', data);
-      }
-
-      return data;
-    } catch (error) {
-      console.error(error);
-      throw new AxiosError('SERVER ERROR. createUser');
+    const user = await this.fetch<User>({ url: '/users', body });
+    if (!user) {
+      throw new AxiosError('REQUEST ERROR. createUser');
     }
+
+    return user;
   }
 
   async updateUser(body: Partial<UpdateUserDTO>): Promise<User> {
@@ -107,5 +105,10 @@ export class RemnaService {
       console.error(error);
       throw new AxiosError('SERVER ERROR. revokeSub');
     }
+  }
+
+  private isValidUsername(username: string): boolean {
+    const regex = /^[A-Za-z0-9_-]+$/;
+    return regex.test(username);
   }
 }

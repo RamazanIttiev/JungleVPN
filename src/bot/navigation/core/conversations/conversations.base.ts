@@ -3,6 +3,7 @@ import { BotContext } from '@bot/bot.types';
 import { RouterLocation } from '@bot/navigation/core/conversations/conversations.types';
 import { Conversation } from '@grammyjs/conversations';
 import { Injectable } from '@nestjs/common';
+import { User } from '@remna/remna.model';
 import { RemnaService } from '@remna/remna.service';
 import { Context } from 'grammy';
 
@@ -34,12 +35,27 @@ export abstract class Base {
     }
   }
 
-  protected async loadUser(ctx: Context) {
-    const tgUser = this.botService.validateUser(ctx.from);
-    const user = await this.remnaService.getUserByTgId(tgUser.id);
-    const username = tgUser.first_name ?? tgUser.username ?? 'User';
+  private isValidUsername(username: string): boolean {
+    const regex = /^[A-Za-z0-9_-]+$/;
+    return regex.test(username);
+  }
 
-    return { tgUser, user, username };
+  protected async loadUser(ctx: BotContext): Promise<Partial<User>> {
+    const tgUser = this.botService.validateUser(ctx.from);
+    const isValidUsername = this.isValidUsername(tgUser.username || tgUser.first_name);
+    const username = isValidUsername ? `${tgUser.username}_${tgUser.id}` : `${tgUser.id}`;
+
+    const user = ctx.session.user.telegramId
+      ? ctx.session.user
+      : await this.remnaService.getUserByTgId(tgUser.id);
+
+    if (user) {
+      ctx.session.user = user;
+    }
+    return {
+      ...user,
+      username,
+    };
   }
 
   protected isExpired(expireAt?: string) {

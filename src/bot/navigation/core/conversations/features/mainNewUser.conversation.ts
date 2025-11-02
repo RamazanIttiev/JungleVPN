@@ -1,6 +1,7 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { Base } from '@bot/navigation/core/conversations/conversations.base';
+import { getNewUserMainPageContent } from '@bot/utils/templates';
 import { Conversation } from '@grammyjs/conversations';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
@@ -9,7 +10,7 @@ import { Context } from 'grammy';
 type MyConversation = Conversation<BotContext>;
 
 @Injectable()
-export class ClientAppConversation extends Base {
+export class MainNewUserConversation extends Base {
   constructor(
     readonly botService: BotService,
     readonly remnaService: RemnaService,
@@ -18,10 +19,13 @@ export class ClientAppConversation extends Base {
   }
 
   async init(conversation: MyConversation, ctx: Context) {
-    const session = await conversation.external((ctx) => ctx.session);
-    const { appUrl, redirectUrl } = this.buildUrls(session.user.subscriptionUrl);
-    const menu = this.buildSubscriptionMenu(conversation, appUrl, redirectUrl);
+    const menu = conversation.menu('main-new-user-menu').text('Подключиться 📶');
+    const tgUser = this.botService.validateUser(ctx.from);
+    const username = tgUser.first_name ?? tgUser.username;
 
-    await ctx.editMessageReplyMarkup({ reply_markup: menu });
+    const content = getNewUserMainPageContent({ username });
+
+    await this.render(ctx, content, menu);
+    await this.stop(conversation);
   }
 }

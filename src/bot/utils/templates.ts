@@ -43,7 +43,7 @@ const getSubStatusContent = (isExpired: boolean, validUntil: string | undefined)
 };
 
 export const getMainPageContent = (options: {
-  username: string | undefined;
+  username: string | null;
   validUntil: string | undefined;
   isExpired: boolean;
 }) => {
@@ -58,19 +58,15 @@ ${getSubStatusContent(isExpired, validUntil)}
 `;
 };
 
-export const getNewUserMainPageContent = (options: {
-  username: string | undefined;
-  isExpired: boolean;
-  isNewUser: boolean;
-}) => {
+export const getNewUserMainPageContent = (options: { username: string | undefined }) => {
   return `
 🌴 Добро пожаловать в Jungle, <b>${options.username || 'Дорогой друг'}</b>!
 
-В <code>JUNGLE</code> скорость и безопасность — на первом месте.  
+В <code>JUNGLE</code> скорость и безопасность — на первом месте. ⚡️
 
 Твои данные здесь под надежной защитой. 🛡️
 
-${options.isNewUser && 'Первые 3 месяца бесплатно❤️'}
+Первые 3 месяца бесплатно❤️
 `;
 };
 
