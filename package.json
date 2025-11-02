@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "bunx nest start --watch",
     "build": "nest build",
-    "start": "bun run build && docker compose up --build",
+    "start": "docker compose up --build -d",
     "migration:generate": "bun node_modules/typeorm/cli migration:generate db/migrations/Migration -d dist/db/datasource.js",
     "migration:run": "bun node_modules/typeorm/cli migration:run -d db/datasource.js",
     "migration:revert": "bun node_modules/typeorm/cli migration:revert -d db/datasource.js"
@@ -38,7 +38,6 @@
     "@types/bun": "^1.3.1",
     "@types/express": "^5.0.3",
     "@types/node": "^20.12.12",
-    "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
@@ -59,5 +58,6 @@
     "@assets/*": [
       "src/assets/*"
     ]
-  }
+  },
+  "packageManager": "pnpm@9.13.2+sha1.969cc200a41db98449afee1bfa7578b3ce6ff330"
 }
