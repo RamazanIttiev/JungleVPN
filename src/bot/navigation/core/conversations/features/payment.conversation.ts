@@ -31,7 +31,9 @@ export class PaymentConversation extends Base {
     const menu = conversation
       .menu('payment-menu')
       .url('💳 Оплатить подписку', paymentUrl)
-      .text('Я оплатил ✅');
+      .text('Я оплатил ✅')
+      .row()
+      .text('Главное меню');
 
     const content = getPaymentPageContent(selectedPeriod!, selectedAmount!);
 

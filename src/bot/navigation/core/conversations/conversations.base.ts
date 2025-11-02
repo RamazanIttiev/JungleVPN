@@ -5,6 +5,7 @@ import { Conversation } from '@grammyjs/conversations';
 import { Injectable } from '@nestjs/common';
 import { User } from '@remna/remna.model';
 import { RemnaService } from '@remna/remna.service';
+import { isValidUsername } from '@utils/utils';
 import { Context } from 'grammy';
 
 export type MyConversation = Conversation<BotContext>;
@@ -35,15 +36,11 @@ export abstract class Base {
     }
   }
 
-  private isValidUsername(username: string): boolean {
-    const regex = /^[A-Za-z0-9_-]+$/;
-    return regex.test(username);
-  }
-
   protected async loadUser(ctx: BotContext): Promise<Partial<User>> {
     const tgUser = this.botService.validateUser(ctx.from);
-    const isValidUsername = this.isValidUsername(tgUser.username || tgUser.first_name);
-    const username = isValidUsername ? `${tgUser.username}_${tgUser.id}` : `${tgUser.id}`;
+    const username = isValidUsername(tgUser.username || tgUser.first_name)
+      ? `${tgUser.username}_${tgUser.id}`
+      : `${tgUser.id}`;
 
     const user = ctx.session.user.telegramId
       ? ctx.session.user

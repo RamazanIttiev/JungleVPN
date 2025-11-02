@@ -6,6 +6,7 @@ import { toDateString } from '@bot/utils/utils';
 import { Conversation } from '@grammyjs/conversations';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
+import { isValidUsername } from '@utils/utils';
 import { Context } from 'grammy';
 
 type MyConversation = Conversation<BotContext>;
@@ -28,8 +29,11 @@ export class MainConversation extends Base {
 
     const isExpired = this.isExpired(user?.expireAt);
 
+    const tgName = ctx.from?.username || ctx.from?.first_name;
+    const username = isValidUsername(tgName) ? tgName! : 'Дорогой друг';
+
     const content = getMainPageContent({
-      username: user?.username!,
+      username,
       isExpired,
       validUntil: toDateString(user?.expireAt!),
     });

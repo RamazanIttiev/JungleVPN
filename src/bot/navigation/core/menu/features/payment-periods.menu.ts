@@ -67,7 +67,7 @@ export class PaymentsPeriodsMenu extends Base {
   async handlePaymentPeriod(ctx: any, period: PaymentPeriod) {
     const tgUser = this.botService.validateUser(ctx.from);
     const isValidPayment = await this.paymentsService.isPaymentValid(ctx.session.paymentId);
-    console.log(period);
+
     if (isValidPayment) {
       const { id, url } = isValidPayment;
       this.updateSession(ctx, id, url, period);

@@ -23,6 +23,10 @@ export class PaymentMenu extends Base {
       })
       .text('Я оплатил ✅', async (ctx) => {
         await this.navigateTo(ctx, 'paymentStatus');
+      })
+      .row()
+      .text('Главное меню', async (ctx) => {
+        await this.navigateTo(ctx, 'main');
       });
   }
 

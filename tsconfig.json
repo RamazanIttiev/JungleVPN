@@ -18,7 +18,8 @@
       "@bot/*": ["src/bot/*"],
       "@remna/*": ["src/remna/*"],
       "@payments/*": ["src/payments/*"],
-      "@assets/*": ["src/assets/*"]
+      "@assets/*": ["src/assets/*"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src/**/*", "db/**/*"],

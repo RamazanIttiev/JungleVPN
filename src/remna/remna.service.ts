@@ -1,3 +1,4 @@
+import { isValidUsername } from '@utils/utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { CreateUserDTO, RemnaResponse, UpdateUserDTO, User } from './remna.model';
 
@@ -29,7 +30,7 @@ export class RemnaService {
         data: body,
       });
       const data: RemnaResponse<Data> = res.data;
-      console.log(url);
+
       if (data) return data.response;
 
       throw new AxiosError('REQUEST ERROR', url);
@@ -43,11 +44,11 @@ export class RemnaService {
     const expiryTime = new Date();
     expiryTime.setDate(expiryTime.getDate() + 90);
 
-    const isValidUsername = this.isValidUsername(data.username);
-
     const body = {
       ...data,
-      username: isValidUsername ? `${data.username}_${data.telegramId}` : `${data.telegramId}`,
+      username: isValidUsername(data.username)
+        ? `${data.username}_${data.telegramId}`
+        : `${data.telegramId}`,
       expireAt: expiryTime.toISOString(),
       activeInternalSquads: [process.env.REMNA_INTERNAL_SQUAD],
       status: 'ACTIVE',
@@ -105,10 +106,5 @@ export class RemnaService {
       console.error(error);
       throw new AxiosError('SERVER ERROR. revokeSub');
     }
-  }
-
-  private isValidUsername(username: string): boolean {
-    const regex = /^[A-Za-z0-9_-]+$/;
-    return regex.test(username);
   }
 }

@@ -50,7 +50,7 @@ export const getMainPageContent = (options: {
   const { username, validUntil, isExpired } = options;
 
   return `
-🌴 Добро пожаловать в <b>Jungle</b>, <b>${username || 'Дорогой друг'}</b>!
+🌴 Добро пожаловать в <b>Jungle</b>, <b>${username}</b>!
 
 В <code>JUNGLE</code> скорость и безопасность — на первом месте. ⚡️
 
