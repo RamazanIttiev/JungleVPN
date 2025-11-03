@@ -1,5 +1,3 @@
-## VPN MVP (Telegram Bot + Nest.js + WireGuard)
-
 ## Database
 #### Creation
 

@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bunx nest start --watch",
+    "dev": "npx nest start --watch",
     "build": "nest build",
     "start": "docker compose up --build -d",
-    "migration:generate": "bun node_modules/typeorm/cli migration:generate db/migrations/Migration -d dist/db/datasource.js",
-    "migration:run": "bun node_modules/typeorm/cli migration:run -d db/datasource.js",
-    "migration:revert": "bun node_modules/typeorm/cli migration:revert -d db/datasource.js"
+    "migration:generate": "npm run build && npx typeorm migration:generate db/migrations/Migration -d dist/db/datasource.js",
+    "migration:run": "npm run build && npx typeorm migration:run -d dist/db/datasource.js",
+    "migration:revert": "npm run build && npx typeorm migration:revert -d dist/db/datasource.js"
   },
   "dependencies": {
     "@grammyjs/conversations": "^2.1.0",
