@@ -22,4 +22,5 @@ FROM node:20-alpine AS production
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
+EXPOSE 5000/tcp
 CMD ["node", "dist/src/main.js"]
