@@ -1,7 +1,7 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { MainConversation } from '@bot/navigation/core/conversations/features/main.conversation';
-import { MainMenu } from '@bot/navigation/core/menu/features/main.menu';
+import { MainMenu } from '@bot/navigation/core/menu/features/main/main.menu';
+import { MainService } from '@bot/navigation/core/menu/features/main/main.service';
 import { UserService } from '@bot/user.service';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
@@ -12,17 +12,17 @@ export class StartCommand {
   constructor(
     readonly botService: BotService,
     readonly remnaService: RemnaService,
-    readonly userViewModel: UserService,
+    readonly userService: UserService,
     readonly mainMenu: MainMenu,
-    readonly mainConversation: MainConversation,
+    readonly mainService: MainService,
   ) {}
 
   register(bot: Bot<BotContext>) {
     bot.command('start', async (ctx) => {
       await ctx.react('🗿');
 
-      await this.userViewModel.init(ctx);
-      await this.mainConversation.init(ctx, this.mainMenu.create());
+      await this.userService.init(ctx);
+      await this.mainService.init(ctx, this.mainMenu.menu);
     });
   }
 }

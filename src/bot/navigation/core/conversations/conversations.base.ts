@@ -1,12 +1,8 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { RouterLocation } from '@bot/navigation/core/conversations/conversations.types';
-import { Menu } from '@bot/navigation/core/menu';
 import { Conversation } from '@grammyjs/conversations';
 import { Injectable } from '@nestjs/common';
-import { User } from '@remna/remna.model';
 import { RemnaService } from '@remna/remna.service';
-import { isValidUsername } from '@utils/utils';
 import { Context } from 'grammy';
 
 export type MyConversation = Conversation<BotContext>;
@@ -29,32 +25,12 @@ export abstract class Base {
         reply_markup,
       });
     } catch (error) {
-      console.log('ERROR');
       await ctx.reply(text, {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
         reply_markup,
       });
     }
-  }
-
-  protected async loadUser(ctx: BotContext): Promise<Partial<User>> {
-    const tgUser = this.botService.validateUser(ctx.from);
-    const username = isValidUsername(tgUser.username || tgUser.first_name)
-      ? `${tgUser.username}_${tgUser.id}`
-      : `${tgUser.id}`;
-
-    const user = ctx.session.user.telegramId
-      ? ctx.session.user
-      : await this.remnaService.getUserByTgId(tgUser.id);
-
-    if (user) {
-      ctx.session.user = user;
-    }
-    return {
-      ...user,
-      username,
-    };
   }
 
   protected isExpired(expireAt?: string) {
@@ -83,17 +59,5 @@ export abstract class Base {
       .text('🔄 Новая ссылка')
       .row()
       .text('Главное меню');
-  }
-
-  protected async navigateTo(ctx: BotContext, to: RouterLocation) {
-    await ctx.conversation.enter(to);
-  }
-
-  protected async navigate(ctx: BotContext, content: string, menu: Menu) {
-    await ctx.editMessageText(content, { reply_markup: menu });
-  }
-
-  protected async stop(conversation: MyConversation) {
-    await conversation.halt();
   }
 }

@@ -33,14 +33,14 @@ export class UserService {
     const user = await this.remnaService.getUserByTgId(tgUser.id);
 
     if (!user) {
-      const data = await this.remnaService.createUser({
+      const newUser = await this.remnaService.createUser({
         username,
         telegramId: tgUser.id,
       });
 
-      session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${data.subscriptionUrl}`;
+      session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${newUser.subscriptionUrl}`;
 
-      this.setUserToSession(ctx, data);
+      this.setUserToSession(ctx, newUser);
     } else {
       this.setUserToSession(ctx, user);
     }

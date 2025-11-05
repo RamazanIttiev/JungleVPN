@@ -1,6 +1,6 @@
 import { Menu } from '@bot/navigation/core/menu';
 import { DevicesMenu } from '@bot/navigation/core/menu/features/devices.menu';
-import { MainMenu } from '@bot/navigation/core/menu/features/main.menu';
+import { MainMenu } from '@bot/navigation/core/menu/features/main/main.menu';
 import { MainNewUserMenu } from '@bot/navigation/core/menu/features/mainNewUser.menu';
 import { PaymentMenu } from '@bot/navigation/core/menu/features/payment.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/core/menu/features/payment-periods.menu';
@@ -19,12 +19,12 @@ export class MenuTree {
   ) {}
 
   init(): Menu {
-    const main = this.mainMenu.create();
-    const mainNewUserMenu = this.mainNewUserMenu.create();
-    const subscriptionMenu = this.subscriptionMenu.create();
-    const devices = this.devicesMenu.create();
-    const paymentMenu = this.paymentMenu.create();
-    const paymentsPeriodsMenu = this.paymentsPeriodsMenu.create();
+    const main = this.mainMenu.menu;
+    const mainNewUserMenu = this.mainNewUserMenu.menu;
+    const subscriptionMenu = this.subscriptionMenu.menu;
+    const devices = this.devicesMenu.menu;
+    const paymentMenu = this.paymentMenu.menu;
+    const paymentsPeriodsMenu = this.paymentsPeriodsMenu.menu;
 
     main.register(devices);
     main.register(paymentMenu);

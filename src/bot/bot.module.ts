@@ -1,11 +1,7 @@
 import { PaymentSuccessCommand } from '@bot/commands/paymentSuccess.command';
 import { StartCommand } from '@bot/commands/start.command';
-import { ConversationModule } from '@bot/navigation/core/conversations/conversations.module';
-import { ConversationService } from '@bot/navigation/core/conversations/conversations.service';
-import { DevicesConversation } from '@bot/navigation/core/conversations/features/devices.conversation';
-import { MainConversation } from '@bot/navigation/core/conversations/features/main.conversation';
-import { MainNewUserConversation } from '@bot/navigation/core/conversations/features/mainNewUser.conversation';
-import { MainMenu } from '@bot/navigation/core/menu/features/main.menu';
+import { MainMenu } from '@bot/navigation/core/menu/features/main/main.menu';
+import { MainService } from '@bot/navigation/core/menu/features/main/main.service';
 import { MenuModule } from '@bot/navigation/core/menu/menu.module';
 import { MenuTree } from '@bot/navigation/core/menu/menu.tree';
 import { UserService } from '@bot/user.service';
@@ -21,16 +17,8 @@ import { BotContext, initialSession } from './bot.types';
 import { BroadcastCommand } from './commands/broadcast.command';
 
 @Module({
-  imports: [PaymentsModule, RemnaModule, MenuModule, ConversationModule, UsersModule],
-  providers: [
-    BotService,
-    RemnaService,
-    MainConversation,
-    DevicesConversation,
-    MainNewUserConversation,
-    MainMenu,
-    UserService,
-  ],
+  imports: [PaymentsModule, RemnaModule, MenuModule, UsersModule],
+  providers: [BotService, RemnaService, UserService, MainService, MainMenu],
   exports: [BotService],
 })
 export class BotModule implements OnModuleInit {
@@ -38,7 +26,6 @@ export class BotModule implements OnModuleInit {
   bot: Bot<BotContext>;
 
   constructor(
-    private readonly conversationService: ConversationService,
     private readonly menuTree: MenuTree,
     private readonly startCommand: StartCommand,
   ) {}
@@ -55,8 +42,6 @@ export class BotModule implements OnModuleInit {
     this.bot.use(conversations());
 
     const menuTree = this.menuTree.init();
-
-    this.conversationService.registerAll(this.bot);
 
     this.bot.use(menuTree);
 
@@ -81,7 +66,7 @@ export class BotModule implements OnModuleInit {
       }
     });
 
-    // await this.bot.start();
+    await this.bot.start();
 
     console.log('🤖 Telegram bot started');
   }

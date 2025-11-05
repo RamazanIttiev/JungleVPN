@@ -4,7 +4,8 @@ import { DevicesConversation } from '@bot/navigation/core/conversations/features
 import { MainConversation } from '@bot/navigation/core/conversations/features/main.conversation';
 import { MainNewUserConversation } from '@bot/navigation/core/conversations/features/mainNewUser.conversation';
 import { DevicesMenu } from '@bot/navigation/core/menu/features/devices.menu';
-import { MainMenu } from '@bot/navigation/core/menu/features/main.menu';
+import { MainMenu } from '@bot/navigation/core/menu/features/main/main.menu';
+import { MainService } from '@bot/navigation/core/menu/features/main/main.service';
 import { MainNewUserMenu } from '@bot/navigation/core/menu/features/mainNewUser.menu';
 import { PaymentMenu } from '@bot/navigation/core/menu/features/payment.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/core/menu/features/payment-periods.menu';
@@ -23,6 +24,7 @@ import { MenuTree } from './menu.tree';
   providers: [
     MenuTree,
     MainMenu,
+    MainService,
     MainNewUserMenu,
     DevicesMenu,
     PaymentsPeriodsMenu,
@@ -42,6 +44,7 @@ import { MenuTree } from './menu.tree';
   exports: [
     MenuTree,
     MainMenu,
+    MainService,
     MainNewUserMenu,
     DevicesMenu,
     PaymentsPeriodsMenu,

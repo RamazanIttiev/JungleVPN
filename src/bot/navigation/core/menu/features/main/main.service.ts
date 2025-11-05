@@ -8,7 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 
 @Injectable()
-export class MainConversation extends Base {
+export class MainService extends Base {
   constructor(
     readonly botService: BotService,
     readonly remnaService: RemnaService,
@@ -18,8 +18,8 @@ export class MainConversation extends Base {
 
   async init(ctx: BotContext, menu: Menu) {
     const session = ctx.session;
-
     const user = session.user;
+
     const isExpired = this.isExpired(user.expireAt);
 
     const content = getMainPageContent({
@@ -28,10 +28,6 @@ export class MainConversation extends Base {
       validUntil: toDateString(user.expireAt!),
     });
 
-    await ctx.reply(content, {
-      parse_mode: 'HTML',
-      link_preview_options: { is_disabled: true },
-      reply_markup: menu,
-    });
+    await this.render(ctx, content, menu);
   }
 }

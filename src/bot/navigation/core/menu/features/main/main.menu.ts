@@ -1,7 +1,7 @@
 import { BotService } from '@bot/bot.service';
 import { Base } from '@bot/navigation/core/conversations/conversations.base';
 import { Menu } from '@bot/navigation/core/menu';
-import { DevicesMenu } from '@bot/navigation/core/menu/features/devices.menu';
+import { DevicesMenu } from '@bot/navigation/core/menu/features/devices/devices.menu';
 import { getDevicesPageContent } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
@@ -18,24 +18,12 @@ export class MainMenu extends Base {
   ) {
     super(botService, remnaService);
 
-    this.menu
-      .text('Подключиться 📶', async (ctx) => {
-        const isExpired = this.isExpired(ctx.session.user?.expireAt);
-
-        if (isExpired) {
-          await this.navigateTo(ctx, 'paymentPeriods');
-          return;
-        }
-
-        await ctx.menu.nav('devices-menu', { immediate: true });
-        await this.render(ctx, getDevicesPageContent(), this.devicesMenu.create());
-      })
-      .text('Продлить подписку', async (ctx) => {
-        await this.navigateTo(ctx, 'paymentPeriods');
+    this.menu.text('Подключиться 📶', async (ctx) => {
+      await ctx.editMessageText(getDevicesPageContent(), {
+        parse_mode: 'HTML',
+        link_preview_options: { is_disabled: true },
+        reply_markup: this.devicesMenu.menu,
       });
-  }
-
-  create() {
-    return this.menu;
+    });
   }
 }
