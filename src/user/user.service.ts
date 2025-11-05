@@ -16,6 +16,8 @@ export class UserService {
     const tgUser = this.botService.validateUser(ctx.from);
     const username = tgUser.first_name ?? tgUser.username;
 
+    session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${user.subscriptionUrl}`;
+
     session.user = {
       uuid: user.uuid,
       telegramId: user.telegramId,

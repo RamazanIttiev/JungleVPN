@@ -1,24 +1,38 @@
 import { PaymentSuccessCommand } from '@bot/commands/paymentSuccess.command';
 import { StartCommand } from '@bot/commands/start.command';
-import { MainMenu } from '@bot/navigation/core/menu/features/main/main.menu';
-import { MainService } from '@bot/navigation/core/menu/features/main/main.service';
-import { MenuModule } from '@bot/navigation/core/menu/menu.module';
-import { MenuTree } from '@bot/navigation/core/menu/menu.tree';
-import { UserService } from '@bot/user.service';
-import { UsersModule } from '@bot/users.module';
+import { MainMenu } from '@bot/navigation/features/main/main.menu';
+import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
+import { PaymentStatusMsgService } from '@bot/navigation/features/payment/paymentStatus.service';
+import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
+import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
+import { MenuModule } from '@bot/navigation/menu.module';
+import { MenuTree } from '@bot/navigation/menu.tree';
 import { conversations } from '@grammyjs/conversations';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { PaymentsModule } from '@payments/payments.module';
 import { RemnaModule } from '@remna/remna.module';
 import { RemnaService } from '@remna/remna.service';
+import { UserService } from '@user/user.service';
+import { UserModule } from '@user/users.module';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
 import { BotService } from './bot.service';
 import { BotContext, initialSession } from './bot.types';
 import { BroadcastCommand } from './commands/broadcast.command';
 
 @Module({
-  imports: [PaymentsModule, RemnaModule, MenuModule, UsersModule],
-  providers: [BotService, RemnaService, UserService, MainService, MainMenu],
+  imports: [PaymentsModule, RemnaModule, MenuModule, UserModule],
+  providers: [
+    BotService,
+    RemnaService,
+    UserService,
+    MainMsgService,
+    PaymentMsgService,
+    PaymentStatusMsgService,
+    SubscriptionMsgService,
+    RevokeSubMsgService,
+    MainMenu,
+  ],
   exports: [BotService],
 })
 export class BotModule implements OnModuleInit {
@@ -28,6 +42,7 @@ export class BotModule implements OnModuleInit {
   constructor(
     private readonly menuTree: MenuTree,
     private readonly startCommand: StartCommand,
+    private readonly paymentSuccessCommand: PaymentSuccessCommand,
   ) {}
 
   async onModuleInit() {
@@ -52,8 +67,8 @@ export class BotModule implements OnModuleInit {
     });
 
     this.startCommand.register(this.bot);
+    this.paymentSuccessCommand.register(this.bot);
     new BroadcastCommand().register(this.bot);
-    new PaymentSuccessCommand().register(this.bot);
 
     this.bot.catch((err) => {
       const e = err.error;

@@ -1,8 +1,12 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { Base } from '@bot/navigation/core/conversations/conversations.base';
-import { Menu } from '@bot/navigation/core/menu';
-import { Injectable } from '@nestjs/common';
+import { Base } from '@bot/navigation/menu.base';
+import { Menu } from '@bot/navigation';
+import { MainMenu } from '@bot/navigation/features/main/main.menu';
+import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
+import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
@@ -23,6 +27,12 @@ export class PaymentsPeriodsMenu extends Base {
     readonly botService: BotService,
     readonly paymentsService: PaymentsService,
     readonly remnaService: RemnaService,
+    readonly mainMsgService: MainMsgService,
+    readonly paymentService: PaymentMsgService,
+    @Inject(forwardRef(() => MainMenu))
+    readonly mainMenu: MainMenu,
+    @Inject(forwardRef(() => PaymentMenu))
+    readonly paymentMenu: PaymentMenu,
   ) {
     super(botService, remnaService);
 
@@ -50,11 +60,10 @@ export class PaymentsPeriodsMenu extends Base {
       .text('6 месяцев (999 ₽)', async (ctx: BotContext) => {
         await this.handlePaymentPeriod(ctx, '6mo');
       })
-      .row();
-
-    this.menu.back('⬅ Назад', async (ctx) => {
-      await this.navigateTo(ctx, 'main');
-    });
+      .row()
+      .back('⬅ Назад', async (ctx) => {
+        await this.mainMsgService.init(ctx, this.mainMenu.menu);
+      });
   }
 
   updateSession(ctx: any, id: string, url: string, period: PaymentPeriod) {
@@ -71,7 +80,7 @@ export class PaymentsPeriodsMenu extends Base {
     if (isValidPayment) {
       const { id, url } = isValidPayment;
       this.updateSession(ctx, id, url, period);
-      await this.navigateTo(ctx, 'payment');
+      await this.paymentService.init(ctx, this.paymentMenu.menu);
       return;
     }
 
@@ -86,10 +95,6 @@ export class PaymentsPeriodsMenu extends Base {
 
     this.updateSession(ctx, id, url, period);
 
-    await this.navigateTo(ctx, 'payment');
-  }
-
-  create() {
-    return this.menu;
+    await this.paymentService.init(ctx, this.paymentMenu.menu);
   }
 }

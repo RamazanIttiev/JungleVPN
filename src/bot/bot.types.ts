@@ -1,4 +1,3 @@
-import { RouterLocation } from '@bot/navigation/core/conversations/conversations.types';
 import { ConversationFlavor } from '@grammyjs/conversations';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { User } from '@remna/remna.model';
@@ -15,7 +14,6 @@ export interface SessionData {
   selectedDevice?: UserDevice;
   selectedAmount?: PaymentAmount;
   selectedPeriod?: PaymentPeriod;
-  location: RouterLocation;
   user: Partial<User>;
 }
 
@@ -29,7 +27,6 @@ export const initialSession = (): SessionData => {
     selectedAmount: undefined,
     selectedPeriod: undefined,
     redirectUrl: undefined,
-    location: 'main',
     user: {
       uuid: undefined,
       telegramId: undefined,

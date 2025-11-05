@@ -1,14 +1,14 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { Base } from '@bot/navigation/core/conversations/conversations.base';
-import { Menu } from '@bot/navigation/core/menu';
+import { Base } from '@bot/navigation/menu.base';
+import { Menu } from '@bot/navigation';
 import { getMainPageContent } from '@bot/utils/templates';
 import { toDateString } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 
 @Injectable()
-export class MainService extends Base {
+export class MainMsgService extends Base {
   constructor(
     readonly botService: BotService,
     readonly remnaService: RemnaService,

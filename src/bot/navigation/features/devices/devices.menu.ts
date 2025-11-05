@@ -1,9 +1,11 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext, UserDevice } from '@bot/bot.types';
-import { Base } from '@bot/navigation/core/conversations/conversations.base';
-import { Menu } from '@bot/navigation/core/menu';
-import { MainMenu } from '@bot/navigation/core/menu/features/main/main.menu';
-import { MainService } from '@bot/navigation/core/menu/features/main/main.service';
+import { Base } from '@bot/navigation/menu.base';
+import { Menu } from '@bot/navigation';
+import { MainMenu } from '@bot/navigation/features/main/main.menu';
+import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
+import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { mapDeviceLabel } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
@@ -18,9 +20,12 @@ export class DevicesMenu extends Base {
   constructor(
     readonly botService: BotService,
     readonly remnaService: RemnaService,
-    readonly mainService: MainService,
+    readonly mainMsgService: MainMsgService,
+    readonly subscriptionMsgService: SubscriptionMsgService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
+    @Inject(forwardRef(() => SubscriptionMenu))
+    readonly subscriptionMenu: SubscriptionMenu,
   ) {
     super(botService, remnaService);
 
@@ -32,12 +37,13 @@ export class DevicesMenu extends Base {
 
       range.row();
       range.text({ text: '⬅ Назад' }, async (ctx) => {
-        await this.mainService.init(ctx, this.mainMenu.menu);
+        await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
     });
   }
 
   private async selectDevice(ctx: BotContext, device: UserDevice) {
     ctx.session.selectedDevice = device;
+    await this.subscriptionMsgService.init(ctx, this.subscriptionMenu.menu);
   }
 }

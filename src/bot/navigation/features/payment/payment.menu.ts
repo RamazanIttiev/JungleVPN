@@ -1,7 +1,10 @@
 import { BotService } from '@bot/bot.service';
-import { Base } from '@bot/navigation/core/conversations/conversations.base';
-import { Menu } from '@bot/navigation/core/menu';
-import { Injectable } from '@nestjs/common';
+import { Base } from '@bot/navigation/menu.base';
+import { Menu } from '@bot/navigation';
+import { MainMenu } from '@bot/navigation/features/main/main.menu';
+import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { PaymentStatusMsgService } from '@bot/navigation/features/payment/paymentStatus.service';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 
 @Injectable()
@@ -11,6 +14,10 @@ export class PaymentMenu extends Base {
   constructor(
     readonly botService: BotService,
     readonly remnaService: RemnaService,
+    readonly paymentStatusMsgService: PaymentStatusMsgService,
+    readonly mainMsgService: MainMsgService,
+    @Inject(forwardRef(() => MainMenu))
+    readonly mainMenu: MainMenu,
   ) {
     super(botService, remnaService);
 
@@ -22,11 +29,11 @@ export class PaymentMenu extends Base {
         }
       })
       .text('Я оплатил ✅', async (ctx) => {
-        await this.navigateTo(ctx, 'paymentStatus');
+        await this.paymentStatusMsgService.init(ctx);
       })
       .row()
       .text('Главное меню', async (ctx) => {
-        await this.navigateTo(ctx, 'main');
+        await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
   }
 

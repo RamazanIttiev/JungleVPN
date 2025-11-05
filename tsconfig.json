@@ -19,6 +19,7 @@
       "@bot/*": ["src/bot/*"],
       "@remna/*": ["src/remna/*"],
       "@payments/*": ["src/payments/*"],
+      "@user/*": ["src/user/*"],
       "@assets/*": ["src/assets/*"],
       "@utils/*": ["src/utils/*"]
     }
