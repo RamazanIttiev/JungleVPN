@@ -1,11 +1,11 @@
 import { BotService } from '@bot/bot.service';
-import { BotContext } from '@bot/bot.types';
-import { Base } from '@bot/navigation/menu.base';
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
+import { Base } from '@bot/navigation/menu.base';
+import { mapPeriodLabelToPriceLabel } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
@@ -44,26 +44,20 @@ export class PaymentsPeriodsMenu extends Base {
       {} as Record<PaymentPeriod, PaymentAmount>,
     );
 
-    this.menu
-      .text('1 rub', async (ctx: BotContext) => {
-        await this.handlePaymentPeriod(ctx, '1d');
-      })
-      .row()
-      .text('1 месяц (199 ₽)', async (ctx: BotContext) => {
-        await this.handlePaymentPeriod(ctx, '1mo');
-      })
-      .row()
-      .text('3 месяца (599 ₽)', async (ctx: BotContext) => {
-        await this.handlePaymentPeriod(ctx, '3mo');
-      })
-      .row()
-      .text('6 месяцев (999 ₽)', async (ctx: BotContext) => {
-        await this.handlePaymentPeriod(ctx, '6mo');
-      })
-      .row()
-      .back('⬅ Назад', async (ctx) => {
+    this.menu.dynamic((_, range) => {
+      this.periods.forEach((period) => {
+        range.text(
+          mapPeriodLabelToPriceLabel(period),
+          async (ctx) => await this.handlePaymentPeriod(ctx, period),
+        );
+        range.row();
+      });
+
+      range.row();
+      range.text({ text: '⬅ Назад' }, async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
+    });
   }
 
   updateSession(ctx: any, id: string, url: string, period: PaymentPeriod) {

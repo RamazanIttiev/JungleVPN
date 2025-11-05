@@ -1,6 +1,7 @@
 import { UserDevice } from '@bot/bot.types';
 import { mapAmountLabel, mapPeriodLabel } from '@bot/utils/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
+import { isValidUsername } from '@utils/utils';
 
 export const getAppLink = (device: UserDevice | undefined): string => {
   switch (device) {
@@ -48,9 +49,10 @@ export const getMainPageContent = (options: {
   isExpired: boolean;
 }) => {
   const { username, validUntil, isExpired } = options;
+  const name = isValidUsername(username) ? username : 'Дорогой друг!';
 
   return `
-🌴 Добро пожаловать в <b>Jungle</b>, <b>${username}</b>!
+🌴 Добро пожаловать в <b>Jungle</b>, <b>${name}</b>!
 
 В <code>JUNGLE</code> скорость и безопасность — на первом месте. ⚡️
 

@@ -64,12 +64,12 @@ export const mapPeriodToDate = (period: PaymentPeriod | undefined) => {
 export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
   switch (period) {
     case '1d':
-      return '1';
+      return '1 test';
     case '1mo':
-      return '1 месяц (199 ₽)';
+      return '1️⃣ месяц (99 ₽)';
     case '3mo':
-      return '3 месяца (599 ₽)';
+      return '3️⃣ месяца (159 ₽)';
     case '6mo':
-      return '6 месяцев (999 ₽)';
+      return '6️⃣ месяцев (499 ₽)';
   }
 };
