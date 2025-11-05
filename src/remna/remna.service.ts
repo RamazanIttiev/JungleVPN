@@ -1,7 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { isValidUsername } from '@utils/utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { CreateUserDTO, RemnaResponse, UpdateUserDTO, User } from './remna.model';
 
+@Injectable()
 export class RemnaService {
   private backend: AxiosInstance = axios.create({
     baseURL: process.env.REMNA_URL,

@@ -6,9 +6,9 @@ export interface RemnaResponse<Data> {
 
 export interface CreateUserDTO {
   username: string;
-  expireAt: string;
+  expireAt?: string;
   activeInternalSquads?: string[];
-  status: UserStatus;
+  status?: UserStatus;
   telegramId: number;
 }
 

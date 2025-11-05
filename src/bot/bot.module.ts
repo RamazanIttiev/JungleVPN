@@ -2,20 +2,35 @@ import { PaymentSuccessCommand } from '@bot/commands/paymentSuccess.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { ConversationModule } from '@bot/navigation/core/conversations/conversations.module';
 import { ConversationService } from '@bot/navigation/core/conversations/conversations.service';
+import { DevicesConversation } from '@bot/navigation/core/conversations/features/devices.conversation';
+import { MainConversation } from '@bot/navigation/core/conversations/features/main.conversation';
+import { MainNewUserConversation } from '@bot/navigation/core/conversations/features/mainNewUser.conversation';
+import { MainMenu } from '@bot/navigation/core/menu/features/main.menu';
 import { MenuModule } from '@bot/navigation/core/menu/menu.module';
 import { MenuTree } from '@bot/navigation/core/menu/menu.tree';
+import { UserService } from '@bot/user.service';
+import { UsersModule } from '@bot/users.module';
 import { conversations } from '@grammyjs/conversations';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { PaymentsModule } from '@payments/payments.module';
 import { RemnaModule } from '@remna/remna.module';
+import { RemnaService } from '@remna/remna.service';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
 import { BotService } from './bot.service';
 import { BotContext, initialSession } from './bot.types';
 import { BroadcastCommand } from './commands/broadcast.command';
 
 @Module({
-  imports: [PaymentsModule, RemnaModule, MenuModule, ConversationModule],
-  providers: [BotService],
+  imports: [PaymentsModule, RemnaModule, MenuModule, ConversationModule, UsersModule],
+  providers: [
+    BotService,
+    RemnaService,
+    MainConversation,
+    DevicesConversation,
+    MainNewUserConversation,
+    MainMenu,
+    UserService,
+  ],
   exports: [BotService],
 })
 export class BotModule implements OnModuleInit {
@@ -66,7 +81,7 @@ export class BotModule implements OnModuleInit {
       }
     });
 
-    await this.bot.start();
+    // await this.bot.start();
 
     console.log('🤖 Telegram bot started');
   }

@@ -13,6 +13,7 @@ import { DevicesMenu } from '@bot/navigation/core/menu/features/devices.menu';
 import { MainMenu } from '@bot/navigation/core/menu/features/main.menu';
 import { MainNewUserMenu } from '@bot/navigation/core/menu/features/mainNewUser.menu';
 import { SubscriptionMenu } from '@bot/navigation/core/menu/features/subscription.menu';
+import { UserService } from '@bot/user.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
@@ -44,6 +45,7 @@ import { RemnaService } from '@remna/remna.service';
     PaymentPeriodsConversation,
     RevokeSubConversation,
     ClientAppConversation,
+    UserService,
   ],
 })
 export class ConversationModule {}

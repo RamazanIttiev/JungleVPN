@@ -1,6 +1,7 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { RouterLocation } from '@bot/navigation/core/conversations/conversations.types';
+import { Menu } from '@bot/navigation/core/menu';
 import { Conversation } from '@grammyjs/conversations';
 import { Injectable } from '@nestjs/common';
 import { User } from '@remna/remna.model';
@@ -27,7 +28,8 @@ export abstract class Base {
         link_preview_options: { is_disabled: true },
         reply_markup,
       });
-    } catch {
+    } catch (error) {
+      console.log('ERROR');
       await ctx.reply(text, {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
@@ -85,6 +87,10 @@ export abstract class Base {
 
   protected async navigateTo(ctx: BotContext, to: RouterLocation) {
     await ctx.conversation.enter(to);
+  }
+
+  protected async navigate(ctx: BotContext, content: string, menu: Menu) {
+    await ctx.editMessageText(content, { reply_markup: menu });
   }
 
   protected async stop(conversation: MyConversation) {

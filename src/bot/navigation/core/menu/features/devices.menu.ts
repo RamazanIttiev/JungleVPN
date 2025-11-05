@@ -1,9 +1,11 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext, UserDevice } from '@bot/bot.types';
 import { Base } from '@bot/navigation/core/conversations/conversations.base';
+import { MainConversation } from '@bot/navigation/core/conversations/features/main.conversation';
 import { Menu } from '@bot/navigation/core/menu';
+import { MainMenu } from '@bot/navigation/core/menu/features/main.menu';
 import { mapDeviceLabel } from '@bot/utils/utils';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 
 @Injectable()
@@ -14,6 +16,9 @@ export class DevicesMenu extends Base {
   constructor(
     readonly botService: BotService,
     readonly remnaService: RemnaService,
+    readonly mainConversation: MainConversation,
+    @Inject(forwardRef(() => MainMenu))
+    readonly mainMenu: MainMenu,
   ) {
     super(botService, remnaService);
 
@@ -23,7 +28,8 @@ export class DevicesMenu extends Base {
     }
 
     this.menu.row().back('⬅ Назад', async (ctx) => {
-      await this.navigateTo(ctx, 'main');
+      await ctx.menu.nav('main-menu', { immediate: true });
+      await this.mainConversation.init(ctx, this.mainMenu.create());
     });
   }
 

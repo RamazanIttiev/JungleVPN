@@ -34,6 +34,5 @@ export class SubscriptionConversation extends Base {
     });
 
     await this.render(ctx, text, menu);
-    await this.stop(conversation);
   }
 }

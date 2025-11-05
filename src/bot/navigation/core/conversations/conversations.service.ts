@@ -26,11 +26,6 @@ export class ConversationService {
     private readonly paymentPeriods: PaymentPeriodsConversation,
   ) {}
   registerAll(bot: Bot<BotContext>) {
-    bot.use(createConversation(this.main.init.bind(this.main), 'main'));
-    bot.use(createConversation(this.mainNewUser.init.bind(this.mainNewUser), 'mainNewUser'));
-    bot.use(
-      createConversation(this.devices.init.bind(this.devices), { id: 'devices', parallel: true }),
-    );
     bot.use(
       createConversation(this.subscription.init.bind(this.subscription), {
         id: 'subscription',

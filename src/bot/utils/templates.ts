@@ -31,10 +31,10 @@ export const getAppLink = (device: UserDevice | undefined): string => {
   }
 };
 
-const getSubStatusContent = (isExpired: boolean, validUntil: string | undefined) => {
+const getSubStatusContent = (isExpired: boolean, validUntil: string) => {
   if (!isExpired) {
     return `📅 <b>Подписка закончится:</b>
-<blockquote>${validUntil!}</blockquote>`;
+<blockquote>${validUntil}</blockquote>`;
   } else {
     return `
 🆘🆘🆘
@@ -43,8 +43,8 @@ const getSubStatusContent = (isExpired: boolean, validUntil: string | undefined)
 };
 
 export const getMainPageContent = (options: {
-  username: string | null;
-  validUntil: string | undefined;
+  username: string;
+  validUntil: string;
   isExpired: boolean;
 }) => {
   const { username, validUntil, isExpired } = options;

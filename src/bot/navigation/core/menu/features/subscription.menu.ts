@@ -17,7 +17,7 @@ export class SubscriptionMenu extends Base {
 
     this.menu
       .url('🔽Скачать', (ctx) => getAppLink(ctx.session.selectedDevice))
-      .url('🔐 Подключиться', (ctx) =>  ctx.session.redirectUrl!)
+      .url('🔐 Подключиться', (ctx) => ctx.session.redirectUrl!)
       .row()
       .text('🔄 Новая ссылка', async (ctx) => {
         await this.navigateTo(ctx, 'revokeSub');
