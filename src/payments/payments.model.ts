@@ -1,7 +1,7 @@
 import { Payment } from '@payments/payment.entity';
 
-export type PaymentPeriod = '1d' | '1mo' | '3mo' | '6mo';
-export type PaymentAmount = '1.00' | '199.00' | '599.00' | '999.00';
+export type PaymentPeriod = '1mo' | '3mo' | '6mo';
+export type PaymentAmount = '99.00' | '149.00' | '499.00';
 export type PaymentStatus = 'pending' | 'succeeded';
 export type PaymentProvider = 'yookassa';
 export type PaymentCurrency = 'RUB';

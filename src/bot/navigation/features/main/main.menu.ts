@@ -1,8 +1,8 @@
 import { BotService } from '@bot/bot.service';
-import { Base } from '@bot/navigation/menu.base';
 import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods.menu';
+import { Base } from '@bot/navigation/menu.base';
 import { getDevicesPageContent, getPaymentPeriodsPage } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
@@ -35,6 +35,8 @@ export class MainMenu extends Base {
           link_preview_options: { is_disabled: true },
           reply_markup: this.paymentsPeriodsMenu.menu,
         });
-      });
+      })
+      .row()
+      .url('Нужна помощь?', process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support');
   }
 }
