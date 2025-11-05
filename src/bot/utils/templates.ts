@@ -35,7 +35,7 @@ export const getAppLink = (device: UserDevice | undefined): string => {
 const getSubStatusContent = (isExpired: boolean, validUntil: string) => {
   if (!isExpired) {
     return `📅 <b>Подписка закончится:</b>
-<blockquote>${validUntil}</blockquote>`;
+<blockquote>${validUntil} по МСК</blockquote>`;
   } else {
     return `
 🆘🆘🆘
@@ -54,7 +54,11 @@ export const getMainPageContent = (options: {
   return `
 🌴 Добро пожаловать в <b>Jungle</b>, <b>${name}</b>!
 
-В <code>JUNGLE</code> скорость и безопасность — на первом месте. ⚡️
+В <code>JUNGLE</code> скорость и безопасность — на первом месте ♥️
+
+⚡️️  Отсутствие рекламы
+✨  Неограниченное количество трафика и устройств
+
 
 ${getSubStatusContent(isExpired, validUntil)}
 `;
@@ -118,11 +122,15 @@ export const getSubscriptionPageContent = (options: {
       return `
 <b>Установи приложение  <a href='${appDownloadLink}'>v2rayTun</a></b>
 
+
+
 <b>Нажми «🔐Подключиться» 👇</b>
 
 
+
 <blockquote><code>${subUrl}</code></blockquote>
-<b>Если у тебя уже есть приложение 🔗</b>
+
+<b> 🔗 Если у тебя уже есть приложение, скопируй ссылку и импортируй</b>
   `;
     default:
       return subUrl || '';
