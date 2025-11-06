@@ -44,7 +44,7 @@ export class RemnaService {
 
   async createUser(data: CreateUserDTO): Promise<User> {
     const expiryTime = new Date();
-    expiryTime.setDate(expiryTime.getDate() + 90);
+    expiryTime.setDate(expiryTime.getDate() + Number(process.env.TRIAL_PERIOD) || 60);
 
     const body = {
       ...data,

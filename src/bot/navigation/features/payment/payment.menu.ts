@@ -1,9 +1,9 @@
 import { BotService } from '@bot/bot.service';
-import { Base } from '@bot/navigation/menu.base';
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentStatusMsgService } from '@bot/navigation/features/payment/paymentStatus.service';
+import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 
@@ -35,9 +35,5 @@ export class PaymentMenu extends Base {
       .text('Главное меню', async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
-  }
-
-  create() {
-    return this.menu;
   }
 }
