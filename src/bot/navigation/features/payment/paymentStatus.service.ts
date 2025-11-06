@@ -48,10 +48,20 @@ export class PaymentStatusMsgService extends Base {
         status: 'ACTIVE',
       });
 
-      await ctx.deleteMessage();
-      await ctx.replyWithSticker(process.env.PAYMENT_SUCCESS_STICKER || '', {
-        reply_markup: new InlineKeyboard().text('Подключиться 📶', 'paymentSuccess'),
-      });
+      try {
+        await ctx.deleteMessage();
+      } catch (error) {
+        console.log(error);
+      }
+
+      const stickerId = process.env.PAYMENT_SUCCESS_STICKER;
+      const successMenu = new InlineKeyboard().text('Подключиться 📶', 'paymentSuccess');
+
+      if (stickerId) {
+        await ctx.replyWithSticker(stickerId, { reply_markup: successMenu });
+      } else {
+        await ctx.reply('✅ Оплата прошла успешно!', { reply_markup: successMenu });
+      }
 
       ctx.session = {
         ...session,

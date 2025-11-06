@@ -17,7 +17,7 @@ export class PaymentsService implements IPaymentProvider {
     private readonly factory: PaymentProviderFactory,
   ) {}
 
-  async isPaymentValid(id: string) {
+  async findValidPayment(id: string) {
     const payment = await this.paymentRepository.findOneBy({ id, status: 'pending' });
 
     if (!payment || !payment.createdAt) return null;

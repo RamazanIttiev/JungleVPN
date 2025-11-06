@@ -1,7 +1,7 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { Base } from '@bot/navigation/menu.base';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
+import { Base } from '@bot/navigation/menu.base';
 import { getSubscriptionPageContent } from '@bot/utils/templates';
 import { escapeHtml } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';

@@ -1,7 +1,7 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { Base } from '@bot/navigation/menu.base';
 import { Menu } from '@bot/navigation';
+import { Base } from '@bot/navigation/menu.base';
 import { getPaymentPageContent } from '@bot/utils/templates';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
@@ -19,12 +19,12 @@ export class PaymentMsgService extends Base {
     const session = ctx.session;
     const { paymentUrl, paymentId, selectedPeriod, selectedAmount } = session;
 
-    if (!paymentUrl || !paymentId) {
+    if (!paymentUrl || !paymentId || !selectedPeriod || !selectedAmount) {
       await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
       return;
     }
 
-    const content = getPaymentPageContent(selectedPeriod!, selectedAmount!);
+    const content = getPaymentPageContent(selectedPeriod, selectedAmount);
 
     await this.render(ctx, content, menu);
   }

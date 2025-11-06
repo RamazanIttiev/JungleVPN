@@ -1,11 +1,11 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext, UserDevice } from '@bot/bot.types';
-import { Base } from '@bot/navigation/menu.base';
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
+import { Base } from '@bot/navigation/menu.base';
 import { mapDeviceLabel } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';

@@ -37,10 +37,6 @@ export class SubscriptionMenu extends Base {
       })
       .row()
       .text('Главное меню', async (ctx) => {
-        ctx.session = {
-          ...ctx.session,
-          user: ctx.session.user,
-        };
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
   }

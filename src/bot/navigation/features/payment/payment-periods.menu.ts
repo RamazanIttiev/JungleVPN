@@ -28,13 +28,17 @@ export class PaymentsPeriodsMenu extends Base {
     readonly paymentsService: PaymentsService,
     readonly remnaService: RemnaService,
     readonly mainMsgService: MainMsgService,
-    readonly paymentService: PaymentMsgService,
+    readonly paymentMsgService: PaymentMsgService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
     @Inject(forwardRef(() => PaymentMenu))
     readonly paymentMenu: PaymentMenu,
   ) {
     super(botService, remnaService);
+
+    if (this.periods.length !== this.amounts.length) {
+      throw new Error('PAYMENT_PERIODS and PAYMENT_AMOUNTS lengths must match');
+    }
 
     this.periodAmounts = this.periods.reduce(
       (acc, period, i) => {
@@ -69,12 +73,16 @@ export class PaymentsPeriodsMenu extends Base {
 
   async handlePaymentPeriod(ctx: any, period: PaymentPeriod) {
     const tgUser = this.botService.validateUser(ctx.from);
-    const isValidPayment = await this.paymentsService.isPaymentValid(ctx.session.paymentId);
+    const prevPeriod = ctx.session.selectedPeriod;
+    const validPayment =
+      prevPeriod === period
+        ? await this.paymentsService.findValidPayment(ctx.session.paymentId)
+        : null;
 
-    if (isValidPayment) {
-      const { id, url } = isValidPayment;
+    if (validPayment) {
+      const { id, url } = validPayment;
       this.updateSession(ctx, id, url, period);
-      await this.paymentService.init(ctx, this.paymentMenu.menu);
+      await this.paymentMsgService.init(ctx, this.paymentMenu.menu);
       return;
     }
 
@@ -89,6 +97,6 @@ export class PaymentsPeriodsMenu extends Base {
 
     this.updateSession(ctx, id, url, period);
 
-    await this.paymentService.init(ctx, this.paymentMenu.menu);
+    await this.paymentMsgService.init(ctx, this.paymentMenu.menu);
   }
 }
