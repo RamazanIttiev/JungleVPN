@@ -27,7 +27,7 @@ export class SubscriptionMenu extends Base {
         const link = getAppLink(ctx.session.selectedDevice);
         return link || 'https://example.com/fallback';
       })
-      .url('🔐 Подключиться', (ctx) => {
+      .url('🔗 Добавить профиль', (ctx) => {
         const link = ctx.session.redirectUrl;
         return link || 'https://example.com';
       })

@@ -1,5 +1,5 @@
 import { UserDevice } from '@bot/bot.types';
-import { mapAmountLabel, mapPeriodLabel } from '@bot/utils/utils';
+import { mapAmountLabel, mapDeviceLabel, mapPeriodLabel } from '@bot/utils/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { isValidUsername } from '@utils/utils';
 
@@ -57,7 +57,8 @@ export const getMainPageContent = (options: {
 В <code>JUNGLE</code> скорость и безопасность — на первом месте ♥️
 
 ⚡️️  Отсутствие рекламы
-✨  Неограниченное количество трафика и устройств
+⚡️️  Неограниченное количество трафика
+🆓  Первые 2 месяца бесплатно
 
 
 ${getSubStatusContent(isExpired, validUntil)}
@@ -112,7 +113,7 @@ export const getSubscriptionPageContent = (options: {
 }) => {
   const { subUrl, device } = options;
 
-  const appDownloadLink = getAppLink(device);
+  const deviceLabel = mapDeviceLabel(device!);
 
   switch (device) {
     case 'ios':
@@ -120,17 +121,22 @@ export const getSubscriptionPageContent = (options: {
     case 'macOS':
     case 'windows':
       return `
-<b>Установи приложение  <a href='${appDownloadLink}'>v2rayTun</a></b>
+📖 Подключение VPN на ${deviceLabel}:
 
 
+1️⃣ Установи приложение «v2RayTun». 
+<i>кнопка «🔽 Скачать»</i>
 
-<b>Нажми «🔐Подключиться» 👇</b>
+2️⃣ Нажми «🔗 Добавить профиль».
 
+<i>Выбери нужную локацию и нажми кнопку подключения</i>
+
+3️⃣ Всё готово! 🎉 Интернет теперь под защитой JungleVPN.
 
 
 <blockquote><code>${subUrl}</code></blockquote>
 
-<b> 🔗 Если у тебя уже есть приложение, скопируй ссылку и импортируй</b>
+<b> 🔗 Вот ссылка, если у тебя уже есть приложение</b>
   `;
     default:
       return subUrl || '';

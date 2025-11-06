@@ -58,7 +58,7 @@ export class PaymentsPeriodsMenu extends Base {
       });
 
       range.row();
-      range.text({ text: '⬅ Назад' }, async (ctx) => {
+      range.text({ text: '⤴ Назад' }, async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
     });
