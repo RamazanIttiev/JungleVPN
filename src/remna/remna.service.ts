@@ -53,6 +53,7 @@ export class RemnaService {
         : `${data.telegramId}`,
       expireAt: expiryTime.toISOString(),
       activeInternalSquads: [process.env.REMNA_INTERNAL_SQUAD],
+      trafficLimitStrategy: 'MONTH',
       status: 'ACTIVE',
     };
 
