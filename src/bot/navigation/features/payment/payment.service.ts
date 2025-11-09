@@ -1,18 +1,17 @@
-import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
+import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { getPaymentPageContent } from '@bot/utils/templates';
-import { Injectable } from '@nestjs/common';
-import { RemnaService } from '@remna/remna.service';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PaymentMsgService extends Base {
   constructor(
-    readonly botService: BotService,
-    readonly remnaService: RemnaService,
+    @Inject(forwardRef(() => PaymentMenu))
+    readonly paymentMenu: PaymentMenu,
   ) {
-    super(botService, remnaService);
+    super();
   }
 
   async init(ctx: BotContext, menu: Menu) {

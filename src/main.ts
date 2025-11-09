@@ -1,13 +1,16 @@
-import 'reflect-metadata';
+import { BotService } from '@bot/bot.service';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const port = Number(process.env.PORT) || 3000;
-  await app.listen(port, '0.0.0.0', () => {
-    console.log(`Server is listening on ${port}`);
-  });
-}
 
+  const port = Number(process.env.PORT) || 3001;
+
+  await app.listen(port, '0.0.0.0');
+  console.log(`Server is running on http://localhost:${port}`);
+
+  const bot = app.get(BotService).bot;
+  await bot.start();
+}
 bootstrap();

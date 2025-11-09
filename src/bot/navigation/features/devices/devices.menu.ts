@@ -1,4 +1,3 @@
-import { BotService } from '@bot/bot.service';
 import { BotContext, UserDevice } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
@@ -8,7 +7,6 @@ import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscrip
 import { Base } from '@bot/navigation/menu.base';
 import { mapDeviceLabel } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { RemnaService } from '@remna/remna.service';
 
 @Injectable()
 export class DevicesMenu extends Base {
@@ -18,8 +16,6 @@ export class DevicesMenu extends Base {
   );
 
   constructor(
-    readonly botService: BotService,
-    readonly remnaService: RemnaService,
     readonly mainMsgService: MainMsgService,
     readonly subscriptionMsgService: SubscriptionMsgService,
     @Inject(forwardRef(() => MainMenu))
@@ -27,7 +23,7 @@ export class DevicesMenu extends Base {
     @Inject(forwardRef(() => SubscriptionMenu))
     readonly subscriptionMenu: SubscriptionMenu,
   ) {
-    super(botService, remnaService);
+    super();
 
     this.menu.dynamic((_, range) => {
       this.devices.forEach((device, i) => {

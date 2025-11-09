@@ -1,4 +1,3 @@
-import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Base } from '@bot/navigation/menu.base';
@@ -10,12 +9,11 @@ import { RemnaService } from '@remna/remna.service';
 @Injectable()
 export class RevokeSubMsgService extends Base {
   constructor(
-    readonly botService: BotService,
     readonly remnaService: RemnaService,
     @Inject(forwardRef(() => SubscriptionMenu))
     readonly subscriptionMenu: SubscriptionMenu,
   ) {
-    super(botService, remnaService);
+    super();
   }
 
   async init(ctx: BotContext) {

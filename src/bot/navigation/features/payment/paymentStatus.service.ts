@@ -1,4 +1,3 @@
-import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { Base } from '@bot/navigation/menu.base';
 import { mapPeriodToDate } from '@bot/utils/utils';
@@ -11,11 +10,10 @@ import { InlineKeyboard } from 'grammy';
 @Injectable()
 export class PaymentStatusMsgService extends Base {
   constructor(
-    readonly botService: BotService,
     readonly remnaService: RemnaService,
     readonly paymentService: PaymentsService,
   ) {
-    super(botService, remnaService);
+    super();
   }
 
   async init(ctx: BotContext) {

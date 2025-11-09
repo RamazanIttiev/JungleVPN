@@ -1,25 +1,21 @@
-import { BotService } from '@bot/bot.service';
 import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
-import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods.menu';
+import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { getDevicesPageContent, getPaymentPeriodsPage } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { RemnaService } from '@remna/remna.service';
 
 @Injectable()
 export class MainMenu extends Base {
   readonly menu = new Menu('main-menu');
 
   constructor(
-    readonly botService: BotService,
-    readonly remnaService: RemnaService,
     @Inject(forwardRef(() => DevicesMenu))
     readonly devicesMenu: DevicesMenu,
     @Inject(forwardRef(() => PaymentsPeriodsMenu))
     readonly paymentsPeriodsMenu: PaymentsPeriodsMenu,
   ) {
-    super(botService, remnaService);
+    super();
 
     this.menu
       .text('Подключиться 📶', async (ctx) => {

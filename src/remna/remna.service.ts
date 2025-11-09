@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { User } from '@user/user.model';
 import { isValidUsername } from '@utils/utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
-import { CreateUserDTO, RemnaResponse, UpdateUserDTO, User } from './remna.model';
+import { CreateUserDTO, RemnaResponse, UpdateUserDTO } from './remna.model';
 
 @Injectable()
 export class RemnaService {

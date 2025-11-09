@@ -1,11 +1,13 @@
-import { BotService } from '@bot/bot.service';
-import { PaymentSuccessCommand } from '@bot/commands/paymentSuccess.command';
+import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
+import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
+import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { StartCommand } from '@bot/commands/start.command';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
-import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods.menu';
+import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
+import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
 import { PaymentStatusMsgService } from '@bot/navigation/features/payment/paymentStatus.service';
 import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
@@ -27,6 +29,7 @@ import { MenuTree } from './menu.tree';
     MainMsgService,
     PaymentMsgService,
     PaymentStatusMsgService,
+    PaymentPeriodsMsgService,
     RevokeSubMsgService,
     SubscriptionMsgService,
     // MENUS
@@ -37,7 +40,6 @@ import { MenuTree } from './menu.tree';
     PaymentMenu,
     SubscriptionMenu,
     // SERVICES
-    BotService,
     RemnaService,
     PaymentsService,
     PaymentProviderFactory,
@@ -45,7 +47,10 @@ import { MenuTree } from './menu.tree';
     UserService,
     // COMMANDS
     StartCommand,
-    PaymentSuccessCommand,
+    // CALLBACKS
+    PaymentSuccessCallback,
+    PaymentPeriodsCallback,
+    NavigateMainCallback,
   ],
   exports: [
     // MODELS
@@ -54,6 +59,7 @@ import { MenuTree } from './menu.tree';
     PaymentStatusMsgService,
     RevokeSubMsgService,
     SubscriptionMsgService,
+    PaymentPeriodsMsgService,
     // MENUS
     MenuTree,
     MainMenu,
@@ -63,7 +69,10 @@ import { MenuTree } from './menu.tree';
     SubscriptionMenu,
     // COMMANDS
     StartCommand,
-    PaymentSuccessCommand,
+    // CALLBACKS
+    PaymentSuccessCallback,
+    PaymentPeriodsCallback,
+    NavigateMainCallback,
   ],
   imports: [TypeOrmModule.forFeature([Payment])],
 })

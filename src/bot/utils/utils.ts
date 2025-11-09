@@ -58,6 +58,18 @@ export const mapPeriodToDate = (period: PaymentPeriod | undefined) => {
   }
 };
 
+export const mapDaysLeftLabel = (daysLeft: number | undefined) => {
+  switch (daysLeft) {
+    case 1:
+      return '1 день';
+    case 2:
+    case 3:
+      return `${daysLeft} дня`;
+    default:
+      return `${daysLeft} дней`;
+  }
+};
+
 export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
   switch (period) {
     case '1mo':

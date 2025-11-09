@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { Bot } from 'grammy';
 
 @Injectable()
-export class PaymentSuccessCommand {
+export class PaymentSuccessCallback {
   constructor(readonly devicesMenu: DevicesMenu) {}
   register(bot: Bot<BotContext>) {
     bot.callbackQuery('paymentSuccess', async (ctx) => {

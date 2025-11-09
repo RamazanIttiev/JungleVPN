@@ -1,6 +1,6 @@
 import { ConversationFlavor } from '@grammyjs/conversations';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
-import { User } from '@remna/remna.model';
+import { User } from '@user/user.model';
 import { Context, SessionFlavor as GrammySessionFlavor } from 'grammy';
 
 export type BotContext = ConversationFlavor<Context & SessionFlavor>;

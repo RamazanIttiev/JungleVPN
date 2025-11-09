@@ -6,7 +6,7 @@ import { UserService } from '@user/user.service';
 import { Bot } from 'grammy';
 
 @Injectable()
-export class StartCommand {
+export class NavigateMainCallback {
   constructor(
     readonly userService: UserService,
     readonly mainMenu: MainMenu,
@@ -14,9 +14,7 @@ export class StartCommand {
   ) {}
 
   register(bot: Bot<BotContext>) {
-    bot.command('start', async (ctx) => {
-      await ctx.react('🍌');
-
+    bot.callbackQuery('navigate_main', async (ctx) => {
       await this.userService.init(ctx);
       await this.mainMsgService.init(ctx, this.mainMenu.menu);
     });

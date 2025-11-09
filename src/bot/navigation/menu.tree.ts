@@ -2,7 +2,7 @@ import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
-import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods.menu';
+import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Injectable } from '@nestjs/common';
 

@@ -1,7 +1,14 @@
 import { UserDevice } from '@bot/bot.types';
-import { mapAmountLabel, mapDeviceLabel, mapPeriodLabel } from '@bot/utils/utils';
+import {
+  mapAmountLabel,
+  mapDaysLeftLabel,
+  mapDeviceLabel,
+  mapPeriodLabel,
+  toDateString,
+} from '@bot/utils/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { isValidUsername } from '@utils/utils';
+import { formatDuration, intervalToDuration } from 'date-fns';
 
 export const getAppLink = (device: UserDevice | undefined): string => {
   switch (device) {
@@ -101,7 +108,7 @@ export const getPaymentPeriodsPage = () => {
 
 export const getPaymentPageContent = (period: PaymentPeriod, amount: PaymentAmount) => {
   return `
-<b>Как только оплатишь, возвращайся обратно, чтоб получить ссылку на подключение</b>
+<b>Как только оплатишь, возвращайся обратно, чтобы получить ссылку на подключение</b>
 
 <blockquote>Ты платишь <b>${mapAmountLabel(amount)}₽</b> за <b>${mapPeriodLabel(period)}</b></blockquote>
   `;
@@ -141,4 +148,27 @@ export const getSubscriptionPageContent = (options: {
     default:
       return subUrl || '';
   }
+};
+
+export const getExpiredSubscriptionContent = (expireAt: string) => {
+  const formattedDate = toDateString(expireAt);
+  const daysLeft = intervalToDuration({
+    start: Date.now(),
+    end: new Date(expireAt),
+  });
+
+  formatDuration(daysLeft, {
+    delimiter: ', ',
+  });
+
+  return `
+🆘🆘🆘
+
+<b>Твоя подписка закончится <blockquote>${formattedDate}</blockquote></b>
+
+😱Это уже через <b>${mapDaysLeftLabel(daysLeft.days)}</b>
+
+
+Чтобы продолжить пользоваться VPN, продли подписку 🙂
+`;
 };
