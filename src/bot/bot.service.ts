@@ -4,7 +4,9 @@ import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
+import { PollCommand } from '@bot/commands/poll.command';
 import { StartCommand } from '@bot/commands/start.command';
+import { PollAnswerListener } from '@bot/listeners/poll.listener';
 import { MenuTree } from '@bot/navigation/menu.tree';
 import { conversations } from '@grammyjs/conversations';
 import { Injectable, OnModuleInit } from '@nestjs/common';
@@ -18,10 +20,13 @@ export class BotService implements OnModuleInit {
   constructor(
     private readonly menuTree: MenuTree,
     private readonly startCommand: StartCommand,
+    private readonly pollCommand: PollCommand,
+    private readonly broadcastCommand: BroadcastCommand,
     private readonly navigateMainCallback: NavigateMainCallback,
     private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
     private readonly paymentPeriodsCallback: PaymentPeriodsCallback,
+    private readonly pollAnswerListener: PollAnswerListener,
   ) {
     if (!this.token) {
       throw new Error('TELEGRAM_BOT_TOKEN missing');
@@ -46,11 +51,15 @@ export class BotService implements OnModuleInit {
     });
 
     this.startCommand.register(this.bot);
+    this.pollCommand.register(this.bot);
+    this.broadcastCommand.register(this.bot);
+
+    this.pollAnswerListener.register(this.bot);
+
     this.navigateMainCallback.register(this.bot);
     this.navigateDevicesCallback.register(this.bot);
     this.paymentSuccessCallback.register(this.bot);
     this.paymentPeriodsCallback.register(this.bot);
-    new BroadcastCommand().register(this.bot);
 
     this.bot.catch((err) => {
       const e = err.error;

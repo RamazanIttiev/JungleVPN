@@ -43,6 +43,27 @@ export class RemnaService {
     }
   }
 
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const data = await this.fetch<{
+        total: number;
+        users: User[];
+      }>({
+        url: '/users',
+        method: 'GET',
+      });
+
+      if (!data) {
+        throw new AxiosError('REQUEST ERROR. getAllUsers', data);
+      }
+
+      return data.users;
+    } catch (error) {
+      console.error(error);
+      throw new AxiosError('SERVER ERROR. getAllUsers');
+    }
+  }
+
   async createUser(data: CreateUserDTO): Promise<User> {
     const expiryTime = new Date();
     expiryTime.setDate(expiryTime.getDate() + Number(process.env.TRIAL_PERIOD) || 60);

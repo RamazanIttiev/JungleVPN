@@ -1,8 +1,3 @@
-import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callback';
-import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
-import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
-import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
-import { StartCommand } from '@bot/commands/start.command';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
@@ -46,13 +41,6 @@ import { MenuTree } from './menu.tree';
     PaymentProviderFactory,
     YooKassaProvider,
     UserService,
-    // COMMANDS
-    StartCommand,
-    // CALLBACKS
-    PaymentSuccessCallback,
-    PaymentPeriodsCallback,
-    NavigateMainCallback,
-    NavigateDevicesCallback,
   ],
   exports: [
     // MODELS
@@ -69,13 +57,6 @@ import { MenuTree } from './menu.tree';
     PaymentsPeriodsMenu,
     PaymentMenu,
     SubscriptionMenu,
-    // COMMANDS
-    StartCommand,
-    // CALLBACKS
-    PaymentSuccessCallback,
-    PaymentPeriodsCallback,
-    NavigateMainCallback,
-    NavigateDevicesCallback,
   ],
   imports: [TypeOrmModule.forFeature([Payment])],
 })
