@@ -4,6 +4,7 @@ import { mapPeriodToDate } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
+import { UserService } from '@user/user.service';
 import { add } from 'date-fns';
 import { InlineKeyboard } from 'grammy';
 
@@ -12,12 +13,17 @@ export class PaymentStatusMsgService extends Base {
   constructor(
     readonly remnaService: RemnaService,
     readonly paymentService: PaymentsService,
+    readonly userService: UserService,
   ) {
     super();
   }
 
   async init(ctx: BotContext) {
     const session = ctx.session;
+    if (!session.user.uuid) {
+      await this.userService.init(ctx);
+    }
+
     const { uuid, expireAt, username } = session.user;
     const { paymentId, paymentUrl, selectedPeriod } = session;
 
