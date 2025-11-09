@@ -11,6 +11,7 @@ export class PaymentPeriodsCallback {
     bot.callbackQuery(['payment_for_1mo', 'payment_for_3mo', 'payment_for_6mo'], async (ctx) => {
       const period = ctx.callbackQuery.data.replace('payment_for_', '') as PaymentPeriod;
       await this.paymentPeriodsMsgService.handlePaymentPeriod(ctx, period);
+      await ctx.answerCallbackQuery();
     });
   }
 }

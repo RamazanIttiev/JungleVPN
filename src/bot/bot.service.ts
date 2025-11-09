@@ -1,4 +1,5 @@
 import { BotContext, initialSession } from '@bot/bot.types';
+import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callback';
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
@@ -18,6 +19,7 @@ export class BotService implements OnModuleInit {
     private readonly menuTree: MenuTree,
     private readonly startCommand: StartCommand,
     private readonly navigateMainCallback: NavigateMainCallback,
+    private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
     private readonly paymentPeriodsCallback: PaymentPeriodsCallback,
   ) {
@@ -45,6 +47,7 @@ export class BotService implements OnModuleInit {
 
     this.startCommand.register(this.bot);
     this.navigateMainCallback.register(this.bot);
+    this.navigateDevicesCallback.register(this.bot);
     this.paymentSuccessCallback.register(this.bot);
     this.paymentPeriodsCallback.register(this.bot);
     new BroadcastCommand().register(this.bot);

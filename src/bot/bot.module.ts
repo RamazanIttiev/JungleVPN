@@ -1,4 +1,5 @@
 import { UserExpireListener } from '@bot/listeners/user-expire.listener';
+import { UserNotConnectedListener } from '@bot/listeners/user-not-connected.listener';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
@@ -28,6 +29,7 @@ import { BotService } from './bot.service';
     MainMenu,
     // HANDLERS
     UserExpireListener,
+    UserNotConnectedListener,
   ],
   exports: [BotService],
 })

@@ -17,6 +17,7 @@ export class NavigateMainCallback {
     bot.callbackQuery('navigate_main', async (ctx) => {
       await this.userService.init(ctx);
       await this.mainMsgService.init(ctx, this.mainMenu.menu);
+      await ctx.answerCallbackQuery();
     });
   }
 }

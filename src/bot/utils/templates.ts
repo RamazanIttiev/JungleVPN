@@ -172,3 +172,15 @@ export const getExpiredSubscriptionContent = (expireAt: string) => {
 Чтобы продолжить пользоваться VPN, продли подписку 🙂
 `;
 };
+
+export const getUserNotConnectedContent = () => {
+  return `
+🌴🐵🌴
+
+Псст... В <code>Jungle</code> youtube без рекламы!
+А еще... В <code>Jungle</code> нет лимита на трафик!
+
+
+Подключайся и наслаждайся безопасным интернетом 🙂
+`;
+};

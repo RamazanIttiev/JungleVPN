@@ -1,3 +1,4 @@
+import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callback';
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
@@ -51,6 +52,7 @@ import { MenuTree } from './menu.tree';
     PaymentSuccessCallback,
     PaymentPeriodsCallback,
     NavigateMainCallback,
+    NavigateDevicesCallback,
   ],
   exports: [
     // MODELS
@@ -73,6 +75,7 @@ import { MenuTree } from './menu.tree';
     PaymentSuccessCallback,
     PaymentPeriodsCallback,
     NavigateMainCallback,
+    NavigateDevicesCallback,
   ],
   imports: [TypeOrmModule.forFeature([Payment])],
 })
