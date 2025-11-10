@@ -21,6 +21,7 @@ import { RemnaModule } from '@remna/remna.module';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
 import { UserModule } from '@user/users.module';
+import { AnalyticsService } from '../analytics/analytics.service';
 import { BotService } from './bot.service';
 
 @Module({
@@ -29,6 +30,7 @@ import { BotService } from './bot.service';
     BotService,
     RemnaService,
     UserService,
+    AnalyticsService,
     MainMsgService,
     PaymentMsgService,
     PaymentStatusMsgService,

@@ -3,12 +3,16 @@ import { PollAnswer } from '@grammyjs/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service'; // optional if you store users
 import { Bot } from 'grammy';
+import { AnalyticsService } from '../../analytics/analytics.service';
 
 @Injectable()
 export class PollAnswerListener {
   private readonly logger = new Logger(PollAnswerListener.name);
 
-  constructor(private readonly remnaService: RemnaService) {}
+  constructor(
+    private readonly remnaService: RemnaService,
+    private analyticsService: AnalyticsService,
+  ) {}
 
   register(bot: Bot<BotContext>) {
     bot.on('poll_answer', async (ctx) => {
@@ -19,35 +23,25 @@ export class PollAnswerListener {
         const selectedOptionIds = answer.option_ids;
 
         if (!userId) {
-          this.logger.warn('Poll answer received without user ID.');
+          this.logger.warn('⚠️ Poll answer received without user ID.');
           return;
         }
+
         const user = await this.remnaService.getUserByTgId(userId);
+        const username = user?.username || `tg_${userId}`;
+        const selected = selectedOptionIds.map(String).join(', ');
 
-        // Log or store answer
-        this.logger.log(
-          `📊 Poll answer from ${user?.username || userId}: poll ${pollId}, options: [${selectedOptionIds.join(', ')}]`,
-        );
+        this.logger.log(`📈 Poll answer from ${username}: poll ${pollId}, options: [${selected}]`);
 
-        // Example: store in DB
-        await this.savePollAnswer({
-          userId,
+        await this.analyticsService.appendRow([
+          username,
           pollId,
-          selectedOptionIds,
-        });
+          selected,
+          new Date().toISOString(),
+        ]);
       } catch (error) {
-        this.logger.error('Failed to process poll answer:', error);
+        this.logger.error('❌ Failed to process poll answer', error);
       }
     });
-  }
-
-  private async savePollAnswer(data: {
-    userId: number;
-    pollId: string;
-    selectedOptionIds: number[];
-  }) {
-    // Here you can save to your database — for example:
-    // await this.remnaService.savePollAnswer(data);
-    this.logger.debug(`✅ Saved poll answer: ${JSON.stringify(data)}`);
   }
 }

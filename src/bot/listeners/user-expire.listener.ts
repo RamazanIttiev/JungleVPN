@@ -29,15 +29,6 @@ export class UserExpireListener {
     await this.handleUserExpiresEvent(payload);
   }
 
-  @OnEvent('user.expires_in_48_hours')
-  async listenToUser48ExpiresEvent(payload: {
-    event: WebHookEvent;
-    data: User;
-    timestamp: string;
-  }) {
-    await this.handleUserExpiresEvent(payload);
-  }
-
   @OnEvent('user.expires_in_72_hours')
   async listenToUser72ExpiresEvent(payload: {
     event: WebHookEvent;
