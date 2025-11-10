@@ -8,7 +8,7 @@ import {
 } from '@bot/utils/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { isValidUsername } from '@utils/utils';
-import { formatDuration, intervalToDuration } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 
 export const getAppLink = (device: UserDevice | undefined): string => {
   switch (device) {
@@ -152,25 +152,30 @@ export const getSubscriptionPageContent = (options: {
 
 export const getExpiredSubscriptionContent = (expireAt: string) => {
   const formattedDate = toDateString(expireAt);
-  const daysLeft = intervalToDuration({
-    start: Date.now(),
-    end: new Date(expireAt),
-  });
+  const daysLeft = differenceInCalendarDays(new Date(expireAt), Date.now());
 
-  formatDuration(daysLeft, {
-    delimiter: ', ',
-  });
-
-  return `
+  switch (daysLeft) {
+    case 1:
+      return `
 🆘🆘🆘
 
 <b>Твоя подписка закончится <blockquote>${formattedDate}</blockquote></b>
 
-😱Это уже через <b>${mapDaysLeftLabel(daysLeft.days)}</b>
+😱Это уже через <b>${mapDaysLeftLabel(daysLeft)}</b>
 
 
 Чтобы продолжить пользоваться VPN, продли подписку 🙂
 `;
+    default:
+      return `
+🌴Jungle напоминает:
+
+<b>Твоя подписка закончится <blockquote>${formattedDate}</blockquote></b>
+
+
+⏳Осталось всего <b>${mapDaysLeftLabel(daysLeft)}</b>
+      `;
+  }
 };
 
 export const getUserNotConnectedContent = () => {
