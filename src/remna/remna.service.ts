@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@user/user.model';
-import { isValidUsername } from '@utils/utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { CreateUserDTO, RemnaResponse, UpdateUserDTO } from './remna.model';
 
@@ -70,9 +69,7 @@ export class RemnaService {
 
     const body = {
       ...data,
-      username: isValidUsername(data.username)
-        ? `${data.username}_${data.telegramId}`
-        : `${data.telegramId}`,
+      username: `${data.username}_${data.telegramId}`,
       expireAt: expiryTime.toISOString(),
       activeInternalSquads: [process.env.REMNA_INTERNAL_SQUAD],
       trafficLimitStrategy: 'MONTH',
