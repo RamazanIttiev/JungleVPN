@@ -3,9 +3,7 @@ import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
-import { PollCommand } from '@bot/commands/poll.command';
 import { StartCommand } from '@bot/commands/start.command';
-import { PollAnswerListener } from '@bot/listeners/poll.listener';
 import { UserExpireListener } from '@bot/listeners/user-expire.listener';
 import { UserNotConnectedListener } from '@bot/listeners/user-not-connected.listener';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
@@ -38,11 +36,9 @@ import { BotService } from './bot.service';
     // HANDLERS
     UserExpireListener,
     UserNotConnectedListener,
-    PollAnswerListener,
     // COMMANDS
     StartCommand,
     BroadcastCommand,
-    PollCommand,
     // CALLBACKS
     PaymentSuccessCallback,
     PaymentPeriodsCallback,
