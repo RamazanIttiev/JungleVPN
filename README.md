@@ -103,34 +103,33 @@ sudo ufw status
 Generate a key
 ```bash
 
-ssh-keygen -t ed25519 -C "username"
+ssh-keygen -t ed25519 -C “ramazan.ittiev@gmail.com”
 ```
 
 Copy to VPS
 ```bash
 
-ssh-copy-id -i ~/.ssh/KEY.pub root@ip
+ssh-copy-id -i ~/.ssh/KEY.pub -p 1702 jungle@IP
 ```
 
-Edit ssh config
+Edit ssh config on LOCAL machine
 ```bash
 
-sudo nano /etc/ssh/sshd_config
+nano ~/.ssh/config
+
+Host HOST
+  HostName IP
+  Port 1702
+  User jungle
+  IdentityFile ~/.ssh/HOST
+  
 ```
-```
-PasswordAuthentication no
-PermitRootLogin no
-PubkeyAuthentication no
-```
+
+On VPS
 ```bash
 
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/authorized_keys
-chown -R root:root ~/.ssh
-```
-```bash
-
-sudo systemctl restart ssh
+sudo ufw deny 22
+sudo ufw reload
 ```
 
 
@@ -146,44 +145,46 @@ certbot certonly --nginx -d domain
 certbot renew --dry-run
 ```
 
+# Node setup
 
-```nginx
-# ------------------------------
-# HTTP (port 80) redirect for BOTH domains
-# ------------------------------
-server {
-    listen 80;
-    server_name thejungle.pro;
-    return 301 https://$host$request_uri;
-}
+```bash
 
-# ------------------------------
-# HTTPS: thejungle.pro (3x-ui)
-# ------------------------------
-server {
-    listen 443 ssl;
-    server_name thejungle.pro;
+sudo apt update && sudo apt upgrade -y
 
-    ssl_certificate /etc/letsencrypt/live/thejungle.pro/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/thejungle.pro/privkey.pem;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_prefer_server_ciphers on;
+sudo apt install unattended-upgrades
+sudo dpkg-reconfigure --priority=low unattended-upgrades
+```
 
-    location /sub/ {
-        proxy_pass http://remnawave;
-        proxy_ssl_verify off;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+```bash
 
-    }
+sudo nano /etc/ssh/sshd_config
+# Port 1702
+# PermitRootLogin no
+# PasswordAuthentication no
 
-    location /redirect {
-        if ($arg_link) {
-            return 302 $arg_link;
-        }
-        return 400 "Missing 'link' parameter";
-    }
-}
+sudo systemctl restart ssh
+```
+
+```bash
+
+adduser jungle
+usermod -aG sudo jungle
+su - jungle
+
+sudo systemctl stop ssh.socket
+sudo systemctl disable ssh.socket
+sudo systemctl enable ssh.service
+sudo systemctl restart ssh.service
+```
+
+```bash
+
+sudo apt install ufw
+
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 1702/tcp 
+sudo ufw allow 443/tcp 
+sudo ufw allow NODE_PORT/udp
+sudo ufw enable
 ```
