@@ -80,3 +80,7 @@ export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
       return '6️⃣ месяцев (499 ₽)';
   }
 };
+
+export const extractUserIdFromUsername = (username: string): number => {
+  return parseInt(username.split('_-0-_')[1], 10);
+};

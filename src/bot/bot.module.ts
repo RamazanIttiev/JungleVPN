@@ -4,6 +4,7 @@ import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback'
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
+import { TorrentListener } from '@bot/listeners/torrent.listener';
 import { UserExpireListener } from '@bot/listeners/user-expire.listener';
 import { UserNotConnectedListener } from '@bot/listeners/user-not-connected.listener';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
@@ -36,6 +37,7 @@ import { BotService } from './bot.service';
     // HANDLERS
     UserExpireListener,
     UserNotConnectedListener,
+    TorrentListener,
     // COMMANDS
     StartCommand,
     BroadcastCommand,

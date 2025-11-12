@@ -69,7 +69,7 @@ export class RemnaService {
 
     const body = {
       ...data,
-      username: `${data.username}_${data.telegramId}`,
+      username: `${data.username}_-0-_${data.telegramId}`,
       expireAt: expiryTime.toISOString(),
       activeInternalSquads: [process.env.REMNA_INTERNAL_SQUAD],
       trafficLimitStrategy: 'MONTH',

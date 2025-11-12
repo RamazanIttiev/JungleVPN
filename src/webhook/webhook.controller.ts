@@ -9,7 +9,7 @@ export class WebhookController {
   constructor(private eventEmitter: EventEmitter2) {}
 
   @Post('remna')
-  async handleWebhook(
+  async handleRemnaWebhook(
     @Headers('x-remnawave-signature') signature: string,
     @Headers('x-remnawave-timestamp') timestamp: string,
     @Body() payload: {
@@ -29,6 +29,27 @@ export class WebhookController {
     }
 
     this.eventEmitter.emit(payload.event, payload);
+    return { ok: true };
+  }
+
+  @Post('torrent')
+  async handleTorrentWebhook(
+    @Headers('Authorization') token: string,
+    @Body() payload: {
+      username: string;
+      ip: string;
+      server: string;
+      action: string;
+      duration: string;
+      timestamp: string;
+    },
+  ) {
+    const expectedToken = process.env.REMNA_TORRENT_WEBHOOK_TOKEN || '';
+    if (token !== expectedToken) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    this.eventEmitter.emit('torrent.event', payload);
     return { ok: true };
   }
 }
