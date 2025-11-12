@@ -1,7 +1,7 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { getTorrentWarningContent } from '@bot/utils/templates';
-import { extractUserIdFromUsername } from '@bot/utils/utils';
+import { extractUserIdFromUsername } from '@utils/utils';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Bot } from 'grammy';

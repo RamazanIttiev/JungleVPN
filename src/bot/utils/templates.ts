@@ -5,7 +5,7 @@ import {
   mapDeviceLabel,
   mapPeriodLabel,
   toDateString,
-} from '@bot/utils/utils';
+} from '@utils/utils';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { isValidUsername } from '@utils/utils';
 import { differenceInCalendarDays } from 'date-fns';

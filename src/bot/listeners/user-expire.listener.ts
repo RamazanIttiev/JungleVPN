@@ -2,7 +2,7 @@ import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
 import { getExpiredSubscriptionContent } from '@bot/utils/templates';
-import { mapPeriodLabelToPriceLabel } from '@bot/utils/utils';
+import { mapPeriodLabelToPriceLabel } from '@utils/utils';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';

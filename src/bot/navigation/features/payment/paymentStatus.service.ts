@@ -1,6 +1,6 @@
 import { BotContext } from '@bot/bot.types';
 import { Base } from '@bot/navigation/menu.base';
-import { mapPeriodToDate } from '@bot/utils/utils';
+import { mapPeriodToDate } from '@utils/utils';
 import { Injectable } from '@nestjs/common';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';

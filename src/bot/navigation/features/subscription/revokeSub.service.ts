@@ -2,7 +2,7 @@ import { BotContext } from '@bot/bot.types';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { getSubscriptionPageContent } from '@bot/utils/templates';
-import { escapeHtml } from '@bot/utils/utils';
+import { escapeHtml } from '@utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 
