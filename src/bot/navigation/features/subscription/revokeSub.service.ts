@@ -30,7 +30,7 @@ export class RevokeSubMsgService extends Base {
 
     const subUrl = await this.remnaService.revokeSub(user.uuid);
     session.user.subscriptionUrl = subUrl;
-    session.redirectUrl = `v2raytun://import/${subUrl}`;
+    session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${subUrl}`;
 
     const content = getSubscriptionPageContent({
       device: session.selectedDevice,
