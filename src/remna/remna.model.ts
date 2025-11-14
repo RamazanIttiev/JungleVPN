@@ -5,11 +5,11 @@ export interface RemnaResponse<Data> {
 }
 
 export interface CreateUserDTO {
-  username: string;
+  telegramId: number;
+  username?: string;
   expireAt?: string;
   activeInternalSquads?: string[];
   status?: UserStatus;
-  telegramId: number;
 }
 
 export interface UpdateUserDTO extends CreateUserDTO {

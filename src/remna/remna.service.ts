@@ -32,7 +32,7 @@ export class RemnaService {
         data: body,
       });
       const data: RemnaResponse<Data> = res.data;
-
+      console.log(data);
       if (data) return data.response;
 
       throw new AxiosError('REQUEST ERROR', url);

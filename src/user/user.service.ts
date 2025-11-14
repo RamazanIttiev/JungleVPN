@@ -19,14 +19,13 @@ export class UserService {
   private setUserToSession(ctx: BotContext, user: User) {
     const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
-    const username = tgUser.first_name ?? tgUser.username;
 
     session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${user.subscriptionUrl}`;
 
     session.user = {
       uuid: user.uuid,
       telegramId: user.telegramId,
-      username,
+      username: tgUser.username,
       expireAt: user.expireAt,
       subscriptionUrl: user.subscriptionUrl,
     };
@@ -35,13 +34,12 @@ export class UserService {
   async init(ctx: BotContext) {
     const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
-    const username = tgUser.first_name ?? tgUser.username;
 
     const user = await this.remnaService.getUserByTgId(tgUser.id);
 
     if (!user) {
       const newUser = await this.remnaService.createUser({
-        username,
+        username: tgUser.username,
         telegramId: tgUser.id,
       });
 
