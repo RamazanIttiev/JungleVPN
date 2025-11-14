@@ -22,7 +22,7 @@ export class RevokeSubMsgService extends Base {
     const session = ctx.session;
     const { user } = session;
 
-    if (!user?.uuid) {
+    if (!user?.uuid || !session.selectedDevice || !session.user.subscriptionUrl) {
       await this.userService.init(ctx);
       await ctx.reply('Что-то пошло не так, попробуй заново /start');
       return;
@@ -30,11 +30,11 @@ export class RevokeSubMsgService extends Base {
 
     const subUrl = await this.remnaService.revokeSub(user.uuid);
     session.user.subscriptionUrl = subUrl;
-    session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${subUrl}`;
+    session.redirectUrl = `v2raytun://import/${subUrl}`;
 
     const content = getSubscriptionPageContent({
-      device: session.selectedDevice!,
-      subUrl: escapeHtml(session.user.subscriptionUrl!),
+      device: session.selectedDevice,
+      subUrl: escapeHtml(session.user.subscriptionUrl),
     });
 
     await this.render(ctx, content, this.subscriptionMenu.menu);
