@@ -37,6 +37,6 @@ export class RevokeSubMsgService extends Base {
       subUrl: escapeHtml(session.user.subscriptionUrl),
     });
 
-    await this.render(ctx, content, this.subscriptionMenu.menu);
+    await this.render(ctx, content, this.subscriptionMenu.menu, true);
   }
 }

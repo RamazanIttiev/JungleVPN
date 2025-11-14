@@ -4,19 +4,27 @@ import { Context } from 'grammy';
 
 @Injectable()
 export abstract class Base {
-  protected async render(ctx: Context, text: string, reply_markup: any) {
+  protected async render(ctx: Context, text: string, reply_markup: any, deleteOld = false) {
+    const options = {
+      parse_mode: 'HTML' as const,
+      link_preview_options: { is_disabled: true },
+      reply_markup,
+    };
+
+    const edit = async () => ctx.editMessageText(text, options);
+    const send = async () => ctx.reply(text, options);
+
+    if (deleteOld) {
+      try {
+        await ctx.deleteMessage();
+        return await send();
+      } catch {}
+    }
+
     try {
-      await ctx.editMessageText(text, {
-        parse_mode: 'HTML',
-        link_preview_options: { is_disabled: true },
-        reply_markup,
-      });
-    } catch (error) {
-      await ctx.reply(text, {
-        parse_mode: 'HTML',
-        link_preview_options: { is_disabled: true },
-        reply_markup,
-      });
+      return await edit();
+    } catch {
+      return await send();
     }
   }
 
