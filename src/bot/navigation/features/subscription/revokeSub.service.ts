@@ -2,13 +2,15 @@ import { BotContext } from '@bot/bot.types';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { getSubscriptionPageContent } from '@bot/utils/templates';
-import { escapeHtml } from '@utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
+import { UserService } from '@user/user.service';
+import { escapeHtml } from '@utils/utils';
 
 @Injectable()
 export class RevokeSubMsgService extends Base {
   constructor(
+    readonly userService: UserService,
     readonly remnaService: RemnaService,
     @Inject(forwardRef(() => SubscriptionMenu))
     readonly subscriptionMenu: SubscriptionMenu,
@@ -21,6 +23,7 @@ export class RevokeSubMsgService extends Base {
     const { user } = session;
 
     if (!user?.uuid) {
+      await this.userService.init(ctx);
       await ctx.reply('Что-то пошло не так, попробуй заново /start');
       return;
     }
