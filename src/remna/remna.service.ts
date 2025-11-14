@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { RemnaError } from '@remna/remna.error';
 import { User } from '@user/user.model';
-import axios, { AxiosError, AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { CreateUserDTO, RemnaResponse, UpdateUserDTO } from './remna.model';
 
 @Injectable()
@@ -24,48 +25,56 @@ export class RemnaService {
     sessionCookie?: string;
     method?: 'GET' | 'POST' | 'PATCH';
     body?: unknown;
-  }): Promise<Data | undefined> {
+  }): Promise<Data> {
     try {
       const res = await this.backend.request({
         method,
         url,
         data: body,
       });
-      const data: RemnaResponse<Data> = res.data;
-      console.log(data);
-      if (data) return data.response;
 
-      throw new AxiosError('REQUEST ERROR', url);
-    } catch (error) {
-      console.log(error);
-      console.log('SERVER ERROR', url);
+      const data: RemnaResponse<Data> = res.data;
+
+      if (res.status === 404) {
+        return null as Data;
+      }
+
+      if (!data || !data.response) {
+        throw new RemnaError(`Invalid response from Remna: ${url}`, res.status, res.data);
+      }
+
+      return data.response;
+    } catch (e: any) {
+      const status = e.response?.status;
+      const payload = e.response?.data;
+
+      console.error('REMNA REQUEST ERROR', {
+        url,
+        method,
+        status,
+        payload,
+        message: e.message,
+      });
+
+      throw new RemnaError(`Remna request failed: ${url}`, status, payload);
     }
   }
 
   async getAllUsers(): Promise<User[]> {
-    try {
-      const data = await this.fetch<{
-        total: number;
-        users: User[];
-      }>({
-        url: '/users',
-        method: 'GET',
-      });
+    const data = await this.fetch<{
+      total: number;
+      users: User[];
+    }>({
+      url: '/users',
+      method: 'GET',
+    });
 
-      if (!data) {
-        throw new AxiosError('REQUEST ERROR. getAllUsers', data);
-      }
-
-      return data.users;
-    } catch (error) {
-      console.error(error);
-      throw new AxiosError('SERVER ERROR. getAllUsers');
-    }
+    return data.users;
   }
 
   async createUser(data: CreateUserDTO): Promise<User> {
     const expiryTime = new Date();
-    expiryTime.setDate(expiryTime.getDate() + Number(process.env.TRIAL_PERIOD) || 60);
+    expiryTime.setDate(expiryTime.getDate() + (Number(process.env.TRIAL_PERIOD) || 60));
 
     const body = {
       ...data,
@@ -76,57 +85,37 @@ export class RemnaService {
       status: 'ACTIVE',
     };
 
-    const user = await this.fetch<User>({ url: '/users', body });
-    if (!user) {
-      throw new AxiosError('REQUEST ERROR. createUser');
-    }
-
-    return user;
+    return this.fetch<User>({ url: '/users', body });
   }
 
   async updateUser(body: Partial<UpdateUserDTO>): Promise<User> {
-    try {
-      const data = await this.fetch<User>({ method: 'PATCH', url: '/users', body });
-      if (!data) {
-        throw new AxiosError('REQUEST ERROR. updateUser', data);
-      }
-
-      return data;
-    } catch (error) {
-      console.error(error);
-      throw new AxiosError('SERVER ERROR. updateUser');
-    }
+    return this.fetch<User>({
+      method: 'PATCH',
+      url: '/users',
+      body,
+    });
   }
 
   async getUserByTgId(id: number): Promise<User | null> {
     try {
-      const data = await this.fetch<User[]>({
+      const users = await this.fetch<User[] | null>({
         url: `/users/by-telegram-id/${id}`,
         method: 'GET',
       });
 
-      if (!data) {
-        return null;
-      }
-
-      return data[0];
-    } catch (error) {
-      console.error(error);
-      throw new AxiosError('SERVER ERROR. getUserByTgId');
+      if (!users) return null;
+      return users[0];
+    } catch (e: any) {
+      if (e instanceof RemnaError && e.status === 404) return null;
+      throw e;
     }
   }
 
   async revokeSub(uuid: string): Promise<string> {
-    try {
-      const data = await this.fetch<User>({ url: `/users/${uuid}/actions/revoke` });
-      if (!data) {
-        throw new AxiosError('REQUEST ERROR. revokeSub', data);
-      }
+    const data = await this.fetch<User>({
+      url: `/users/${uuid}/actions/revoke`,
+    });
 
-      return data.subscriptionUrl;
-    } catch (error) {
-      console.error(error);
-      throw new AxiosError('SERVER ERROR. revokeSub');
-    }
+    return data.subscriptionUrl;
   }
 }
