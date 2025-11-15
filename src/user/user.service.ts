@@ -41,7 +41,7 @@ export class UserService {
 
       const username = isValidValue(CreateUserRequestSchema.shape.username, tgUser.username)
         ? tgUser.username
-        : `user_${tgUser.id}`;
+        : `user_-0-_${tgUser.id}`;
 
       if (!user) {
         const newUser = await this.remnaService.createUser({
