@@ -1,7 +1,6 @@
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
-import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { Base } from '@bot/navigation/menu.base';
 import { getAppLink } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
@@ -11,8 +10,6 @@ export class SubscriptionMenu extends Base {
   menu = new Menu('subscription-menu');
   constructor(
     readonly mainMsgService: MainMsgService,
-    @Inject(forwardRef(() => RevokeSubMsgService))
-    readonly revokeSubMsgService: RevokeSubMsgService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
   ) {
@@ -27,10 +24,10 @@ export class SubscriptionMenu extends Base {
         const link = ctx.session.redirectUrl;
         return link || 'https://example.com';
       })
-      .row()
-      .text('🔄 Новая ссылка', async (ctx) => {
-        await this.revokeSubMsgService.init(ctx);
-      })
+      // .row()
+      // .text('🔄 Новая ссылка', async (ctx) => {
+      //   await this.revokeSubMsgService.init(ctx);
+      // })
       .row()
       .text('Главное меню', async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
