@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';

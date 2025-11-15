@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { BotContext, initialSession } from '@bot/bot.types';
 import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callback';
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';

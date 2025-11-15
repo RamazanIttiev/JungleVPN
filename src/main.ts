@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';

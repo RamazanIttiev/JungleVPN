@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';

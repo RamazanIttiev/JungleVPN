@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { Base } from '@bot/navigation/menu.base';
 import { Injectable } from '@nestjs/common';

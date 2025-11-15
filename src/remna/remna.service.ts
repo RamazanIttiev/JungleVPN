@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { Injectable } from '@nestjs/common';
 import { RemnaError } from '@remna/remna.error';
 import {

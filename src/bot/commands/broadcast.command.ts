@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';

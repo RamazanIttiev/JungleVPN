@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { User as GrammyUser } from '@grammyjs/types/manage';
 import { Injectable } from '@nestjs/common';
@@ -21,7 +22,7 @@ export class UserService {
     const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
 
-    session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${user.subscriptionUrl}`;
+    session.redirectUrl = `${process.env.CLIENT_APP_URL}/${user.subscriptionUrl}`;
 
     session.user = {
       uuid: user.uuid,
@@ -49,7 +50,7 @@ export class UserService {
           username,
         });
 
-        session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${newUser.subscriptionUrl}`;
+        session.redirectUrl = `${process.env.CLIENT_APP_URL}/${newUser.subscriptionUrl}`;
 
         this.setUserToSession(ctx, newUser);
       } else {
