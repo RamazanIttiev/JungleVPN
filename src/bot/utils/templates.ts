@@ -1,13 +1,13 @@
-import { UserDevice } from '@bot/bot.types';
+import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
+import { UserDevice } from '@user/user.model';
 import {
+  isValidUsername,
   mapAmountLabel,
   mapDaysLeftLabel,
   mapDeviceLabel,
   mapPeriodLabel,
   toDateString,
 } from '@utils/utils';
-import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
-import { isValidUsername } from '@utils/utils';
 import { differenceInCalendarDays } from 'date-fns';
 
 export const getAppLink = (device: UserDevice | undefined): string => {

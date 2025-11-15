@@ -2,7 +2,7 @@ import * as crypto from 'node:crypto';
 import { BadRequestException, Body, Controller, Headers, Post } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
-import { User } from '@user/user.model';
+import { UserDto } from '@user/user.model';
 
 @Controller('webhook')
 export class WebhookController {
@@ -14,7 +14,7 @@ export class WebhookController {
     @Headers('x-remnawave-timestamp') timestamp: string,
     @Body() payload: {
       event: WebHookEvent;
-      data: User;
+      data: UserDto;
       timestamp: string;
     },
   ) {

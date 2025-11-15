@@ -1,4 +1,4 @@
-import { BotContext, UserDevice } from '@bot/bot.types';
+import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
@@ -6,6 +6,7 @@ import { SubscriptionMsgService } from '@bot/navigation/features/subscription/su
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { UserDevice } from '@user/user.model';
 import { mapDeviceLabel } from '@utils/utils';
 
 @Injectable()

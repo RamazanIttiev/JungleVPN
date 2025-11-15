@@ -2,7 +2,8 @@ import { BotContext } from '@bot/bot.types';
 import { User as GrammyUser } from '@grammyjs/types/manage';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
-import { User } from '@user/user.model';
+import { CreateUserRequestSchema, UserDto } from '@user/user.model';
+import { isValidValue } from '@utils/utils';
 
 @Injectable()
 export class UserService {
@@ -16,7 +17,7 @@ export class UserService {
     return user;
   }
 
-  private setUserToSession(ctx: BotContext, user: User) {
+  private setUserToSession(ctx: BotContext, user: UserDto) {
     const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
 
@@ -35,19 +36,25 @@ export class UserService {
     const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
 
-    const user = await this.remnaService.getUserByTgId(tgUser.id);
+    if (!session.user.uuid) {
+      const user = await this.remnaService.getUserByTgId(tgUser.id);
 
-    if (!user) {
-      const newUser = await this.remnaService.createUser({
-        username: tgUser.username,
-        telegramId: tgUser.id,
-      });
+      const username = isValidValue(CreateUserRequestSchema.shape.username, tgUser.username)
+        ? tgUser.username
+        : `user_${tgUser.id}`;
 
-      session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${newUser.subscriptionUrl}`;
+      if (!user) {
+        const newUser = await this.remnaService.createUser({
+          telegramId: tgUser.id,
+          username,
+        });
 
-      this.setUserToSession(ctx, newUser);
-    } else {
-      this.setUserToSession(ctx, user);
+        session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${newUser.subscriptionUrl}`;
+
+        this.setUserToSession(ctx, newUser);
+      } else {
+        this.setUserToSession(ctx, user);
+      }
     }
   }
 }

@@ -22,6 +22,7 @@ export class BroadcastCommand {
       if (!textToSend || textToSend.startsWith('/start')) return;
 
       for (const { telegramId } of users) {
+        if (!telegramId) continue;
         if (telegramId === adminId) continue;
         try {
           await ctx.api.sendMessage(telegramId, textToSend);

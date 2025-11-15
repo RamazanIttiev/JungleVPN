@@ -4,7 +4,8 @@ import { getUserNotConnectedContent } from '@bot/utils/templates';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
-import { User } from '@user/user.model';
+import { UserDto } from '@user/user.model';
+import { AxiosError } from 'axios';
 import { Bot, InlineKeyboard } from 'grammy';
 
 @Injectable()
@@ -18,7 +19,7 @@ export class UserNotConnectedListener {
   @OnEvent('user.not_connected')
   async listenToUserNotConnectedEvent(payload: {
     event: WebHookEvent;
-    data: User;
+    user: Pick<UserDto, 'telegramId'>;
     timestamp: string;
   }) {
     const keyboard = new InlineKeyboard();
@@ -26,7 +27,11 @@ export class UserNotConnectedListener {
     keyboard.text('Подключиться 📶', 'navigate_devices');
     keyboard.text('Главное меню', 'navigate_main');
 
-    await this.bot.api.sendMessage(payload.data.telegramId, getUserNotConnectedContent(), {
+    if (payload.user.telegramId == null) {
+      throw new AxiosError('UserNotConnectedListener: telegramId is null');
+    }
+
+    await this.bot.api.sendMessage(payload.user.telegramId, getUserNotConnectedContent(), {
       parse_mode: 'HTML',
       reply_markup: keyboard,
     });

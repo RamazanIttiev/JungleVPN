@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { RemnaError } from '@remna/remna.error';
-import { User } from '@user/user.model';
+import {
+  CreateUserRequestDto,
+  CreateUserResponseDto,
+  UpdateUserRequestDto,
+  UserDto,
+} from '@user/user.model';
 import axios, { AxiosInstance } from 'axios';
-import { CreateUserDTO, RemnaResponse, UpdateUserDTO } from './remna.model';
+import { RemnaResponse } from './remna.model';
 
 @Injectable()
 export class RemnaService {
@@ -39,7 +44,7 @@ export class RemnaService {
         return null as Data;
       }
 
-      if (!data || !data.response) {
+      if (!data) {
         throw new RemnaError(`Invalid response from Remna: ${url}`, res.status, res.data);
       }
 
@@ -60,59 +65,54 @@ export class RemnaService {
     }
   }
 
-  async getAllUsers(): Promise<User[]> {
-    const data = await this.fetch<{
-      total: number;
-      users: User[];
-    }>({
+  async getAllUsers() {
+    return await this.fetch<CreateUserResponseDto[]>({
       url: '/users',
       method: 'GET',
     });
-
-    return data.users;
   }
 
-  async createUser(data: CreateUserDTO): Promise<User> {
+  async createUser(payload: Pick<UserDto, 'username' | 'telegramId'>) {
     const expiryTime = new Date();
     expiryTime.setDate(expiryTime.getDate() + (Number(process.env.TRIAL_PERIOD) || 60));
 
-    const body = {
-      ...data,
-      username: `${data.username}_-0-_${data.telegramId}`,
+    const body: CreateUserRequestDto = {
+      username: payload.username,
+      telegramId: payload.telegramId,
       expireAt: expiryTime.toISOString(),
-      activeInternalSquads: [process.env.REMNA_INTERNAL_SQUAD],
+      activeInternalSquads: [process.env.REMNA_INTERNAL_SQUAD || ''],
       trafficLimitStrategy: 'MONTH',
       status: 'ACTIVE',
     };
 
-    return this.fetch<User>({ url: '/users', body });
+    return this.fetch<CreateUserResponseDto>({ url: '/users', body });
   }
 
-  async updateUser(body: Partial<UpdateUserDTO>): Promise<User> {
-    return this.fetch<User>({
+  async updateUser(body: UpdateUserRequestDto) {
+    return this.fetch<UserDto>({
       method: 'PATCH',
       url: '/users',
       body,
     });
   }
 
-  async getUserByTgId(id: number): Promise<User | null> {
+  async getUserByTgId(id: number) {
     try {
-      const users = await this.fetch<User[] | null>({
+      const user = await this.fetch<CreateUserResponseDto[] | null>({
         url: `/users/by-telegram-id/${id}`,
         method: 'GET',
       });
 
-      if (!users) return null;
-      return users[0];
+      if (!user) return null;
+      return user[0];
     } catch (e: any) {
       if (e instanceof RemnaError && e.status === 404) return null;
       throw e;
     }
   }
 
-  async revokeSub(uuid: string): Promise<string> {
-    const data = await this.fetch<User>({
+  async revokeSub(uuid: string) {
+    const data = await this.fetch<CreateUserResponseDto>({
       url: `/users/${uuid}/actions/revoke`,
     });
 

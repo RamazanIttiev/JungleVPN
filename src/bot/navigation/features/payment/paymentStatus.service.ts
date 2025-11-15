@@ -1,10 +1,10 @@
 import { BotContext } from '@bot/bot.types';
 import { Base } from '@bot/navigation/menu.base';
-import { mapPeriodToDate } from '@utils/utils';
 import { Injectable } from '@nestjs/common';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
+import { mapPeriodToDate } from '@utils/utils';
 import { add } from 'date-fns';
 import { InlineKeyboard } from 'grammy';
 
@@ -24,10 +24,10 @@ export class PaymentStatusMsgService extends Base {
       await this.userService.init(ctx);
     }
 
-    const { uuid, expireAt, username } = session.user;
+    const { uuid, expireAt } = session.user;
     const { paymentId, paymentUrl, selectedPeriod } = session;
 
-    if (!paymentUrl) {
+    if (!paymentUrl || !uuid || !expireAt || !selectedPeriod) {
       await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
       return;
     }
@@ -47,9 +47,7 @@ export class PaymentStatusMsgService extends Base {
       await this.paymentService.updatePayment(paymentId, { status, paidAt: new Date() });
       await this.remnaService.updateUser({
         uuid,
-        username,
         expireAt: newExpireAt,
-        status: 'ACTIVE',
       });
 
       try {

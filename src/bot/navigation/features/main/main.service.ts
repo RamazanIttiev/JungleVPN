@@ -2,9 +2,9 @@ import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { Base } from '@bot/navigation/menu.base';
 import { getMainPageContent } from '@bot/utils/templates';
-import { toDateString } from '@utils/utils';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '@user/user.service';
+import { toDateString } from '@utils/utils';
 
 @Injectable()
 export class MainMsgService extends Base {

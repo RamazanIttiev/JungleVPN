@@ -2,11 +2,12 @@ import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
 import { getExpiredSubscriptionContent } from '@bot/utils/templates';
-import { mapPeriodLabelToPriceLabel } from '@utils/utils';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
-import { User } from '@user/user.model';
+import { UserDto } from '@user/user.model';
+import { mapPeriodLabelToPriceLabel } from '@utils/utils';
+import { AxiosError } from 'axios';
 import { Bot, InlineKeyboard } from 'grammy';
 
 @Injectable()
@@ -23,7 +24,7 @@ export class UserExpireListener {
   @OnEvent('user.expires_in_24_hours')
   async listenToUser24ExpiresEvent(payload: {
     event: WebHookEvent;
-    data: User;
+    payload: Pick<UserDto, 'telegramId' | 'expireAt'>;
     timestamp: string;
   }) {
     await this.handleUserExpiresEvent(payload);
@@ -32,13 +33,17 @@ export class UserExpireListener {
   @OnEvent('user.expires_in_72_hours')
   async listenToUser72ExpiresEvent(payload: {
     event: WebHookEvent;
-    data: User;
+    payload: Pick<UserDto, 'telegramId' | 'expireAt'>;
     timestamp: string;
   }) {
     await this.handleUserExpiresEvent(payload);
   }
 
-  async handleUserExpiresEvent(payload: { event: WebHookEvent; data: User; timestamp: string }) {
+  async handleUserExpiresEvent(data: {
+    event: WebHookEvent;
+    payload: Pick<UserDto, 'telegramId' | 'expireAt'>;
+    timestamp: string;
+  }) {
     const keyboard = new InlineKeyboard();
 
     this.paymentPeriodsMsgService.periods.forEach((period) => {
@@ -48,9 +53,13 @@ export class UserExpireListener {
 
     keyboard.text('Главное меню', 'navigate_main');
 
+    if (data.payload.telegramId == null) {
+      throw new AxiosError('UserNotConnectedListener: telegramId is null');
+    }
+
     await this.bot.api.sendMessage(
-      payload.data.telegramId,
-      getExpiredSubscriptionContent(payload.data.expireAt),
+      data.payload.telegramId,
+      getExpiredSubscriptionContent(data.payload.expireAt),
       {
         parse_mode: 'HTML',
         reply_markup: keyboard,

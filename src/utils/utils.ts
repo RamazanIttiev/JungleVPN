@@ -1,5 +1,6 @@
-import { UserDevice } from '@bot/bot.types';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
+import { UserDevice } from '@user/user.model';
+import { z } from 'zod';
 
 export const isValidUsername = (username: string | undefined | null): boolean => {
   if (!username) return false;
@@ -89,4 +90,17 @@ export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
 
 export const extractUserIdFromUsername = (username: string): number => {
   return parseInt(username.split('_-0-_')[1], 10);
+};
+
+export const isValidValue = <T extends z.ZodTypeAny>(
+  schema: T,
+  value: unknown,
+): value is z.infer<T> => {
+  return schema.safeParse(value).success;
+};
+
+export const getRandomNumber = (): number => {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return (array[0] % 90000000) + 100000;
 };
