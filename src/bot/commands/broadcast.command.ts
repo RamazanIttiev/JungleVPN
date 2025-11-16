@@ -2,7 +2,7 @@ import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
-import { Bot } from 'grammy';
+import { Bot, InlineKeyboard } from 'grammy';
 
 @Injectable()
 export class BroadcastCommand {
@@ -26,7 +26,9 @@ export class BroadcastCommand {
         if (!telegramId) continue;
         if (telegramId === adminId) continue;
         try {
-          await ctx.api.sendMessage(telegramId, textToSend);
+          await ctx.api.sendMessage(telegramId, textToSend, {
+            reply_markup: new InlineKeyboard().text('Подключиться 📶', 'navigate_devices'),
+          });
         } catch (e) {
           console.log(`Failed to send to ${telegramId}:`, e);
         }

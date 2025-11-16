@@ -67,10 +67,15 @@ export class RemnaService {
   }
 
   async getAllUsers() {
-    return await this.fetch<CreateUserResponseDto[]>({
+    const { users } = await this.fetch<{
+      total: number;
+      users: UserDto[];
+    }>({
       url: '/users',
       method: 'GET',
     });
+
+    return users;
   }
 
   async createUser(payload: Pick<UserDto, 'username' | 'telegramId'>) {
