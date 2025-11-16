@@ -188,3 +188,11 @@ sudo ufw allow 443/tcp
 sudo ufw allow NODE_PORT/udp
 sudo ufw enable
 ```
+
+Add volume to remnanode's docker-compose.yml:
+
+```bash
+
+volumes:
+- "/var/log/remnanode:/var/log/remnanode"
+```
