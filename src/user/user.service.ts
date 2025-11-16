@@ -3,8 +3,7 @@ import { BotContext } from '@bot/bot.types';
 import { User as GrammyUser } from '@grammyjs/types/manage';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
-import { CreateUserRequestSchema, UserDto } from '@user/user.model';
-import { isValidValue } from '@utils/utils';
+import { UserDto } from '@user/user.model';
 
 @Injectable()
 export class UserService {
@@ -40,14 +39,10 @@ export class UserService {
     if (!session.user.uuid) {
       const user = await this.remnaService.getUserByTgId(tgUser.id);
 
-      const username = isValidValue(CreateUserRequestSchema.shape.username, tgUser.username)
-        ? tgUser.username
-        : `user_-0-_${tgUser.id}`;
-
       if (!user) {
         const newUser = await this.remnaService.createUser({
           telegramId: tgUser.id,
-          username,
+          username: tgUser.id.toString(),
         });
 
         session.redirectUrl = `${process.env.CLIENT_APP_URL}/${newUser.subscriptionUrl}`;

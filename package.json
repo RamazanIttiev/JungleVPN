@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nest start --watch",
     "build": "nest build",
-    "start": "docker compose down && docker compose up --build -d",
+    "start": "npm install && docker compose down && docker compose up --build -d && docker compose logs -f",
     "migration:generate": "npm run build && npx typeorm migration:generate db/migrations/Migration -d dist/db/datasource.js",
     "migration:run": "npm run build && npx typeorm migration:run -d dist/db/datasource.js",
     "migration:revert": "npm run build && npx typeorm migration:revert -d dist/db/datasource.js"

@@ -88,10 +88,6 @@ export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
   }
 };
 
-export const extractUserIdFromUsername = (username: string): number => {
-  return parseInt(username.split('_-0-_')[1], 10);
-};
-
 export const isValidValue = <T extends z.ZodTypeAny>(
   schema: T,
   value: unknown,

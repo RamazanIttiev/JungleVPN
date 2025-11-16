@@ -1,7 +1,6 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { getTorrentWarningContent } from '@bot/utils/templates';
-import { extractUserIdFromUsername } from '@utils/utils';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Bot } from 'grammy';
@@ -23,10 +22,7 @@ export class TorrentListener {
     duration: string;
     timestamp: string;
   }) {
-    const userId = extractUserIdFromUsername(payload.username);
-    if (!userId) return;
-
-    await this.bot.api.sendMessage(userId, getTorrentWarningContent(), {
+    await this.bot.api.sendMessage(payload.username, getTorrentWarningContent(), {
       parse_mode: 'HTML',
     });
   }
