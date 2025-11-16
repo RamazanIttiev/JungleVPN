@@ -19,7 +19,7 @@ export class UserNotConnectedListener {
   @OnEvent('user.not_connected')
   async listenToUserNotConnectedEvent(payload: {
     event: WebHookEvent;
-    user: Pick<UserDto, 'telegramId'>;
+    data: Pick<UserDto, 'telegramId'>;
     timestamp: string;
   }) {
     const keyboard = new InlineKeyboard();
@@ -27,11 +27,11 @@ export class UserNotConnectedListener {
     keyboard.text('Подключиться 📶', 'navigate_devices');
     keyboard.text('Главное меню', 'navigate_main');
 
-    if (payload.user.telegramId == null) {
+    if (payload.data.telegramId == null) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
-    await this.bot.api.sendMessage(payload.user.telegramId, getUserNotConnectedContent(), {
+    await this.bot.api.sendMessage(5986698166, getUserNotConnectedContent(), {
       parse_mode: 'HTML',
       reply_markup: keyboard,
     });

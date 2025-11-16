@@ -24,7 +24,7 @@ export class UserExpireListener {
   @OnEvent('user.expires_in_24_hours')
   async listenToUser24ExpiresEvent(payload: {
     event: WebHookEvent;
-    payload: Pick<UserDto, 'telegramId' | 'expireAt'>;
+    data: Pick<UserDto, 'telegramId' | 'expireAt'>;
     timestamp: string;
   }) {
     await this.handleUserExpiresEvent(payload);
@@ -33,15 +33,15 @@ export class UserExpireListener {
   @OnEvent('user.expires_in_72_hours')
   async listenToUser72ExpiresEvent(payload: {
     event: WebHookEvent;
-    payload: Pick<UserDto, 'telegramId' | 'expireAt'>;
+    data: Pick<UserDto, 'telegramId' | 'expireAt'>;
     timestamp: string;
   }) {
     await this.handleUserExpiresEvent(payload);
   }
 
-  async handleUserExpiresEvent(data: {
+  async handleUserExpiresEvent(payload: {
     event: WebHookEvent;
-    payload: Pick<UserDto, 'telegramId' | 'expireAt'>;
+    data: Pick<UserDto, 'telegramId' | 'expireAt'>;
     timestamp: string;
   }) {
     const keyboard = new InlineKeyboard();
@@ -53,13 +53,13 @@ export class UserExpireListener {
 
     keyboard.text('Главное меню', 'navigate_main');
 
-    if (data.payload.telegramId == null) {
+    if (payload.data.telegramId == null) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
     await this.bot.api.sendMessage(
-      data.payload.telegramId,
-      getExpiredSubscriptionContent(data.payload.expireAt),
+      payload.data.telegramId,
+      getExpiredSubscriptionContent(payload.data.expireAt),
       {
         parse_mode: 'HTML',
         reply_markup: keyboard,
