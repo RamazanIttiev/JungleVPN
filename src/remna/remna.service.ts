@@ -29,7 +29,7 @@ export class RemnaService {
   }: {
     url: string;
     sessionCookie?: string;
-    method?: 'GET' | 'POST' | 'PATCH';
+    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
     body?: unknown;
   }): Promise<Data> {
     try {
@@ -115,6 +115,10 @@ export class RemnaService {
       if (e instanceof RemnaError && e.status === 404) return null;
       throw e;
     }
+  }
+
+  async deleteUser(id: string) {
+    await this.fetch({ url: `/users/${id}`, method: 'DELETE' });
   }
 
   async revokeSub(uuid: string) {
