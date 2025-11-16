@@ -25,13 +25,13 @@ export class UserNotConnectedListener {
     const keyboard = new InlineKeyboard();
 
     keyboard.text('Подключиться 📶', 'navigate_devices');
-    keyboard.text('Главное меню', 'navigate_main');
+    keyboard.text('Главное меню 🏠', 'navigate_main');
 
-    if (payload.data.telegramId == null) {
+    if (!payload.data.telegramId) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
-    await this.bot.api.sendMessage(5986698166, getUserNotConnectedContent(), {
+    await this.bot.api.sendMessage(payload.data.telegramId, getUserNotConnectedContent(), {
       parse_mode: 'HTML',
       reply_markup: keyboard,
     });
