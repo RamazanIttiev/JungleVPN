@@ -10,6 +10,7 @@ import { MenuTree } from '@bot/navigation/menu.tree';
 import { conversations } from '@grammyjs/conversations';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
+import { I18n } from '@grammyjs/i18n';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -46,6 +47,14 @@ export class BotService implements OnModuleInit {
     this.bot.on(':successful_payment', async (ctx) => {
       await ctx.reply('✅ Оплата прошла успешно! Спасибо за вашу поддержку.');
     });
+
+    const i18n = new I18n<BotContext>({
+      defaultLocale: "ru",
+      directory: "src/bot/i18n",
+    });
+
+    this.bot.use(i18n);
+
 
     this.startCommand.register(this.bot);
     this.broadcastCommand.register(this.bot);
