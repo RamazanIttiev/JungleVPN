@@ -97,42 +97,6 @@ Check status
 sudo ufw status
 ```
 
-
-# SSH keys
-
-Generate a key
-```bash
-
-ssh-keygen -t ed25519 -C “ramazan.ittiev@gmail.com”
-```
-
-Copy to VPS
-```bash
-
-ssh-copy-id -i ~/.ssh/KEY.pub -p 1702 jungle@IP
-```
-
-Edit ssh config on LOCAL machine
-```bash
-
-nano ~/.ssh/config
-
-Host HOST
-  HostName IP
-  Port 1702
-  User jungle
-  IdentityFile ~/.ssh/HOST
-  
-```
-
-On VPS
-```bash
-
-sudo ufw deny 22
-sudo ufw reload
-```
-
-
 # SSL cert
 
 ```bash
@@ -183,16 +147,46 @@ sudo apt install ufw
 
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-sudo ufw allow 1702/tcp 
+sudo ufw allow 1702 
 sudo ufw allow 443/tcp 
-sudo ufw allow NODE_PORT/udp
+sudo ufw allow NODE_PORT
 sudo ufw enable
 ```
 
-Add volume to remnanode's docker-compose.yml:
+Install remnanode https://docs.rw/docs/install/remnawave-node
 
+Add log volume and rotate https://docs.rw/docs/install/remnawave-node#node-logs
+
+### SSH keys
+
+Generate a key
 ```bash
 
-volumes:
-- "/var/log/remnanode:/var/log/remnanode"
+ssh-keygen -t ed25519 -C “ramazan.ittiev@gmail.com”
+```
+
+Copy to VPS
+```bash
+
+ssh-copy-id -i ~/.ssh/KEY.pub -p 1702 jungle@IP
+```
+
+Edit ssh config on LOCAL machine
+```bash
+
+nano ~/.ssh/config
+
+Host HOST
+  HostName IP
+  Port 1702
+  User jungle
+  IdentityFile ~/.ssh/HOST
+  
+```
+
+On VPS
+```bash
+
+sudo ufw deny 22
+sudo ufw reload
 ```
