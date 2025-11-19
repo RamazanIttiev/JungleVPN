@@ -13,14 +13,11 @@ export class SubscriptionMsgService extends Base {
 
   async init(ctx: BotContext, menu: Menu) {
     const session = ctx.session;
-
-    if (!session.user.uuid) {
-      await this.userService.init(ctx);
-    }
+    const user = await this.userService.init(ctx);
 
     const text = getSubscriptionPageContent({
       device: session.selectedDevice,
-      subUrl: session.user.subscriptionUrl,
+      subUrl: user.subscriptionUrl,
     });
     await this.render(ctx, text, menu);
   }

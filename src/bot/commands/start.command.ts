@@ -1,14 +1,12 @@
-import { BotContext } from '@bot/bot.types';
+import { BotContext, initialSession } from '@bot/bot.types';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { Injectable } from '@nestjs/common';
-import { UserService } from '@user/user.service';
 import { Bot } from 'grammy';
 
 @Injectable()
 export class StartCommand {
   constructor(
-    readonly userService: UserService,
     readonly mainMenu: MainMenu,
     readonly mainMsgService: MainMsgService,
   ) {}
@@ -17,7 +15,7 @@ export class StartCommand {
     bot.command('start', async (ctx) => {
       await ctx.react('🍌');
 
-      await this.userService.init(ctx);
+      ctx.session.user = initialSession().user;
       await this.mainMsgService.init(ctx, this.mainMenu.menu);
     });
   }

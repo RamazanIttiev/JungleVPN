@@ -21,11 +21,9 @@ export class PaymentStatusMsgService extends Base {
 
   async init(ctx: BotContext) {
     const session = ctx.session;
-    if (!session.user.uuid) {
-      await this.userService.init(ctx);
-    }
+    const user = await this.userService.init(ctx);
 
-    const { uuid, expireAt } = session.user;
+    const { uuid, expireAt } = user;
     const { paymentId, paymentUrl, selectedPeriod } = session;
 
     if (!paymentUrl || !uuid || !expireAt || !selectedPeriod) {
@@ -66,13 +64,10 @@ export class PaymentStatusMsgService extends Base {
         await ctx.reply('✅ Оплата прошла успешно!', { reply_markup: successMenu });
       }
 
-      ctx.session = {
-        ...session,
-        user: {
-          ...session.user,
-          expireAt: newExpireAt,
-        },
-      };
+      session.paymentId = undefined;
+      session.paymentUrl = undefined;
+      session.selectedPeriod = undefined;
+      session.selectedAmount = undefined;
     } else {
       await ctx.reply('❗ Платеж еще не оплачен.');
     }

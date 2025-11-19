@@ -13,18 +13,14 @@ export class MainMsgService extends Base {
   }
 
   async init(ctx: BotContext, menu: Menu) {
-    const session = ctx.session;
+    const user = await this.userService.init(ctx);
 
-    if (!session.user.uuid) {
-      await this.userService.init(ctx);
-    }
-
-    const isExpired = this.isExpired(session.user.expireAt);
+    const isExpired = this.isExpired(user.expireAt);
 
     const content = getMainPageContent({
-      username: session.user.username!,
+      username: user.username,
       isExpired,
-      validUntil: toDateString(session.user.expireAt!),
+      validUntil: toDateString(user.expireAt),
     });
 
     await this.render(ctx, content, menu);
