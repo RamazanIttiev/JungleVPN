@@ -7,7 +7,6 @@ import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback'
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { MenuTree } from '@bot/navigation/menu.tree';
-import { conversations } from '@grammyjs/conversations';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
 
@@ -34,8 +33,6 @@ export class BotService implements OnModuleInit {
 
   async onModuleInit() {
     this.bot.use(session({ initial: initialSession }));
-
-    this.bot.use(conversations());
 
     const menuTree = this.menuTree.init();
 
