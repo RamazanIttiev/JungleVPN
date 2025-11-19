@@ -21,12 +21,9 @@ export class PaymentStatusMsgService extends Base {
 
   async init(ctx: BotContext) {
     const session = ctx.session;
-    const user = await this.userService.init(ctx);
-
-    const { uuid, expireAt } = user;
     const { paymentId, paymentUrl, selectedPeriod } = session;
 
-    if (!paymentUrl || !uuid || !expireAt || !selectedPeriod) {
+    if (!paymentUrl || !selectedPeriod) {
       await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
       return;
     }
@@ -39,6 +36,9 @@ export class PaymentStatusMsgService extends Base {
     const status = await this.paymentService.checkPaymentStatus(paymentId);
 
     if (status === 'succeeded') {
+      const user = await this.userService.init(ctx);
+      const { uuid, expireAt } = user;
+
       const newExpireAt = add(expireAt || new Date(), {
         months: mapPeriodToDate(selectedPeriod),
       }).toISOString();

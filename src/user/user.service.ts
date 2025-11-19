@@ -23,9 +23,8 @@ export class UserService {
 
     ctx.session.user = initialSession().user;
     const user = await this.remnaService.getUserByTgId(tgUser.id);
-    if (!user) {
-      console.log('NOUSER');
 
+    if (!user) {
       const newUser = await this.remnaService.createUser({
         telegramId: tgUser.id,
         username: tgUser.id.toString(),
