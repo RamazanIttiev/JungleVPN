@@ -25,6 +25,7 @@ export class BroadcastCommand {
       for (const { telegramId } of users) {
         if (!telegramId) continue;
         if (telegramId === adminId) continue;
+
         try {
           await ctx.api.sendMessage(telegramId, textToSend, {
             reply_markup: new InlineKeyboard().text('Подключиться 📶', 'navigate_devices'),

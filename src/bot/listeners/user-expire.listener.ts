@@ -57,13 +57,17 @@ export class UserExpireListener {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
-    await this.bot.api.sendMessage(
-      payload.data.telegramId,
-      getExpiredSubscriptionContent(payload.data.expireAt),
-      {
-        parse_mode: 'HTML',
-        reply_markup: keyboard,
-      },
-    );
+    try {
+      await this.bot.api.sendMessage(
+        payload.data.telegramId,
+        getExpiredSubscriptionContent(payload.data.expireAt),
+        {
+          parse_mode: 'HTML',
+          reply_markup: keyboard,
+        },
+      );
+    } catch (error) {
+      console.log(`Failed to send ${payload.event} message`);
+    }
   }
 }

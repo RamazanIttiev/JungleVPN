@@ -112,12 +112,20 @@ export class PaymentStatusListener {
       });
     }
 
-    return this.bot.api.sendMessage(telegramId, '✅ Оплата прошла успешно!', {
-      reply_markup: successMenu,
-    });
+    try {
+      return this.bot.api.sendMessage(telegramId, '✅ Оплата прошла успешно!', {
+        reply_markup: successMenu,
+      });
+    } catch (err) {
+      console.log('Failed to send successful payment message', err);
+    }
   }
 
   private async notifyPendingPayment(telegramId: number) {
-    return this.bot.api.sendMessage(telegramId, '❗ Платеж еще не оплачен.');
+    try {
+      return this.bot.api.sendMessage(telegramId, '❗ Платеж еще не оплачен.');
+    } catch (err) {
+      console.log('Failed to send notifyPendingPayment', err);
+    }
   }
 }

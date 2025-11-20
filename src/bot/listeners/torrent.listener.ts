@@ -22,8 +22,12 @@ export class TorrentListener {
     duration: string;
     timestamp: string;
   }) {
-    await this.bot.api.sendMessage(payload.username, getTorrentWarningContent(), {
-      parse_mode: 'HTML',
-    });
+    try {
+      await this.bot.api.sendMessage(payload.username, getTorrentWarningContent(), {
+        parse_mode: 'HTML',
+      });
+    } catch (error) {
+      console.log('Failed to send torrent block message');
+    }
   }
 }

@@ -45,9 +45,13 @@ export class UserNotConnectedListener {
     //   return;
     // }
 
-    await this.bot.api.sendMessage(payload.data.telegramId, getUserNotConnectedContent(), {
-      parse_mode: 'HTML',
-      reply_markup: keyboard,
-    });
+    try {
+      await this.bot.api.sendMessage(payload.data.telegramId, getUserNotConnectedContent(), {
+        parse_mode: 'HTML',
+        reply_markup: keyboard,
+      });
+    } catch (e) {
+      console.log(`Failed to send to ${payload.data.telegramId}:`, e);
+    }
   }
 }
