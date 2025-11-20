@@ -102,7 +102,7 @@ export class RemnaService {
     });
   }
 
-  async getUserByTgId(id: number) {
+  async getUserByTgId(id: number): Promise<UserDto | null> {
     try {
       const user = await this.fetch<CreateUserResponseDto[] | null>({
         url: `/users/by-telegram-id/${id}`,

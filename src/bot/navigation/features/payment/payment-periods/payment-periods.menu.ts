@@ -4,8 +4,8 @@ import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
 import { Base } from '@bot/navigation/menu.base';
-import { mapPeriodLabelToPriceLabel } from '@utils/utils';
 import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { mapPeriodLabelToPriceLabel } from '@utils/utils';
 
 @Injectable()
 export class PaymentsPeriodsMenu extends Base implements OnModuleInit {

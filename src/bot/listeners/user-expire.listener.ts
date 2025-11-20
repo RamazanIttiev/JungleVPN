@@ -51,7 +51,7 @@ export class UserExpireListener {
       keyboard.row();
     });
 
-    keyboard.text('Главное меню', 'navigate_main');
+    keyboard.text('Главное меню 🏠', 'navigate_main');
 
     if (payload.data.telegramId == null) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');

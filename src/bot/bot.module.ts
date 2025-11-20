@@ -4,13 +4,13 @@ import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback'
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
+import { PaymentStatusListener } from '@bot/listeners/payment-status.listener';
 import { TorrentListener } from '@bot/listeners/torrent.listener';
 import { UserExpireListener } from '@bot/listeners/user-expire.listener';
 import { UserNotConnectedListener } from '@bot/listeners/user-not-connected.listener';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
-import { PaymentStatusMsgService } from '@bot/navigation/features/payment/paymentStatus.service';
 import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { MenuModule } from '@bot/navigation/menu.module';
@@ -30,7 +30,6 @@ import { BotService } from './bot.service';
     UserService,
     MainMsgService,
     PaymentMsgService,
-    PaymentStatusMsgService,
     SubscriptionMsgService,
     RevokeSubMsgService,
     MainMenu,
@@ -38,6 +37,7 @@ import { BotService } from './bot.service';
     UserExpireListener,
     UserNotConnectedListener,
     TorrentListener,
+    PaymentStatusListener,
     // COMMANDS
     StartCommand,
     BroadcastCommand,

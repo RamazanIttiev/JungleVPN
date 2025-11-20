@@ -12,7 +12,7 @@ export class MainMsgService extends Base {
     super();
   }
 
-  async init(ctx: BotContext, menu: Menu) {
+  async init(ctx: BotContext, menu: Menu, deleteOldMsg?: boolean) {
     const user = await this.userService.init(ctx);
 
     const isExpired = this.isExpired(user.expireAt);
@@ -23,6 +23,6 @@ export class MainMsgService extends Base {
       validUntil: toDateString(user.expireAt),
     });
 
-    await this.render(ctx, content, menu);
+    await this.render(ctx, content, menu, deleteOldMsg);
   }
 }

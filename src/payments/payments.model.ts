@@ -5,6 +5,54 @@ export type PaymentAmount = '99.00' | '149.00' | '499.00';
 export type PaymentStatus = 'pending' | 'succeeded';
 export type PaymentProvider = 'yookassa';
 export type PaymentCurrency = 'RUB';
+export type PaymentNotificationEvent =
+  | 'payment.succeeded'
+  | 'payment.canceled'
+  | 'payment.waiting_for_capture';
+
+export interface PaymentDescription {
+  selectedPeriod: 1 | 3 | 6;
+  telegramId: number;
+  telegramMessageId: number | undefined;
+}
+
+export interface PaymentPayload {
+  id: string;
+  status: 'waiting_for_capture' | 'succeeded' | 'canceled' | 'pending' | string;
+  paid: boolean;
+  amount: {
+    value: string;
+    currency: string;
+  };
+  authorization_details?: {
+    rrn?: string;
+    auth_code?: string;
+    three_d_secure?: {
+      applied: boolean;
+    };
+  };
+  created_at: string; // ISO timestamp
+  description?: string;
+  expires_at?: string; // ISO timestamp
+  metadata: Record<string, any>;
+  payment_method?: {
+    type: string;
+    id: string;
+    saved: boolean;
+    card?: {
+      first6?: string;
+      last4?: string;
+      expiry_month?: string;
+      expiry_year?: string;
+      card_type?: string;
+      issuer_country?: string;
+      issuer_name?: string;
+    };
+    title?: string;
+  };
+  refundable: boolean;
+  test: boolean;
+}
 
 export interface IPaymentProvider {
   /**

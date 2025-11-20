@@ -4,7 +4,7 @@ import { Context } from 'grammy';
 
 @Injectable()
 export abstract class Base {
-  protected async render(ctx: Context, text: string, reply_markup: any, deleteOld = false) {
+  protected async render(ctx: Context, text: string, reply_markup: any, deleteOldMsg = false) {
     const options = {
       parse_mode: 'HTML' as const,
       link_preview_options: { is_disabled: true },
@@ -14,7 +14,7 @@ export abstract class Base {
     const edit = async () => ctx.editMessageText(text, options);
     const send = async () => ctx.reply(text, options);
 
-    if (deleteOld) {
+    if (deleteOldMsg) {
       try {
         await ctx.deleteMessage();
         return await send();

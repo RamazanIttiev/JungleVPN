@@ -29,7 +29,7 @@ export class SubscriptionMenu extends Base {
       //   await this.revokeSubMsgService.init(ctx);
       // })
       .row()
-      .text('Главное меню', async (ctx) => {
+      .text('Главное меню 🏠', async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
   }

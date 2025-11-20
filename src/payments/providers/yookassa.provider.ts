@@ -38,7 +38,7 @@ export class YooKassaProvider implements IPaymentProvider {
             type: 'redirect',
             return_url: process.env.YOOKASSA_RETURN_URL,
           },
-          description: '',
+          description: dto.description,
         },
         {
           headers: {

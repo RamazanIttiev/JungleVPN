@@ -4,10 +4,11 @@ import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Payment } from '@payments/payment.entity';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
-import { Payment } from '@payments/payment.entity';
 import { RemnaService } from '@remna/remna.service';
+import { mapPeriodToDate } from '@utils/utils';
 
 @Injectable()
 export class PaymentPeriodsMsgService extends Base {
@@ -36,13 +37,17 @@ export class PaymentPeriodsMsgService extends Base {
     super();
   }
 
-  async getPendingPayment(prevPeriod: PaymentPeriod | undefined, period: PaymentPeriod,paymentId: string | undefined) {
+  async getPendingPayment(
+    prevPeriod: PaymentPeriod | undefined,
+    period: PaymentPeriod,
+    paymentId: string | undefined,
+  ) {
     return prevPeriod === period && paymentId
-        ? await this.paymentsService.findValidPayment(paymentId)
-        : null;
+      ? await this.paymentsService.findValidPayment(paymentId)
+      : null;
   }
 
-  async handlePendingPayment (ctx: BotContext, pendingPayment:  Payment, period: PaymentPeriod ) {
+  async handlePendingPayment(ctx: BotContext, pendingPayment: Payment, period: PaymentPeriod) {
     const { id, url } = pendingPayment;
     this.updateSession(ctx, id, url, period);
     await this.paymentMsgService.init(ctx, this.paymentMenu.menu);
@@ -50,20 +55,20 @@ export class PaymentPeriodsMsgService extends Base {
   }
 
   async handlePaymentPeriod(ctx: BotContext, period: PaymentPeriod) {
-    const session = ctx.session
+    const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
     const user = await this.remnaService.getUserByTgId(tgUser.id);
-    const {selectedPeriod, paymentId} = session;
+    const { selectedPeriod, paymentId } = session;
 
     if (!user) {
       await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
       return;
     }
 
-    const pendingPayment = await this.getPendingPayment(selectedPeriod, period, paymentId)
+    const pendingPayment = await this.getPendingPayment(selectedPeriod, period, paymentId);
 
     if (pendingPayment) {
-      await this.handlePendingPayment(ctx, pendingPayment, period)
+      await this.handlePendingPayment(ctx, pendingPayment, period);
     }
 
     const { id, url } = await this.paymentsService.createPayment(
@@ -71,6 +76,11 @@ export class PaymentPeriodsMsgService extends Base {
         userId: tgUser.id,
         amount: this.periodAmounts[period],
         currency: 'RUB',
+        description: JSON.stringify({
+          selectedPeriod: mapPeriodToDate(selectedPeriod),
+          telegramId: tgUser.id,
+          telegramMessageId: ctx.msg?.message_id,
+        }),
       },
       'yookassa',
     );
@@ -80,7 +90,7 @@ export class PaymentPeriodsMsgService extends Base {
     await this.paymentMsgService.init(ctx, this.paymentMenu.menu);
   }
 
-  private updateSession(ctx: any, id: string, url: string, period: PaymentPeriod) {
+  private updateSession(ctx: BotContext, id: string, url: string, period: PaymentPeriod) {
     ctx.session.paymentId = id;
     ctx.session.paymentUrl = url;
     ctx.session.selectedAmount = this.periodAmounts[period];

@@ -1,10 +1,11 @@
 import * as crypto from 'node:crypto';
 import * as process from 'node:process';
-import { BadRequestException, Body, Controller, Headers, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Headers, Post, Res } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { PaymentNotificationEvent, PaymentPayload } from '@payments/payments.model';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
-
+import { Response } from 'express';
 @Controller('webhook')
 export class WebhookController {
   constructor(private eventEmitter: EventEmitter2) {}
@@ -52,5 +53,23 @@ export class WebhookController {
 
     this.eventEmitter.emit('torrent.event', payload);
     return { ok: true };
+  }
+
+  @Post('payments')
+  async handlePaymentsWebhook(
+    @Headers('x-forwarded-for') ip: string,
+    @Res() res: Response,
+    @Body()
+    payload: { type: 'notification'; event: PaymentNotificationEvent; object: PaymentPayload },
+  ) {
+    res.status(200).send('OK');
+
+    const validIpAddresses = JSON.parse(process.env.PAYMENT_VALID_IP_ADDRESS || '[]') as string[];
+
+    if (!validIpAddresses.includes(ip) && process.env.NODE_ENV === 'production') {
+      throw new BadRequestException('Income IP from Yookassa is not valid');
+    }
+
+    this.eventEmitter.emit(payload.event, payload);
   }
 }
