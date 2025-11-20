@@ -18,7 +18,7 @@ export class MainMsgService extends Base {
     const isExpired = this.isExpired(user.expireAt);
 
     const content = getMainPageContent({
-      username: user.username,
+      username: ctx.from?.username || ctx.from?.first_name || 'Дорогой друг',
       isExpired,
       validUntil: toDateString(user.expireAt),
     });
