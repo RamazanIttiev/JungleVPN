@@ -128,7 +128,6 @@ export const getSubscriptionPageContent = (options: {
 
 <i>Выбери нужную локацию и нажми кнопку подключения</i>
 
-3️⃣ Всё готово! 🎉 Интернет теперь под защитой JungleVPN.
 
 
 <blockquote><code>${subUrl}</code></blockquote>
