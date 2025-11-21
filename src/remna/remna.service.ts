@@ -78,7 +78,7 @@ export class RemnaService {
     return users;
   }
 
-  async createUser(payload: Pick<UserDto, 'username' | 'telegramId'>) {
+  async createUser(payload: Pick<UserDto, 'username' | 'telegramId'>): Promise<UserDto> {
     const expiryTime = new Date();
     expiryTime.setDate(expiryTime.getDate() + (Number(process.env.TRIAL_PERIOD) || 60));
 

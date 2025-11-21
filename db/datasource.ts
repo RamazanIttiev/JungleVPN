@@ -1,6 +1,7 @@
 import { Payment } from '@payments/payment.entity';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { Referral } from '../src/referral/referral.entity';
 
 config();
 
@@ -12,7 +13,7 @@ export const dataSourceOptions: DataSourceOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  entities: [Payment],
+  entities: [Payment, Referral],
   migrations: ['dist/db/migrations/**/*.js'],
   migrationsRun: process.env.NODE_ENV === 'production',
   synchronize: process.env.NODE_ENV === 'development',

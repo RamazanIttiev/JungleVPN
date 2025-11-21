@@ -6,6 +6,7 @@ import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { PaymentStatusListener } from '@bot/listeners/payment-status.listener';
 import { TorrentListener } from '@bot/listeners/torrent.listener';
+import { UserRewardedListener } from '@bot/listeners/user.rewarded.listener';
 import { UserExpireListener } from '@bot/listeners/user-expire.listener';
 import { UserNotConnectedListener } from '@bot/listeners/user-not-connected.listener';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
@@ -20,14 +21,16 @@ import { RemnaModule } from '@remna/remna.module';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
 import { UserModule } from '@user/users.module';
+import { ReferralModule } from '../referral/referral.module';
 import { BotService } from './bot.service';
 
 @Module({
-  imports: [PaymentsModule, RemnaModule, MenuModule, UserModule],
+  imports: [PaymentsModule, RemnaModule, MenuModule, UserModule, ReferralModule],
   providers: [
     BotService,
     RemnaService,
     UserService,
+    // MENU SERVICES
     MainMsgService,
     PaymentMsgService,
     SubscriptionMsgService,
@@ -38,6 +41,7 @@ import { BotService } from './bot.service';
     UserNotConnectedListener,
     TorrentListener,
     PaymentStatusListener,
+    UserRewardedListener,
     // COMMANDS
     StartCommand,
     BroadcastCommand,

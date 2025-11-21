@@ -192,3 +192,25 @@ export const getTorrentWarningContent = () => {
 Спасибо за понимание! 🙏
 `;
 };
+
+export const getUserRewarderContent = (newUser: boolean, expireAt: string) => {
+  const formattedDate = toDateString(expireAt);
+
+  if (newUser) {
+    return `
+Спасибо, что зовешь друзей в <code>JUNGLE</code> 🌴
+
+Добавил тебе ${process.env.INVITER_START_BONUS_IN_DAYS} день в подписку ♥️
+
+<b>Теперь твоя подписка закончится <blockquote>${formattedDate}</blockquote></b>
+`;
+  } else {
+    return `
+Активных участников <code>JUNGLE</code> теперь больше благодаря тебе 🦍
+
+Добавил ${process.env.INVITER_PAID_BONUS_IN_DAYS} дней в подписку ♥️
+
+<b>Теперь твоя подписка закончится <blockquote>${formattedDate}</blockquote></b>
+`;
+  }
+};

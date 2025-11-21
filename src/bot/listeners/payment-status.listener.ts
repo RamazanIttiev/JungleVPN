@@ -13,6 +13,7 @@ import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
 import { add } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
+import { ReferralService } from '../../referral/referral.service';
 
 @Injectable()
 export class PaymentStatusListener {
@@ -22,6 +23,7 @@ export class PaymentStatusListener {
     private readonly botService: BotService,
     private readonly paymentsService: PaymentsService,
     private readonly remnaService: RemnaService,
+    private readonly referralService: ReferralService,
   ) {
     this.bot = this.botService.bot;
   }
@@ -71,7 +73,7 @@ export class PaymentStatusListener {
     desc: PaymentDescription,
     user: UserDto,
   ) {
-    const { uuid, expireAt } = user;
+    const { uuid, expireAt, telegramId } = user;
 
     const newExpireAt = add(expireAt || new Date(), {
       months: desc.selectedPeriod,
@@ -86,6 +88,14 @@ export class PaymentStatusListener {
       uuid,
       expireAt: newExpireAt,
     });
+
+    if (telegramId) {
+      const invitedUser = await this.referralService.getReferralRecord(telegramId);
+
+      if (invitedUser?.status !== 'COMPLETED') {
+        await this.referralService.handleInviterRewardAfterPayment(telegramId);
+      }
+    }
   }
 
   private async cleanUpTelegramMessage(telegramId: number, messageId?: number) {

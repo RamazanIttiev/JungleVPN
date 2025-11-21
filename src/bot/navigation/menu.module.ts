@@ -15,6 +15,8 @@ import { PaymentsService } from '@payments/payments.service';
 import { YooKassaProvider } from '@payments/providers/yookassa.provider';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
+import { Referral } from '../../referral/referral.entity';
+import { ReferralService } from '../../referral/referral.service';
 import { DevicesMenu } from './features/devices/devices.menu';
 import { MenuTree } from './menu.tree';
 
@@ -39,6 +41,7 @@ import { MenuTree } from './menu.tree';
     PaymentProviderFactory,
     YooKassaProvider,
     UserService,
+    ReferralService,
   ],
   exports: [
     // MODELS
@@ -55,6 +58,6 @@ import { MenuTree } from './menu.tree';
     PaymentMenu,
     SubscriptionMenu,
   ],
-  imports: [TypeOrmModule.forFeature([Payment])],
+  imports: [TypeOrmModule.forFeature([Payment, Referral])],
 })
 export class MenuModule {}
