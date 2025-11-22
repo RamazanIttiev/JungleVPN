@@ -36,7 +36,7 @@ export class PaymentStatusListener {
     const payment = payload.object;
 
     const metadata = payment.metadata as PaymentMetadata;
-    if (!metadata) {
+    if (!metadata || !metadata.telegramId) {
       this.logger.warn('No metadata');
       return;
     }

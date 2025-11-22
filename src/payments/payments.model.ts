@@ -62,20 +62,7 @@ export interface IPaymentProvider {
    */
   createPayment: (dto: CreatePaymentDto, providerName: PaymentProvider) => Promise<PaymentSession>;
 
-  /**
-   * Verifies the payment status (usually called after redirect or webhook).
-   * @param paymentId - The provider-specific payment ID.
-   * @returns PaymentStatus (e.g., 'pending', 'succeeded', 'failed').
-   */
-  checkPaymentStatus: (paymentId: string, providerName: PaymentProvider) => Promise<PaymentStatus>;
-
   updatePayment: (id: string, partial: Partial<Payment>) => Promise<void>;
-
-  /**
-   * Optional: Handles provider webhook callback.
-   * Useful for asynchronous confirmation.
-   */
-  handleWebhook?: (data: any) => Promise<void>;
 }
 
 export class CreatePaymentDto {

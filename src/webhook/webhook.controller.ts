@@ -1,6 +1,6 @@
 import * as crypto from 'node:crypto';
 import * as process from 'node:process';
-import { BadRequestException, Body, Controller, Headers, Post, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Headers, Logger, Post, Res } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PaymentNotificationEvent, PaymentPayload } from '@payments/payments.model';
 import { WebHookEvent } from '@remna/remna.model';
@@ -8,6 +8,8 @@ import { UserDto } from '@user/user.model';
 import { Response } from 'express';
 @Controller('webhook')
 export class WebhookController {
+  logger = new Logger();
+
   constructor(private eventEmitter: EventEmitter2) {}
 
   @Post('remna')
@@ -69,7 +71,8 @@ export class WebhookController {
       !validIpAddresses.some((address) => ip.split(', ').includes(address)) &&
       process.env.NODE_ENV === 'production'
     ) {
-      throw new BadRequestException('Income IP from Yookassa is not valid');
+      this.logger.warn('Income IP from Yookassa is not valid');
+      return;
     }
 
     this.eventEmitter.emit(payload.event, payload);

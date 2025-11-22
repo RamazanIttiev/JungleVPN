@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaymentProviderFactory } from '@payments/payments.factory';
 import {
@@ -51,17 +51,6 @@ export class PaymentsService implements IPaymentProvider {
     await this.paymentRepository.save(payment);
 
     return { id: session.id, url: session.url };
-  }
-
-  async checkPaymentStatus(paymentId: string) {
-    const payment = await this.paymentRepository.findOneBy({ id: paymentId });
-    const providerName = payment?.provider;
-
-    if (!providerName) {
-      throw new NotFoundException('providerName is required, checkPaymentStatus');
-    }
-    const provider = this.factory.getProvider(providerName);
-    return await provider.checkPaymentStatus(paymentId, providerName);
   }
 
   async updatePayment(id: string, partial: Partial<Payment>) {
