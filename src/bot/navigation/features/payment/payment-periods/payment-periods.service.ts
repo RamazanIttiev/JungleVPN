@@ -76,11 +76,12 @@ export class PaymentPeriodsMsgService extends Base {
         userId: tgUser.id,
         amount: this.periodAmounts[period],
         currency: 'RUB',
-        description: JSON.stringify({
+        metadata: {
           selectedPeriod: mapPeriodToDate(selectedPeriod),
           telegramId: tgUser.id,
           telegramMessageId: ctx.msg?.message_id,
-        }),
+        },
+        description: 'Рад видеть тебя в JUNGLE 🌴',
       },
       'yookassa',
     );

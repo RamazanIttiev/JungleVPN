@@ -13,7 +13,6 @@ export class WebhookController {
   @Post('remna')
   async handleRemnaWebhook(
     @Headers('x-remnawave-signature') signature: string,
-    @Headers('x-remnawave-timestamp') timestamp: string,
     @Body() payload: {
       event: WebHookEvent;
       data: UserDto;
@@ -66,7 +65,10 @@ export class WebhookController {
 
     const validIpAddresses = JSON.parse(process.env.PAYMENT_VALID_IP_ADDRESS || '[]') as string[];
 
-    if (!validIpAddresses.includes(ip) && process.env.NODE_ENV === 'production') {
+    if (
+      !validIpAddresses.some((address) => ip.split(', ').includes(address)) &&
+      process.env.NODE_ENV === 'production'
+    ) {
       throw new BadRequestException('Income IP from Yookassa is not valid');
     }
 

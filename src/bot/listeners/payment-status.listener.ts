@@ -1,10 +1,10 @@
 import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import {
-  PaymentDescription,
+  PaymentMetadata,
   PaymentNotificationEvent,
   PaymentPayload,
 } from '@payments/payments.model';
@@ -17,6 +17,7 @@ import { Bot, InlineKeyboard } from 'grammy';
 @Injectable()
 export class PaymentStatusListener {
   bot: Bot<BotContext>;
+  logger = new Logger();
 
   constructor(
     private readonly botService: BotService,
@@ -34,11 +35,17 @@ export class PaymentStatusListener {
   }) {
     const payment = payload.object;
 
-    const description = this.parseDescription(payment.description);
-    if (!description) return;
+    const metadata = payment.metadata as PaymentMetadata;
+    if (!metadata) {
+      this.logger.warn('No metadata');
+      return;
+    }
 
-    const user = await this.loadUser(description.telegramId);
-    if (!user || !user.telegramId) return;
+    const user = await this.loadUser(metadata.telegramId);
+    if (!user || !user.telegramId) {
+      this.logger.warn('No user found');
+      return;
+    }
 
     const { status } = payment;
 
@@ -46,19 +53,9 @@ export class PaymentStatusListener {
       return this.notifyPendingPayment(user.telegramId);
     }
 
-    await this.processSuccessfulPayment(payment.id, description, user);
-    await this.cleanUpTelegramMessage(user.telegramId, description.telegramMessageId);
+    await this.processSuccessfulPayment(payment.id, metadata, user);
+    await this.cleanUpTelegramMessage(user.telegramId, metadata.telegramMessageId);
     await this.sendSuccessMessage(user.telegramId);
-  }
-
-  private parseDescription(description?: string): PaymentDescription | null {
-    if (!description) return null;
-
-    try {
-      return JSON.parse(description) as PaymentDescription;
-    } catch {
-      return null;
-    }
   }
 
   private async loadUser(telegramId: number) {
@@ -66,11 +63,7 @@ export class PaymentStatusListener {
     return user?.telegramId ? user : null;
   }
 
-  private async processSuccessfulPayment(
-    paymentId: string,
-    desc: PaymentDescription,
-    user: UserDto,
-  ) {
+  private async processSuccessfulPayment(paymentId: string, desc: PaymentMetadata, user: UserDto) {
     const { uuid, expireAt } = user;
 
     const newExpireAt = add(expireAt || new Date(), {
@@ -89,12 +82,14 @@ export class PaymentStatusListener {
   }
 
   private async cleanUpTelegramMessage(telegramId: number, messageId?: number) {
-    if (!messageId) return;
-
-    try {
-      await this.bot.api.deleteMessage(telegramId, messageId);
-    } catch (err) {
-      console.log('Failed to delete Telegram message:', err);
+    if (messageId) {
+      try {
+        await this.bot.api.deleteMessage(telegramId, messageId);
+      } catch (err) {
+        console.log('Failed to delete Telegram message:', err);
+      }
+    } else {
+      this.logger.warn('No messageId in cleanUpTelegramMessage');
     }
   }
 
