@@ -5,7 +5,12 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PaymentNotificationEvent, PaymentPayload } from '@payments/payments.model';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const CIDRMatcher = require('cidr-matcher');
+
 import { Response } from 'express';
+
 @Controller('webhook')
 export class WebhookController {
   logger = new Logger();
@@ -67,11 +72,16 @@ export class WebhookController {
 
     const validIpAddresses = JSON.parse(process.env.PAYMENT_VALID_IP_ADDRESS || '[]') as string[];
 
-    if (
-      !validIpAddresses.some((address) => ip.split(', ').includes(address)) &&
-      process.env.NODE_ENV === 'production'
-    ) {
-      this.logger.warn('Income IP from Yookassa is not valid');
+    const normalizedIps = validIpAddresses.map((ip) => {
+      if (ip.includes('/')) return ip;
+      return ip.includes(':') ? `${ip}/128` : `${ip}/32`;
+    });
+    const matcher = new CIDRMatcher(normalizedIps);
+
+    const ips = ip.split(',').map((i) => i.trim());
+
+    if (process.env.NODE_ENV === 'production' && !ips.some((i) => matcher.contains(i))) {
+      this.logger.warn(`Invalid YooKassa IP: ${ip}`);
       return;
     }
 
