@@ -167,7 +167,7 @@ export const getExpiredSubscriptionContent = (expireAt: string) => {
   }
 };
 
-export const getUserNotConnectedContent = () => {
+export const getUserNotConnected24Content = () => {
   return `
 🌴🐵🌴
 
@@ -176,6 +176,14 @@ export const getUserNotConnectedContent = () => {
 
 
 Подключайся и наслаждайся безопасным интернетом 🙂
+`;
+};
+
+export const getUserNotConnected72Content = () => {
+  return `
+Вижу ты еще не подключался 🥲
+
+Давай я помогу? Займет меньше минуты 🙂
 `;
 };
 

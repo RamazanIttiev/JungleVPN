@@ -1,7 +1,7 @@
 import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { getUserNotConnectedContent } from '@bot/utils/templates';
+import { getUserNotConnected24Content, getUserNotConnected72Content } from '@bot/utils/templates';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
@@ -29,34 +29,58 @@ export class UserNotConnectedListener {
     data: UserDto;
     timestamp: string;
   }) {
-    const keyboard = new InlineKeyboard();
+    const keyboard = new InlineKeyboard()
+      .text('Подключиться 📶', 'navigate_devices')
+      .text('Главное меню 🏠', 'navigate_main')
+      .url('Нужна помощь?', process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support');
+
     const createdAt = new Date(payload.data.createdAt);
     const timestamp = new Date(payload.timestamp);
-    const SEVEN_DAYS_IN_HOURS = Number(process.env.SEVEN_DAYS_IN_HOURS);
     const diffHours = differenceInHours(timestamp, createdAt);
-
-    keyboard.text('Подключиться 📶', 'navigate_devices');
-    keyboard.text('Главное меню 🏠', 'navigate_main');
 
     if (!payload.data.telegramId) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
-    if (diffHours >= SEVEN_DAYS_IN_HOURS) {
+    if (diffHours >= Number(process.env.SEVEN_DAYS_IN_HOURS)) {
       await this.remnaService.deleteUser(payload.data.uuid);
       return;
     }
 
+    if (diffHours >= Number(process.env.TREE_DAYS_IN_HOURS)) {
+      await this.handleThreeDays(payload.data.telegramId, payload.data.uuid, keyboard);
+      return;
+    }
+
+    await this.handleInitial(payload.data.telegramId, payload.data.uuid, keyboard);
+  }
+
+  async handleThreeDays(telegramId: number, uuid: string, keyboard: InlineKeyboard) {
     await safeSendMessage(
       this.bot,
-      payload.data.telegramId,
-      getUserNotConnectedContent(),
+      telegramId,
+      getUserNotConnected72Content(),
       {
         parse_mode: 'HTML',
         reply_markup: keyboard,
       },
       async () => {
-        await this.remnaService.deleteUser(payload.data.uuid);
+        await this.remnaService.deleteUser(uuid);
+      },
+    );
+  }
+
+  async handleInitial(telegramId: number, uuid: string, keyboard: InlineKeyboard) {
+    await safeSendMessage(
+      this.bot,
+      telegramId,
+      getUserNotConnected24Content(),
+      {
+        parse_mode: 'HTML',
+        reply_markup: keyboard,
+      },
+      async () => {
+        await this.remnaService.deleteUser(uuid);
       },
     );
   }
