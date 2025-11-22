@@ -51,6 +51,18 @@ const getSubStatusContent = (isExpired: boolean, validUntil: string) => {
   }
 };
 
+export const getReferralPageContent = () => {
+  return `
+Зови своих друзей в <code>JUNGLE</code> и получай доп дни в подписку 😃
+
+За каждого приглашенного пользователя получаешь <blockquote>+${process.env.INVITER_START_BONUS_IN_DAYS} день</blockquote>
+
+А если твой друг оплатит, то получишь целых <blockquote>+${process.env.INVITER_PAID_BONUS_IN_DAYS} дней</blockquote>
+
+Хорошо звучит, даже? 🫠 
+`;
+};
+
 export const getInvitationContent = () => {
   return `
 🌴 Добро пожаловать в <code>JUNGLE</code>. Тут скорость и безопасность — на первом месте ♥️

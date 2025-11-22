@@ -2,6 +2,8 @@ import * as process from 'node:process';
 import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
+import { ReferralMenu } from '@bot/navigation/features/referral/referral.menu';
+import { ReferralMsgService } from '@bot/navigation/features/referral/referral.service';
 import { Base } from '@bot/navigation/menu.base';
 import { getDevicesPageContent, getPaymentPeriodsPage } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
@@ -15,6 +17,9 @@ export class MainMenu extends Base {
     readonly devicesMenu: DevicesMenu,
     @Inject(forwardRef(() => PaymentsPeriodsMenu))
     readonly paymentsPeriodsMenu: PaymentsPeriodsMenu,
+    @Inject(forwardRef(() => ReferralMenu))
+    readonly referralMenu: ReferralMenu,
+    readonly referralMsgService: ReferralMsgService,
   ) {
     super();
 
@@ -26,8 +31,10 @@ export class MainMenu extends Base {
           reply_markup: this.devicesMenu.menu,
         });
       })
+      .text('Партнерка 🤝', async (ctx) => {
+        await this.referralMsgService.init(ctx, this.referralMenu.menu);
+      })
       .row()
-      .switchInline('Партнерка 🤝', 'invite')
       .text('Продлить ➕', async (ctx) => {
         await ctx.editMessageText(getPaymentPeriodsPage(), {
           parse_mode: 'HTML',
