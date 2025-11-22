@@ -11,6 +11,7 @@ import {
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
+import { safeSendMessage } from '@utils/utils';
 import { add } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
 
@@ -107,20 +108,12 @@ export class PaymentStatusListener {
       });
     }
 
-    try {
-      return this.bot.api.sendMessage(telegramId, '✅ Оплата прошла успешно!', {
-        reply_markup: successMenu,
-      });
-    } catch (err) {
-      console.log('Failed to send successful payment message', err);
-    }
+    await safeSendMessage(this.bot, telegramId, '✅ Оплата прошла успешно!', {
+      reply_markup: successMenu,
+    });
   }
 
   private async notifyPendingPayment(telegramId: number) {
-    try {
-      return this.bot.api.sendMessage(telegramId, '❗ Платеж еще не оплачен.');
-    } catch (err) {
-      console.log('Failed to send notifyPendingPayment', err);
-    }
+    await safeSendMessage(this.bot, telegramId, '✅ Оплата прошла успешно!');
   }
 }

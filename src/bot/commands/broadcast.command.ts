@@ -2,7 +2,8 @@ import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
-import { Bot, GrammyError, InlineKeyboard } from 'grammy';
+import { safeSendMessage } from '@utils/utils';
+import { Bot, InlineKeyboard } from 'grammy';
 
 @Injectable()
 export class BroadcastCommand {
@@ -26,16 +27,17 @@ export class BroadcastCommand {
         if (!telegramId) continue;
         if (telegramId === adminId) continue;
 
-        try {
-          await ctx.api.sendMessage(telegramId, textToSend, {
+        await safeSendMessage(
+          bot,
+          telegramId,
+          textToSend,
+          {
             reply_markup: new InlineKeyboard().text('Подключиться 📶', 'navigate_devices'),
-          });
-        } catch (e) {
-          const error = e as GrammyError;
-          if (error.description === 'Forbidden: bot was blocked by the user') {
+          },
+          async () => {
             await this.remnaService.deleteUser(uuid);
-          }
-        }
+          },
+        );
       }
 
       await ctx.reply('✅ Message sent to all users!');

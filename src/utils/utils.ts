@@ -1,5 +1,8 @@
+import { BotContext } from '@bot/bot.types';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
+import { Api, Bot, GrammyError, RawApi } from 'grammy';
+import { Other } from 'grammy/out/core/api';
 import { z } from 'zod';
 
 export const isValidUsername = (username: string | undefined | null): boolean => {
@@ -87,6 +90,28 @@ export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
       return '6️⃣ месяцев (499 ₽)';
   }
 };
+
+export async function safeSendMessage(
+  bot: Bot<BotContext, Api<RawApi>>,
+  userId: number,
+  content: string,
+  options?: Other<RawApi, 'sendMessage', 'chat_id' | 'text'> | undefined,
+  onBlocked?: () => Promise<void>,
+) {
+  try {
+    await bot.api.sendMessage(userId, content, options);
+  } catch (err) {
+    const error = err as GrammyError;
+    if (error.error_code === 403 && error.description.includes('bot was blocked')) {
+      if (onBlocked) {
+        await onBlocked();
+      }
+    } else {
+      // rethrow other errors
+      throw err;
+    }
+  }
+}
 
 export const isValidValue = <T extends z.ZodTypeAny>(
   schema: T,

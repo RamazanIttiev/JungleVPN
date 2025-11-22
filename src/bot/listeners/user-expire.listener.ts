@@ -5,8 +5,9 @@ import { getExpiredSubscriptionContent } from '@bot/utils/templates';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
+import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
-import { mapPeriodLabelToPriceLabel } from '@utils/utils';
+import { mapPeriodLabelToPriceLabel, safeSendMessage } from '@utils/utils';
 import { AxiosError } from 'axios';
 import { Bot, InlineKeyboard } from 'grammy';
 
@@ -15,6 +16,7 @@ export class UserExpireListener {
   bot: Bot<BotContext>;
 
   constructor(
+    private readonly remnaService: RemnaService,
     private readonly botService: BotService,
     private readonly paymentPeriodsMsgService: PaymentPeriodsMsgService,
   ) {
@@ -24,7 +26,7 @@ export class UserExpireListener {
   @OnEvent('user.expires_in_24_hours')
   async listenToUser24ExpiresEvent(payload: {
     event: WebHookEvent;
-    data: Pick<UserDto, 'telegramId' | 'expireAt'>;
+    data: UserDto;
     timestamp: string;
   }) {
     await this.handleUserExpiresEvent(payload);
@@ -33,17 +35,13 @@ export class UserExpireListener {
   @OnEvent('user.expires_in_72_hours')
   async listenToUser72ExpiresEvent(payload: {
     event: WebHookEvent;
-    data: Pick<UserDto, 'telegramId' | 'expireAt'>;
+    data: UserDto;
     timestamp: string;
   }) {
     await this.handleUserExpiresEvent(payload);
   }
 
-  async handleUserExpiresEvent(payload: {
-    event: WebHookEvent;
-    data: Pick<UserDto, 'telegramId' | 'expireAt'>;
-    timestamp: string;
-  }) {
+  async handleUserExpiresEvent(payload: { event: WebHookEvent; data: UserDto; timestamp: string }) {
     const keyboard = new InlineKeyboard();
 
     this.paymentPeriodsMsgService.periods.forEach((period) => {
@@ -57,17 +55,17 @@ export class UserExpireListener {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
-    try {
-      await this.bot.api.sendMessage(
-        payload.data.telegramId,
-        getExpiredSubscriptionContent(payload.data.expireAt),
-        {
-          parse_mode: 'HTML',
-          reply_markup: keyboard,
-        },
-      );
-    } catch (error) {
-      console.log(`Failed to send ${payload.event} message`);
-    }
+    await safeSendMessage(
+      this.bot,
+      payload.data.telegramId,
+      getExpiredSubscriptionContent(payload.data.expireAt),
+      {
+        parse_mode: 'HTML',
+        reply_markup: keyboard,
+      },
+      async () => {
+        await this.remnaService.deleteUser(payload.data.uuid);
+      },
+    );
   }
 }
