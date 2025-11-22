@@ -36,11 +36,16 @@ export class PaymentStatusListener {
   }) {
     const payment = payload.object;
 
-    const metadata = payment.metadata as PaymentMetadata;
-    if (!metadata || !metadata.telegramId) {
+    if (!payment.metadata || !payment.metadata.telegramId) {
       this.logger.warn('No metadata');
       return;
     }
+
+    const metadata: PaymentMetadata = {
+      telegramId: Number(payment.metadata.telegramId),
+      selectedPeriod: Number(payment.metadata.selectedPeriod),
+      telegramMessageId: Number(payment.metadata.telegramMessageId),
+    };
 
     const user = await this.loadUser(metadata.telegramId);
     if (!user || !user.telegramId) {
@@ -64,11 +69,15 @@ export class PaymentStatusListener {
     return user?.telegramId ? user : null;
   }
 
-  private async processSuccessfulPayment(paymentId: string, desc: PaymentMetadata, user: UserDto) {
+  private async processSuccessfulPayment(
+    paymentId: string,
+    metadata: PaymentMetadata,
+    user: UserDto,
+  ) {
     const { uuid, expireAt } = user;
 
-    const newExpireAt = add(expireAt || new Date(), {
-      months: desc.selectedPeriod,
+    const newExpireAt = add(expireAt, {
+      months: metadata.selectedPeriod,
     }).toISOString();
 
     await this.paymentsService.updatePayment(paymentId, {

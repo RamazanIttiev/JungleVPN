@@ -11,7 +11,7 @@ export type PaymentNotificationEvent =
   | 'payment.waiting_for_capture';
 
 export interface PaymentMetadata {
-  selectedPeriod: 1 | 3 | 6;
+  selectedPeriod: number;
   telegramId: number;
   telegramMessageId: number | undefined;
 }

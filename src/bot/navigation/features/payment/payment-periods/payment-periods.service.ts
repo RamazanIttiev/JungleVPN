@@ -58,14 +58,14 @@ export class PaymentPeriodsMsgService extends Base {
     const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
     const user = await this.remnaService.getUserByTgId(tgUser.id);
-    const { selectedPeriod, paymentId } = session;
+    const { paymentId } = session;
 
     if (!user) {
       await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
       return;
     }
 
-    const pendingPayment = await this.getPendingPayment(selectedPeriod, period, paymentId);
+    const pendingPayment = await this.getPendingPayment(period, period, paymentId);
 
     if (pendingPayment) {
       await this.handlePendingPayment(ctx, pendingPayment, period);
@@ -77,7 +77,7 @@ export class PaymentPeriodsMsgService extends Base {
         amount: this.periodAmounts[period],
         currency: 'RUB',
         metadata: {
-          selectedPeriod: mapPeriodToDate(selectedPeriod),
+          selectedPeriod: mapPeriodToDate(period),
           telegramId: tgUser.id,
           telegramMessageId: ctx.msg?.message_id,
         },
