@@ -4,6 +4,7 @@ import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback'
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
+import { InlineQueryListener } from '@bot/listeners/inline-query.listener';
 import { PaymentStatusListener } from '@bot/listeners/payment-status.listener';
 import { TorrentListener } from '@bot/listeners/torrent.listener';
 import { UserRewardedListener } from '@bot/listeners/user.rewarded.listener';
@@ -42,6 +43,7 @@ import { BotService } from './bot.service';
     TorrentListener,
     PaymentStatusListener,
     UserRewardedListener,
+    InlineQueryListener,
     // COMMANDS
     StartCommand,
     BroadcastCommand,
@@ -50,6 +52,7 @@ import { BotService } from './bot.service';
     PaymentPeriodsCallback,
     NavigateMainCallback,
     NavigateDevicesCallback,
+    InlineQueryListener,
   ],
   exports: [BotService],
 })
