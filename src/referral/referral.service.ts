@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from '@user/user.service';
 import { add } from 'date-fns';
 import { Repository } from 'typeorm';
-import { Referral, ReferralStatus } from './referral.entity';
+import { Referral } from './referral.entity';
 import { generateReferralCode } from './referral.utils';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class ReferralService {
     const referral = this.referralRepository.create({
       inviterId,
       invitedId,
-      status: ReferralStatus.FIRST_REWARD,
+      status: 'FIRST_REWARD',
     });
 
     await this.referralRepository.save(referral);
@@ -85,7 +85,7 @@ export class ReferralService {
       return;
     }
 
-    if (referral.status === ReferralStatus.COMPLETED) {
+    if (referral.status === 'COMPLETED') {
       this.logger.log(
         `Inviter ${referral.inviterId} received all bonuses for ${invitedTelegramId}`,
       );
@@ -98,7 +98,7 @@ export class ReferralService {
       false,
     );
 
-    referral.status = ReferralStatus.COMPLETED;
+    referral.status = 'COMPLETED';
     await this.referralRepository.save(referral);
   }
 

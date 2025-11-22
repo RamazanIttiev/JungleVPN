@@ -1,10 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum ReferralStatus {
-  PENDING = 'PENDING',
-  FIRST_REWARD = 'FIRST_REWARD',
-  COMPLETED = 'COMPLETED',
-}
+export type ReferralStatus = 'PENDING' | 'FIRST_REWARD' | 'COMPLETED';
 
 @Entity('referrals')
 export class Referral {
@@ -18,9 +14,8 @@ export class Referral {
   invitedId: number;
 
   @Column({
-    type: 'enum',
-    enum: ReferralStatus,
-    default: ReferralStatus.PENDING,
+    type: 'varchar',
+    default: 'PENDING',
   })
   status: ReferralStatus;
 
