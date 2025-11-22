@@ -2,7 +2,7 @@ import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
-import { Bot, InlineKeyboard } from 'grammy';
+import { Bot, GrammyError, InlineKeyboard } from 'grammy';
 
 @Injectable()
 export class BroadcastCommand {
@@ -22,7 +22,7 @@ export class BroadcastCommand {
       if (!message || message.startsWith('/start')) return;
       if (!textToSend || textToSend.startsWith('/start')) return;
 
-      for (const { telegramId } of users) {
+      for (const { telegramId, uuid } of users) {
         if (!telegramId) continue;
         if (telegramId === adminId) continue;
 
@@ -31,7 +31,10 @@ export class BroadcastCommand {
             reply_markup: new InlineKeyboard().text('Подключиться 📶', 'navigate_devices'),
           });
         } catch (e) {
-          console.log(`Failed to send to ${telegramId}:`, e);
+          const error = e as GrammyError;
+          if (error.description === 'Forbidden: bot was blocked by the user') {
+            await this.remnaService.deleteUser(uuid);
+          }
         }
       }
 

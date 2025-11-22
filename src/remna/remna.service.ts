@@ -117,8 +117,8 @@ export class RemnaService {
     }
   }
 
-  async deleteUser(id: string) {
-    await this.fetch({ url: `/users/${id}`, method: 'DELETE' });
+  async deleteUser(uuid: string) {
+    await this.fetch({ url: `/users/${uuid}`, method: 'DELETE' });
   }
 
   async revokeSub(uuid: string) {
