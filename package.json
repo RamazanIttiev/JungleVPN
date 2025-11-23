@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nest start --watch",
+    "dev": "npm i && nest start --watch",
     "build": "nest build",
     "start": "npm install && docker compose down && docker compose up --build -d && docker compose logs -f",
     "migration:generate": "npm run build && npx typeorm migration:generate db/migrations/Migration -d dist/db/datasource.js",

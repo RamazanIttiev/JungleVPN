@@ -96,7 +96,7 @@ export async function safeSendMessage(
   userId: number,
   content: string,
   options?: Other<RawApi, 'sendMessage', 'chat_id' | 'text'> | undefined,
-  onBlocked?: () => Promise<void>,
+  onBlocked?: (error: GrammyError) => Promise<void>,
 ) {
   try {
     await bot.api.sendMessage(userId, content, options);
@@ -104,11 +104,11 @@ export async function safeSendMessage(
     const error = err as GrammyError;
     if (error.error_code === 403 && error.description.includes('bot was blocked')) {
       if (onBlocked) {
-        await onBlocked();
+        await onBlocked(error);
       }
     } else {
       // rethrow other errors
-      throw err;
+      throw error;
     }
   }
 }

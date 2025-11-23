@@ -71,7 +71,7 @@ export class RemnaService {
       total: number;
       users: UserDto[];
     }>({
-      url: '/users',
+      url: '/users?size=1000',
       method: 'GET',
     });
 
