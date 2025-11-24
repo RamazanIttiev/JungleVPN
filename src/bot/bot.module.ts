@@ -2,6 +2,7 @@ import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callbac
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
+import { AlertCommand } from '@bot/commands/alert.command';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { PaymentStatusListener } from '@bot/listeners/payment-status.listener';
@@ -41,6 +42,7 @@ import { BotService } from './bot.service';
     // COMMANDS
     StartCommand,
     BroadcastCommand,
+    AlertCommand,
     // CALLBACKS
     PaymentSuccessCallback,
     PaymentPeriodsCallback,
