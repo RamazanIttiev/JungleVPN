@@ -4,7 +4,6 @@ import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callbac
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
-import { AlertCommand } from '@bot/commands/alert.command';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { MenuTree } from '@bot/navigation/menu.tree';
@@ -20,7 +19,6 @@ export class BotService implements OnModuleInit {
     private readonly menuTree: MenuTree,
     private readonly startCommand: StartCommand,
     private readonly broadcastCommand: BroadcastCommand,
-    private readonly alertCommand: AlertCommand,
     private readonly navigateMainCallback: NavigateMainCallback,
     private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
@@ -48,7 +46,6 @@ export class BotService implements OnModuleInit {
 
     this.startCommand.register(this.bot);
     this.broadcastCommand.register(this.bot);
-    this.alertCommand.register(this.bot);
 
     this.navigateMainCallback.register(this.bot);
     this.navigateDevicesCallback.register(this.bot);
