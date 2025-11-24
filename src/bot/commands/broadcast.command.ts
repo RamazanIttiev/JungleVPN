@@ -12,7 +12,6 @@ export class BroadcastCommand {
 
   register(bot: Bot<BotContext>) {
     bot.command('message', async (ctx) => {
-      const isProd = process.env.NODE_ENV === 'production';
       const adminId = Number(process.env.TELEGRAM_ADMIN_ID);
       const fromId = ctx.from?.id;
       if (fromId !== adminId) return;
@@ -42,18 +41,9 @@ export class BroadcastCommand {
 
         const promises = batch.map(async (user) => {
           try {
-            await safeSendMessage(
-              bot,
-              user.telegramId || 0,
-              textToSend,
-              {
-                reply_markup: new InlineKeyboard().text('Подключиться 📶', 'navigate_devices'),
-              },
-              async (error) => {
-                this.logger.warn(error);
-                isProd && (await this.remnaService.deleteUser(user.uuid));
-              },
-            );
+            await safeSendMessage(bot, user.telegramId || 0, textToSend, {
+              reply_markup: new InlineKeyboard().text('Подключиться 📶', 'navigate_devices'),
+            });
             successCount++;
           } catch (e) {
             const error = e as Error;

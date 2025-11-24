@@ -5,7 +5,6 @@ import { getExpiredSubscriptionContent } from '@bot/utils/templates';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
-import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
 import { mapPeriodLabelToPriceLabel, safeSendMessage } from '@utils/utils';
 import { AxiosError } from 'axios';
@@ -16,7 +15,6 @@ export class UserExpireListener {
   bot: Bot<BotContext>;
 
   constructor(
-    private readonly remnaService: RemnaService,
     private readonly botService: BotService,
     private readonly paymentPeriodsMsgService: PaymentPeriodsMsgService,
   ) {
@@ -62,9 +60,6 @@ export class UserExpireListener {
       {
         parse_mode: 'HTML',
         reply_markup: keyboard,
-      },
-      async () => {
-        await this.remnaService.deleteUser(payload.data.uuid);
       },
     );
   }
