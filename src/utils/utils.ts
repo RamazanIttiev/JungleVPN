@@ -1,15 +1,11 @@
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
-import { z } from 'zod';
 
 export const isValidUsername = (username: string | undefined | null): boolean => {
   if (!username) return false;
   const regex = /^[A-Za-z0-9_-]+$/;
   return regex.test(username);
 };
-
-export const escapeHtml = (s: string): string =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export const mapDeviceLabel = (device: UserDevice) => {
   switch (device) {
@@ -44,11 +40,11 @@ export const mapAmountLabel = (amount: PaymentAmount) => {
 export const mapPeriodLabel = (period: PaymentPeriod) => {
   switch (period) {
     case '1mo':
-      return '1 месяц';
+      return 'period-1mo';
     case '3mo':
-      return '3 месяца';
+      return 'period-3mo';
     case '6mo':
-      return '6 месяцев';
+      return 'period-6mo';
   }
 };
 
@@ -65,26 +61,14 @@ export const mapPeriodToDate = (period: PaymentPeriod | undefined) => {
   }
 };
 
-export const mapDaysLeftLabel = (daysLeft: number | undefined) => {
-  switch (daysLeft) {
-    case 1:
-      return '1 день';
-    case 2:
-    case 3:
-      return `${daysLeft} дня`;
-    default:
-      return `${daysLeft} дней`;
-  }
-};
-
 export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
   switch (period) {
     case '1mo':
-      return '1️⃣ месяц (99 ₽)';
+      return 'payment-period-button-label-1';
     case '3mo':
-      return '3️⃣ месяца (159 ₽)';
+      return 'payment-period-button-label-2';
     case '6mo':
-      return '6️⃣ месяцев (499 ₽)';
+      return 'payment-period-button-label-3';
   }
 };
 
@@ -115,17 +99,4 @@ export const getAppLink = (device: UserDevice | undefined): string => {
         'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
       );
   }
-};
-
-export const isValidValue = <T extends z.ZodTypeAny>(
-  schema: T,
-  value: unknown,
-): value is z.infer<T> => {
-  return schema.safeParse(value).success;
-};
-
-export const getRandomNumber = (): number => {
-  const array = new Uint32Array(1);
-  crypto.getRandomValues(array);
-  return (array[0] % 90000000) + 100000;
 };

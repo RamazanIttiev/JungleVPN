@@ -1,4 +1,32 @@
 dear-friend = Дорогой друг!
+connect-button-label = Подключиться 📶
+extend-button-label = Продлить ➕
+support-button-label = Нужна помощь?
+back-button-label = ⤴ Назад
+payment-period-button-label-1 = 1 месяц ({ $amount } { $currency })
+payment-period-button-label-2 = 3 месяца ({ $amount } { $currency })
+payment-period-button-label-3 = 6 месяцев ({ $amount } { $currency })
+pay-button-label = 💳 Оплатить подписку
+paid-button-label = Я оплатил ✅
+main-menu-button-label = Главное меню 🏠
+download-button-label = 🔽 Скачать
+add-profile-button-label = 🔗 Добавить профиль
+new-link-button-label = 🔄 Новая ссылка
+broadcast-sent-success = ✅ Сообщение отправлено всем пользователям!
+error-menu-outdated = Что-то изменилось, попробуй заново /start
+payment-success = ✅ Оплата прошла успешно! Спасибо за вашу поддержку.
+error-generic-restart = ❗ Что-то пошло не так. Попробуй снова /start
+payment-not-found = ❗ Платеж не найден. Попробуй заново /start
+payment-pending = ❗ Платеж еще не оплачен.
+period-1mo = 1 месяц
+period-3mo = 3 месяца
+period-6mo = 6 месяцев
+days-left-label = { $daysLeft ->
+    [one] { $daysLeft } день
+    [few] { $daysLeft } дня
+    *[many] { $daysLeft } дней
+  }
+
 
 main-welcome =
     🌴 Добро пожаловать в <b>Jungle</b>, <b>{ $name }</b>!

@@ -28,14 +28,15 @@ export class UserNotConnectedListener {
     data: UserDto;
     timestamp: string;
   }) {
+    const locale = 'en';
     const keyboard = new InlineKeyboard();
     const createdAt = new Date(payload.data.createdAt);
     const timestamp = new Date(payload.timestamp);
     const THREE_DAYS_IN_HOURS = 70;
     const diffHours = differenceInHours(timestamp, createdAt);
 
-    keyboard.text('Подключиться 📶', 'navigate_devices');
-    keyboard.text('Главное меню 🏠', 'navigate_main');
+    keyboard.text(this.localService.i18n.t(locale, 'connect-button-label'), 'navigate_devices');
+    keyboard.text(this.localService.i18n.t(locale, 'main-menu-button-label'), 'navigate_main');
 
     if (!payload.data.telegramId) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
@@ -46,7 +47,7 @@ export class UserNotConnectedListener {
       return;
     }
 
-    const locale = 'en';
+
     const text = this.localService.i18n.t(locale, 'user-not-connected');
 
     await this.bot.api.sendMessage(payload.data.telegramId, text, {

@@ -23,14 +23,14 @@ export class PaymentMenu extends Base implements OnModuleInit {
       .dynamic(async (ctx, range) => {
         const paymentUrl = ctx.session.paymentUrl;
         if (paymentUrl) {
-          range.url('💳 Оплатить подписку', paymentUrl);
+          range.url((ctx) => ctx.t('pay-button-label'), paymentUrl);
         }
       })
-      .text('Я оплатил ✅', async (ctx) => {
+      .text((ctx) => ctx.t('paid-button-label'), async (ctx) => {
         await this.paymentStatusMsgService.init(ctx);
       })
       .row()
-      .text('Главное меню', async (ctx) => {
+      .text((ctx) => ctx.t('main-menu-button-label'), async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
   }

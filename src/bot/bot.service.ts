@@ -48,7 +48,7 @@ export class BotService implements OnModuleInit {
     this.bot.on('pre_checkout_query', (ctx) => ctx.answerPreCheckoutQuery(true));
 
     this.bot.on(':successful_payment', async (ctx) => {
-      await ctx.reply('✅ Оплата прошла успешно! Спасибо за вашу поддержку.');
+      await ctx.reply(ctx.t('payment-success'));
     });
 
     this.startCommand.register(this.bot);

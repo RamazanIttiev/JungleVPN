@@ -23,7 +23,7 @@ export class RevokeSubMsgService extends Base {
 
     if (!user?.uuid || !session.selectedDevice || !session.user.subscriptionUrl) {
       await this.userService.init(ctx);
-      await ctx.reply('Что-то пошло не так, попробуй заново /start');
+      await ctx.reply(ctx.t('error-generic-restart'));
       return;
     }
 

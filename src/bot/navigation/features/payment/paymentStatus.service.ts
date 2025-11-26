@@ -29,12 +29,12 @@ export class PaymentStatusMsgService extends Base {
     const { paymentId, paymentUrl, selectedPeriod } = session;
 
     if (!paymentUrl || !uuid || !expireAt || !selectedPeriod) {
-      await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
+      await ctx.reply(ctx.t('error-generic-restart'));
       return;
     }
 
     if (!paymentId) {
-      await ctx.reply('❗ Платеж не найден. Попробуй заново /start');
+      await ctx.reply(ctx.t('payment-not-found'));
       return;
     }
 
@@ -58,12 +58,12 @@ export class PaymentStatusMsgService extends Base {
       }
 
       const stickerId = process.env.PAYMENT_SUCCESS_STICKER;
-      const successMenu = new InlineKeyboard().text('Подключиться 📶', 'paymentSuccess');
+      const successMenu = new InlineKeyboard().text(ctx.t('connect-button-label'), 'paymentSuccess');
 
       if (stickerId) {
         await ctx.replyWithSticker(stickerId, { reply_markup: successMenu });
       } else {
-        await ctx.reply('✅ Оплата прошла успешно!', { reply_markup: successMenu });
+        await ctx.reply(ctx.t('payment-success'), { reply_markup: successMenu });
       }
 
       ctx.session = {
@@ -74,7 +74,7 @@ export class PaymentStatusMsgService extends Base {
         },
       };
     } else {
-      await ctx.reply('❗ Платеж еще не оплачен.');
+      await ctx.reply(ctx.t('payment-pending'));
     }
   }
 }

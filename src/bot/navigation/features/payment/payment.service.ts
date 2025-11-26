@@ -19,13 +19,13 @@ export class PaymentMsgService extends Base {
     const { paymentUrl, paymentId, selectedPeriod, selectedAmount } = session;
 
     if (!paymentUrl || !paymentId || !selectedPeriod || !selectedAmount) {
-      await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
+      await ctx.reply(ctx.t('error-generic-restart'));
       return;
     }
 
     const content = ctx.t('payment-text', {
       amount: mapAmountLabel(selectedAmount),
-      period: mapPeriodLabel(selectedPeriod),
+      period: ctx.t(mapPeriodLabel(selectedPeriod)),
     });
 
     await this.render(ctx, content, menu);

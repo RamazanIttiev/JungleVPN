@@ -18,21 +18,30 @@ export class MainMenu extends Base {
     super();
 
     this.menu
-      .text('Подключиться 📶', async (ctx) => {
-        await ctx.editMessageText(ctx.t('devices-text'), {
-          parse_mode: 'HTML',
-          link_preview_options: { is_disabled: true },
-          reply_markup: this.devicesMenu.menu,
-        });
-      })
-      .text('Продлить ➕', async (ctx) => {
-        await ctx.editMessageText(ctx.t('payment-periods-text'), {
-          parse_mode: 'HTML',
-          link_preview_options: { is_disabled: true },
-          reply_markup: this.paymentsPeriodsMenu.menu,
-        });
-      })
+      .text(
+        (ctx) => ctx.t('connect-button-label'),
+        async (ctx) => {
+          await ctx.editMessageText(ctx.t('devices-text'), {
+            parse_mode: 'HTML',
+            link_preview_options: { is_disabled: true },
+            reply_markup: this.devicesMenu.menu,
+          });
+        },
+      )
+      .text(
+        (ctx) => ctx.t('extend-button-label'),
+        async (ctx) => {
+          await ctx.editMessageText(ctx.t('payment-periods-text'), {
+            parse_mode: 'HTML',
+            link_preview_options: { is_disabled: true },
+            reply_markup: this.paymentsPeriodsMenu.menu,
+          });
+        },
+      )
       .row()
-      .url('Нужна помощь?', process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support');
+      .url(
+        (ctx) => ctx.t('support-button-label'),
+        process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support',
+      );
   }
 }

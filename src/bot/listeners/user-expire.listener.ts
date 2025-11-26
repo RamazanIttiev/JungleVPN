@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
-import { mapDaysLeftLabel, mapPeriodLabelToPriceLabel, toDateString } from '@utils/utils';
+import { mapPeriodLabelToPriceLabel, toDateString } from '@utils/utils';
 import { AxiosError } from 'axios';
 import { differenceInCalendarDays } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
@@ -46,6 +46,7 @@ export class UserExpireListener {
     data: Pick<UserDto, 'telegramId' | 'expireAt'>;
     timestamp: string;
   }) {
+    const locale = 'en';
     const keyboard = new InlineKeyboard();
 
     this.paymentPeriodsMsgService.periods.forEach((period) => {
@@ -53,16 +54,16 @@ export class UserExpireListener {
       keyboard.row();
     });
 
-    keyboard.text('Главное меню', 'navigate_main');
+    keyboard.text(this.localService.i18n.t(locale, 'main-menu-button-label'), 'navigate_main');
 
     if (payload.data.telegramId == null) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
-    const locale = 'en';
+
     const formattedDate = toDateString(payload.data.expireAt);
     const daysLeft = differenceInCalendarDays(new Date(payload.data.expireAt), Date.now());
-    const daysLeftLabel = mapDaysLeftLabel(daysLeft);
+    const daysLeftLabel = this.localService.i18n.t(locale, 'days-left-label', { daysLeft });
 
     const text = this.localService.i18n.t(locale, 'expired-subscription-text', {
       daysLeft,

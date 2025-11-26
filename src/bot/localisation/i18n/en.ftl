@@ -1,4 +1,31 @@
 dear-friend=Dear Friend
+connect-button-label = Connect 📶
+extend-button-label = Extend ➕
+support-button-label = Need help?
+main-menu-button-label = Home 🏠
+download-button-label = 🔽 Install
+back-button-label = ⤴ Back
+payment-period-button-label-1 =  1  month ({ $amount } { $currency })
+payment-period-button-label-2 =  3  months ({ $amount } { $currency })
+payment-period-button-label-3 =  6  months ({ $amount } { $currency })
+pay-button-label = 💳 Pay
+paid-button-label = I paid ✅
+add-profile-button-label = 🔗 Add profile
+new-link-button-label = 🔄 New link
+broadcast-sent-success = ✅ Message sent to all users!
+payment-success = ✅ Payment successful! Thank you for your support.
+error-menu-outdated = Something changed, try /start again
+error-generic-restart = ❗ Something went wrong. Try /start again
+payment-not-found = ❗ Payment not found. Try /start again
+payment-pending = ❗ Payment is still pending.
+period-1mo = 1 month
+period-3mo = 3 months
+period-6mo = 6 months
+days-left-label = { $daysLeft ->
+    [one] { $daysLeft } day
+    *[other] { $daysLeft } days
+  }
+
 
 main =
     🌴 Welcome to the <code>Jungle</code>, <b>{ $username }</b>!
@@ -19,7 +46,7 @@ main =
 
     { $isExpired ->
     [true]   🆘🆘🆘 <b>Your subscription has expired 🥲</b>
-    *[false]  📅 <b>Subscription ends:</b>
+    *[false]  📅 <b>Subscription end date:</b>
     <blockquote>{ $validUntil } (MSK)</blockquote>
     }
 
@@ -37,7 +64,7 @@ payment-periods-text =
 
 
 payment-text =
-    <b>As soon as you pay, come back here to get the connection link</b>
+    <b>As soon as you pay, come back to get the connection link</b>
 
     <blockquote>You’re paying <b>{ $amount }₽</b> for <b>{ $period }</b></blockquote>
 

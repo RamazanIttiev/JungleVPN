@@ -27,14 +27,14 @@ export class BroadcastCommand {
         if (telegramId === adminId) continue;
         try {
           await ctx.api.sendMessage(telegramId, textToSend, {
-            reply_markup: new InlineKeyboard().text('Подключиться 📶', 'navigate_devices'),
+            reply_markup: new InlineKeyboard().text(ctx.t('connect-button-label'), 'navigate_devices'),
           });
         } catch (e) {
           console.log(`Failed to send to ${telegramId}:`, e);
         }
       }
 
-      await ctx.reply('✅ Message sent to all users!');
+      await ctx.reply(ctx.t('broadcast-sent-success'));
     });
   }
 }

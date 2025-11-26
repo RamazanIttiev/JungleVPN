@@ -4,8 +4,8 @@ import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
 import { Base } from '@bot/navigation/menu.base';
-import { mapPeriodLabelToPriceLabel } from '@utils/utils';
 import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { mapPeriodLabelToPriceLabel } from '@utils/utils';
 
 @Injectable()
 export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
@@ -33,14 +33,18 @@ export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
     this.menu.dynamic((_, range) => {
       this.paymentPeriodsMsgService.periods.forEach((period) => {
         range.text(
-          mapPeriodLabelToPriceLabel(period),
+          (ctx) =>
+            ctx.t(mapPeriodLabelToPriceLabel(period), {
+              amount: this.paymentPeriodsMsgService.periodAmounts[period],
+              currency: '₽',
+            }),
           async (ctx) => await this.paymentPeriodsMsgService.handlePaymentPeriod(ctx, period),
         );
         range.row();
       });
 
       range.row();
-      range.text({ text: '⤴ Назад' }, async (ctx) => {
+      range.text({ text: (ctx) => ctx.t('back-button-label') }, async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
     });
