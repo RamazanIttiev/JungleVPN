@@ -6,12 +6,12 @@ back-button-label = ⤴ Назад
 payment-period-button-label-1 = 1 месяц ({ $amount } { $currency })
 payment-period-button-label-2 = 3 месяца ({ $amount } { $currency })
 payment-period-button-label-3 = 6 месяцев ({ $amount } { $currency })
-pay-button-label = 💳 Оплатить подписку
-paid-button-label = Я оплатил ✅
-main-menu-button-label = Главное меню 🏠
-download-button-label = 🔽 Скачать
-add-profile-button-label = 🔗 Добавить профиль
-new-link-button-label = 🔄 Новая ссылка
+pay-button-label = Оплатить подписку 💳
+home-button-label = Главное меню 🏠
+chanel-button-label = Телеграм канал 🌟
+download-button-label = Скачать 🔽
+add-profile-button-label = Добавить профиль 🔗
+new-link-button-label = Новая ссылка 🔄
 broadcast-sent-success = ✅ Сообщение отправлено всем пользователям!
 error-menu-outdated = Что-то изменилось, попробуй заново /start
 payment-success = ✅ Оплата прошла успешно! Спасибо за вашу поддержку.
@@ -109,12 +109,19 @@ expired-subscription-text =
 
 
 
-user-not-connected =
+user-not-connected-24 =
     🌴🐵🌴
 
     Псст... Вижу ты еще не подключился
 
     Подключайся и наслаждайся безопасным интернетом
+
+
+
+user-not-connected-72 =
+    Вижу ты все еще не подключался 🥲
+
+    Давай я помогу? Займет меньше минуты 🙂
 
 
 

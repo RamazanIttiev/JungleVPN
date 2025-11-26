@@ -2,16 +2,16 @@ dear-friend=Dear Friend
 connect-button-label = Connect 📶
 extend-button-label = Extend ➕
 support-button-label = Need help?
-main-menu-button-label = Home 🏠
-download-button-label = 🔽 Install
+home-button-label = Home 🏠
+download-button-label = Install 🔽
 back-button-label = ⤴ Back
 payment-period-button-label-1 =  1  month ({ $amount } { $currency })
 payment-period-button-label-2 =  3  months ({ $amount } { $currency })
 payment-period-button-label-3 =  6  months ({ $amount } { $currency })
-pay-button-label = 💳 Pay
-paid-button-label = I paid ✅
-add-profile-button-label = 🔗 Add profile
-new-link-button-label = 🔄 New link
+pay-button-label = Pay 💳
+add-profile-button-label = Add profile 🔗
+new-link-button-label = New link 🔄
+chanel-button-label = Telegram chanel 🌟
 broadcast-sent-success = ✅ Message sent to all users!
 payment-success = ✅ Payment successful! Thank you for your support.
 error-menu-outdated = Something changed, try /start again
@@ -86,13 +86,20 @@ subscription-text =
 
 
 
-user-not-connected =
+user-not-connected-24 =
     🌴🐵🌴
 
     Psst... You haven't connected yet
     Keep your data safe in the <code>Jungle</code>
 
     Connect and enjoy 🙂
+
+
+
+user-not-connected-72 =
+    You are still not connected
+
+    Let me help you, it will take less then a minute 🙂
 
 
 

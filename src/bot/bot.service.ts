@@ -38,8 +38,6 @@ export class BotService implements OnModuleInit {
 
     this.bot.use(this.localService.i18n);
 
-    this.bot.use(conversations());
-
     const menuTree = this.menuTree.init();
 
     this.bot.use(menuTree);

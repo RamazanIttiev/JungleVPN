@@ -35,7 +35,7 @@ export class RevokeSubMsgService extends Base {
 
     const text = ctx.t('subscription-page', {
       deviceLabel,
-      subUrl: session.user.subscriptionUrl!,
+      subUrl: user.subscriptionUrl!,
     });
 
     await this.render(ctx, text, this.subscriptionMenu.menu, true);

@@ -19,7 +19,7 @@ export class SubscriptionMsgService extends Base {
 
     const text = ctx.t('subscription-text', {
       deviceLabel,
-      subUrl: session.user.subscriptionUrl!,
+      subUrl: user.subscriptionUrl!,
     });
     await this.render(ctx, text, menu);
   }

@@ -1,6 +1,8 @@
 import { BotContext } from '@bot/bot.types';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
+import { Api, Bot, GrammyError, RawApi } from 'grammy';
+import { Other } from 'grammy/out/core/api';
 
 export const isValidUsername = (username: string | undefined | null): boolean => {
   if (!username) return false;

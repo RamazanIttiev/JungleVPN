@@ -39,7 +39,10 @@ export class MainMenu extends Base {
         },
       )
       .row()
-      .url('Телеграм канал 🌟', process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/in_the_jungle')
+      .url(
+        (ctx) => ctx.t('chanel-button-label'),
+        process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/in_the_jungle',
+      )
       .row()
       .url(
         (ctx) => ctx.t('support-button-label'),

@@ -22,7 +22,7 @@ export class MainMsgService extends Base {
 
     const content = ctx.t('main', {
       username: username!,
-      validUntil: toDateString(session.user.expireAt!),
+      validUntil: toDateString(user.expireAt!),
       isExpired: isExpired ? 'true' : 'false',
     });
 

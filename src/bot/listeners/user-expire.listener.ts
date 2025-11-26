@@ -5,9 +5,8 @@ import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payme
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
-import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
-import { mapPeriodLabelToPriceLabel, toDateString, safeSendMessage } from '@utils/utils';
+import { mapPeriodLabelToPriceLabel, safeSendMessage, toDateString } from '@utils/utils';
 import { AxiosError } from 'axios';
 import { differenceInCalendarDays } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
@@ -20,7 +19,6 @@ export class UserExpireListener {
     private readonly botService: BotService,
     private readonly localService: LocalisationService,
     private readonly paymentPeriodsMsgService: PaymentPeriodsMsgService,
-    private readonly remnaService: RemnaService,
   ) {
     this.bot = this.botService.bot;
   }
@@ -58,7 +56,7 @@ export class UserExpireListener {
       keyboard.row();
     });
 
-    keyboard.text(this.localService.i18n.t(locale, 'main-menu-button-label'), 'navigate_main');
+    keyboard.text(this.localService.i18n.t(locale, 'home-button-label'), 'navigate_main');
 
     const formattedDate = toDateString(payload.data.expireAt);
     const daysLeft = differenceInCalendarDays(new Date(payload.data.expireAt), Date.now());
@@ -70,14 +68,9 @@ export class UserExpireListener {
       daysLeftLabel,
     });
 
-    await safeSendMessage(
-      this.bot,
-      payload.data.telegramId,
-      text,
-      {
-        parse_mode: 'HTML',
-        reply_markup: keyboard,
-      },
-    );
+    await safeSendMessage(this.bot, telegramId, text, {
+      parse_mode: 'HTML',
+      reply_markup: keyboard,
+    });
   }
 }

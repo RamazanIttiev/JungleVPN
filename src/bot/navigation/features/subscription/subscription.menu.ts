@@ -36,7 +36,7 @@ export class SubscriptionMenu extends Base {
       // })
       .row()
       .text(
-        (ctx) => ctx.t('main-menu-button-label'),
+        (ctx) => ctx.t('home-button-label'),
         async (ctx) => {
           await this.mainMsgService.init(ctx, this.mainMenu.menu);
         },
