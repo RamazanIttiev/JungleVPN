@@ -64,7 +64,6 @@ export const getMainPageContent = (options: {
 
 В <code>JUNGLE</code> скорость и безопасность — на первом месте ♥️
 
-⚡️️  YouTube без рекламы
 ⚡️️  Неограниченное количество трафика
 🆓  Первые 2 месяца бесплатно
 
@@ -110,6 +109,7 @@ export const getSubscriptionPageContent = (options: {
 }) => {
   const { subUrl, device } = options;
 
+  const deviceLink = getAppLink(device);
   const deviceLabel = mapDeviceLabel(device!);
 
   switch (device) {
@@ -121,8 +121,8 @@ export const getSubscriptionPageContent = (options: {
 📖 Подключение VPN на ${deviceLabel}:
 
 
-1️⃣ Установи приложение «v2RayTun». 
-<i>кнопка «🔽 Скачать»</i>
+1️⃣ Установи приложение <a href='${deviceLink}'>«v2RayTun»</a> 
+<a>кнопка «🔽 Скачать»</a>
 
 2️⃣ Нажми «🔗 Добавить профиль».
 
