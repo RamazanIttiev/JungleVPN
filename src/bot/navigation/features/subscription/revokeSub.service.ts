@@ -1,11 +1,10 @@
 import { BotContext } from '@bot/bot.types';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Base } from '@bot/navigation/menu.base';
-import { getSubscriptionPageContent } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
-import { escapeHtml } from '@utils/utils';
+import { mapDeviceLabel } from '@utils/utils';
 
 @Injectable()
 export class RevokeSubMsgService extends Base {
@@ -32,11 +31,13 @@ export class RevokeSubMsgService extends Base {
     session.user.subscriptionUrl = subUrl;
     session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${subUrl}`;
 
-    const content = getSubscriptionPageContent({
-      device: session.selectedDevice,
-      subUrl: escapeHtml(session.user.subscriptionUrl),
+    const deviceLabel = mapDeviceLabel(session.selectedDevice!);
+
+    const text = ctx.t('subscription-page', {
+      deviceLabel,
+      subUrl: session.user.subscriptionUrl!,
     });
 
-    await this.render(ctx, content, this.subscriptionMenu.menu, true);
+    await this.render(ctx, text, this.subscriptionMenu.menu, true);
   }
 }

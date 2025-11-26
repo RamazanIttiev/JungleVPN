@@ -1,4 +1,3 @@
-import * as process from 'node:process';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
 import {
@@ -10,35 +9,6 @@ import {
   toDateString,
 } from '@utils/utils';
 import { differenceInCalendarDays } from 'date-fns';
-
-export const getAppLink = (device: UserDevice | undefined): string => {
-  switch (device) {
-    case 'ios':
-      return (
-        process.env.IPHONE_APP_DOWNLOAD_LINK ||
-        'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
-      );
-    case 'macOS':
-      return (
-        process.env.MACOS_APP_DOWNLOAD_LINK ||
-        'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
-      );
-    case 'android':
-      return (
-        process.env.ANDROID_APP_DOWNLOAD_LINK ||
-        'https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ruB'
-      );
-    case 'windows':
-      return (
-        process.env.WINDOWS_APP_DOWNLOAD_LINK || 'https://storage.v2raytun.com/v2RayTun_Setup.exe'
-      );
-    default:
-      return (
-        process.env.IPHONE_APP_DOWNLOAD_LINK ||
-        'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
-      );
-  }
-};
 
 const getSubStatusContent = (isExpired: boolean, validUntil: string) => {
   if (!isExpired) {
@@ -147,8 +117,6 @@ export const getExpiredSubscriptionContent = (expireAt: string) => {
   switch (daysLeft) {
     case 1:
       return `
-🆘🆘🆘
-
 <b>Твоя подписка закончится <blockquote>${formattedDate}</blockquote></b>
 
 😱Это уже через <b>${mapDaysLeftLabel(daysLeft)}</b>

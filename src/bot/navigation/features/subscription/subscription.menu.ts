@@ -2,8 +2,8 @@ import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { Base } from '@bot/navigation/menu.base';
-import { getAppLink } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { getAppLink } from '@utils/utils';
 
 @Injectable()
 export class SubscriptionMenu extends Base {

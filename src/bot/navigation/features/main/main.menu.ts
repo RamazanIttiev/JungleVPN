@@ -3,7 +3,6 @@ import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
 import { Base } from '@bot/navigation/menu.base';
-import { getDevicesPageContent, getPaymentPeriodsPage } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -20,14 +19,14 @@ export class MainMenu extends Base {
 
     this.menu
       .text('Подключиться 📶', async (ctx) => {
-        await ctx.editMessageText(getDevicesPageContent(), {
+        await ctx.editMessageText(ctx.t('devices-text'), {
           parse_mode: 'HTML',
           link_preview_options: { is_disabled: true },
           reply_markup: this.devicesMenu.menu,
         });
       })
       .text('Продлить ➕', async (ctx) => {
-        await ctx.editMessageText(getPaymentPeriodsPage(), {
+        await ctx.editMessageText(ctx.t('payment-periods-text'), {
           parse_mode: 'HTML',
           link_preview_options: { is_disabled: true },
           reply_markup: this.paymentsPeriodsMenu.menu,

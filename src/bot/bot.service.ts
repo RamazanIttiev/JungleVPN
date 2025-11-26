@@ -6,11 +6,11 @@ import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback'
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
+import { LocalisationService } from '@bot/localisation/localisation.service';
 import { MenuTree } from '@bot/navigation/menu.tree';
 import { conversations } from '@grammyjs/conversations';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
-import { I18n } from '@grammyjs/i18n';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -25,6 +25,7 @@ export class BotService implements OnModuleInit {
     private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
     private readonly paymentPeriodsCallback: PaymentPeriodsCallback,
+    private readonly localService: LocalisationService,
   ) {
     if (!this.token) {
       throw new Error('TELEGRAM_BOT_TOKEN missing');
@@ -35,6 +36,8 @@ export class BotService implements OnModuleInit {
 
   async onModuleInit() {
     this.bot.use(session({ initial: initialSession }));
+
+    this.bot.use(this.localService.i18n);
 
     this.bot.use(conversations());
 
@@ -47,14 +50,6 @@ export class BotService implements OnModuleInit {
     this.bot.on(':successful_payment', async (ctx) => {
       await ctx.reply('✅ Оплата прошла успешно! Спасибо за вашу поддержку.');
     });
-
-    const i18n = new I18n<BotContext>({
-      defaultLocale: "ru",
-      directory: "src/bot/i18n",
-    });
-
-    this.bot.use(i18n);
-
 
     this.startCommand.register(this.bot);
     this.broadcastCommand.register(this.bot);

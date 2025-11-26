@@ -1,6 +1,6 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { getTorrentWarningContent } from '@bot/utils/templates';
+import { LocalisationService } from '@bot/localisation/localisation.service';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Bot } from 'grammy';
@@ -9,7 +9,10 @@ import { Bot } from 'grammy';
 export class TorrentListener {
   bot: Bot<BotContext>;
 
-  constructor(private readonly botService: BotService) {
+  constructor(
+    private readonly botService: BotService,
+    private readonly localService: LocalisationService,
+  ) {
     this.bot = this.botService.bot;
   }
 
@@ -22,7 +25,10 @@ export class TorrentListener {
     duration: string;
     timestamp: string;
   }) {
-    await this.bot.api.sendMessage(payload.username, getTorrentWarningContent(), {
+    const locale = 'en';
+    const text = this.localService.i18n.t(locale, 'torrent-warning-text');
+
+    await this.bot.api.sendMessage(payload.username, text, {
       parse_mode: 'HTML',
     });
   }

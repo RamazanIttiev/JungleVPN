@@ -2,8 +2,8 @@ import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { Base } from '@bot/navigation/menu.base';
-import { getPaymentPageContent } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { mapAmountLabel, mapPeriodLabel } from '@utils/utils';
 
 @Injectable()
 export class PaymentMsgService extends Base {
@@ -23,7 +23,10 @@ export class PaymentMsgService extends Base {
       return;
     }
 
-    const content = getPaymentPageContent(selectedPeriod, selectedAmount);
+    const content = ctx.t('payment-text', {
+      amount: mapAmountLabel(selectedAmount),
+      period: mapPeriodLabel(selectedPeriod),
+    });
 
     await this.render(ctx, content, menu);
   }

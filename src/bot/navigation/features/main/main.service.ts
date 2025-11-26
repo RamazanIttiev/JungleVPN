@@ -3,7 +3,7 @@ import { Menu } from '@bot/navigation';
 import { Base } from '@bot/navigation/menu.base';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '@user/user.service';
-import { toDateString } from '@utils/utils';
+import { isValidUsername, toDateString } from '@utils/utils';
 
 @Injectable()
 export class MainMsgService extends Base {
@@ -20,10 +20,14 @@ export class MainMsgService extends Base {
 
     const isExpired = this.isExpired(session.user.expireAt);
 
+    const username = isValidUsername(ctx.from?.username)
+      ? ctx.from?.username
+      : ctx.t('dear-friend');
+
     const content = ctx.t('main', {
-      username: session.user.username!,
-      isExpired: isExpired ? 'true' : 'false',
+      username: username!,
       validUntil: toDateString(session.user.expireAt!),
+      isExpired: isExpired ? 'true' : 'false',
     });
 
     await this.render(ctx, content, menu);

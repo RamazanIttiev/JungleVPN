@@ -29,7 +29,7 @@ export const mapDeviceLabel = (device: UserDevice) => {
 export const toDateString = (value: string) => {
   return new Date(value).toLocaleDateString('ru-EU', {
     year: 'numeric',
-    month: 'long',
+    month: 'numeric',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
@@ -85,6 +85,35 @@ export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
       return '3️⃣ месяца (159 ₽)';
     case '6mo':
       return '6️⃣ месяцев (499 ₽)';
+  }
+};
+
+export const getAppLink = (device: UserDevice | undefined): string => {
+  switch (device) {
+    case 'ios':
+      return (
+        process.env.IPHONE_APP_DOWNLOAD_LINK ||
+        'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
+      );
+    case 'macOS':
+      return (
+        process.env.MACOS_APP_DOWNLOAD_LINK ||
+        'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
+      );
+    case 'android':
+      return (
+        process.env.ANDROID_APP_DOWNLOAD_LINK ||
+        'https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ruB'
+      );
+    case 'windows':
+      return (
+        process.env.WINDOWS_APP_DOWNLOAD_LINK || 'https://storage.v2raytun.com/v2RayTun_Setup.exe'
+      );
+    default:
+      return (
+        process.env.IPHONE_APP_DOWNLOAD_LINK ||
+        'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
+      );
   }
 };
 

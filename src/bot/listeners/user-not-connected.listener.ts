@@ -1,6 +1,6 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { getUserNotConnectedContent } from '@bot/utils/templates';
+import { LocalisationService } from '@bot/localisation/localisation.service';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
@@ -16,6 +16,7 @@ export class UserNotConnectedListener {
 
   constructor(
     readonly botService: BotService,
+    readonly localService: LocalisationService,
     readonly remnaService: RemnaService,
   ) {
     this.bot = this.botService.bot;
@@ -45,7 +46,10 @@ export class UserNotConnectedListener {
       return;
     }
 
-    await this.bot.api.sendMessage(payload.data.telegramId, getUserNotConnectedContent(), {
+    const locale = 'en';
+    const text = this.localService.i18n.t(locale, 'user-not-connected');
+
+    await this.bot.api.sendMessage(payload.data.telegramId, text, {
       parse_mode: 'HTML',
       reply_markup: keyboard,
     });
