@@ -5,6 +5,7 @@ import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payme
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
+import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
 import { mapPeriodLabelToPriceLabel, toDateString } from '@utils/utils';
 import { AxiosError } from 'axios';
@@ -19,6 +20,7 @@ export class UserExpireListener {
     private readonly botService: BotService,
     private readonly localService: LocalisationService,
     private readonly paymentPeriodsMsgService: PaymentPeriodsMsgService,
+    private readonly remnaService: RemnaService,
   ) {
     this.bot = this.botService.bot;
   }
@@ -26,7 +28,7 @@ export class UserExpireListener {
   @OnEvent('user.expires_in_24_hours')
   async listenToUser24ExpiresEvent(payload: {
     event: WebHookEvent;
-    data: Pick<UserDto, 'telegramId' | 'expireAt'>;
+    data: Pick<UserDto, 'telegramId' | 'expireAt' | 'description'>;
     timestamp: string;
   }) {
     await this.handleUserExpiresEvent(payload);
@@ -35,7 +37,7 @@ export class UserExpireListener {
   @OnEvent('user.expires_in_72_hours')
   async listenToUser72ExpiresEvent(payload: {
     event: WebHookEvent;
-    data: Pick<UserDto, 'telegramId' | 'expireAt'>;
+    data: Pick<UserDto, 'telegramId' | 'expireAt' | 'description'>;
     timestamp: string;
   }) {
     await this.handleUserExpiresEvent(payload);
@@ -43,10 +45,16 @@ export class UserExpireListener {
 
   async handleUserExpiresEvent(payload: {
     event: WebHookEvent;
-    data: Pick<UserDto, 'telegramId' | 'expireAt'>;
+    data: Pick<UserDto, 'telegramId' | 'expireAt' | 'description'>;
     timestamp: string;
   }) {
-    const locale = 'en';
+    const telegramId = payload.data.telegramId;
+    if (!telegramId) {
+      throw new AxiosError('UserNotConnectedListener: telegramId is null');
+    }
+
+    const locale = payload.data.description || process.env.DEFAULT_LOCALE || 'ru';
+
     const keyboard = new InlineKeyboard();
 
     this.paymentPeriodsMsgService.periods.forEach((period) => {
@@ -55,11 +63,6 @@ export class UserExpireListener {
     });
 
     keyboard.text(this.localService.i18n.t(locale, 'main-menu-button-label'), 'navigate_main');
-
-    if (payload.data.telegramId == null) {
-      throw new AxiosError('UserNotConnectedListener: telegramId is null');
-    }
-
 
     const formattedDate = toDateString(payload.data.expireAt);
     const daysLeft = differenceInCalendarDays(new Date(payload.data.expireAt), Date.now());
@@ -71,7 +74,7 @@ export class UserExpireListener {
       daysLeftLabel,
     });
 
-    await this.bot.api.sendMessage(payload.data.telegramId, text, {
+    await this.bot.api.sendMessage(telegramId, text, {
       parse_mode: 'HTML',
       reply_markup: keyboard,
     });

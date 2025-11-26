@@ -28,7 +28,7 @@ export class UserNotConnectedListener {
     data: UserDto;
     timestamp: string;
   }) {
-    const locale = 'en';
+    const locale = payload.data.description || process.env.DEFAULT_LOCALE || 'ru';
     const keyboard = new InlineKeyboard();
     const createdAt = new Date(payload.data.createdAt);
     const timestamp = new Date(payload.timestamp);
