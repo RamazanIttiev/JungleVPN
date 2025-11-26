@@ -11,14 +11,10 @@ export class MainMsgService extends Base {
     super();
   }
 
-  async init(ctx: BotContext, menu: Menu) {
-    const session = ctx.session;
+  async init(ctx: BotContext, menu: Menu, deleteOldMsg?: boolean) {
+    const user = await this.userService.init(ctx);
 
-    if (!session.user.uuid) {
-      await this.userService.init(ctx);
-    }
-
-    const isExpired = this.isExpired(session.user.expireAt);
+    const isExpired = this.isExpired(user.expireAt);
 
     const username = isValidUsername(ctx.from?.username)
       ? ctx.from?.username
@@ -30,6 +26,6 @@ export class MainMsgService extends Base {
       isExpired: isExpired ? 'true' : 'false',
     });
 
-    await this.render(ctx, content, menu);
+    await this.render(ctx, content, menu, deleteOldMsg);
   }
 }

@@ -39,6 +39,8 @@ export class MainMenu extends Base {
         },
       )
       .row()
+      .url('Телеграм канал 🌟', process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/in_the_jungle')
+      .row()
       .url(
         (ctx) => ctx.t('support-button-label'),
         process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support',

@@ -38,7 +38,8 @@ export class YooKassaProvider implements IPaymentProvider {
             type: 'redirect',
             return_url: process.env.YOOKASSA_RETURN_URL,
           },
-          description: '',
+          description: dto.description,
+          metadata: dto.metadata,
         },
         {
           headers: {
@@ -68,7 +69,4 @@ export class YooKassaProvider implements IPaymentProvider {
   }
 
   updatePayment: (id: string, partial: Partial<Payment>) => Promise<void>;
-  async handleWebhook(data: any): Promise<void> {
-    // Optionally process webhook callbacks
-  }
 }

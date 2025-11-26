@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nest start --watch",
+    "dev": "npm i && nest start --watch",
     "build": "nest build",
     "start": "npm install && docker compose down && docker compose up --build -d && docker compose logs -f",
     "migration:generate": "npm run build && npx typeorm migration:generate db/migrations/Migration -d dist/db/datasource.js",
@@ -11,8 +11,6 @@
     "migration:revert": "npm run build && npx typeorm migration:revert -d dist/db/datasource.js"
   },
   "dependencies": {
-    "@grammyjs/conversations": "^2.1.0",
-    "@grammyjs/hydrate": "^1.6.0",
     "@grammyjs/i18n": "^1.1.2",
     "@grammyjs/menu": "^1.3.1",
     "@nestjs/common": "^11.0.1",
@@ -22,6 +20,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "11.0.0",
     "axios": "^1.12.2",
+    "cidr-matcher": "^2.1.1",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "grammy": "^1.38.2",
@@ -30,7 +29,6 @@
     "reflect-metadata": "^0.2.2",
     "rimraf": "^6.0.1",
     "rxjs": "^7.8.1",
-    "tough-cookie": "^6.0.0",
     "tweetnacl": "^1.0.3",
     "typeorm": "^0.3.20"
   },
@@ -40,6 +38,7 @@
     "@nestjs/schematics": "^10.1.2",
     "@nestjs/testing": "^11.0.1",
     "@types/bun": "^1.3.1",
+    "@types/cidr-matcher": "^2.1.2",
     "@types/express": "^5.0.3",
     "@types/node": "^20.12.12",
     "typescript": "^5.4.5",

@@ -71,7 +71,7 @@ export class RemnaService {
       total: number;
       users: UserDto[];
     }>({
-      url: '/users',
+      url: '/users?size=1000',
       method: 'GET',
     });
 
@@ -103,7 +103,7 @@ export class RemnaService {
     });
   }
 
-  async getUserByTgId(id: number) {
+  async getUserByTgId(id: number): Promise<UserDto | null> {
     try {
       const user = await this.fetch<CreateUserResponseDto[] | null>({
         url: `/users/by-telegram-id/${id}`,
@@ -118,8 +118,8 @@ export class RemnaService {
     }
   }
 
-  async deleteUser(id: string) {
-    await this.fetch({ url: `/users/${id}`, method: 'DELETE' });
+  async deleteUser(uuid: string) {
+    await this.fetch({ url: `/users/${uuid}`, method: 'DELETE' });
   }
 
   async revokeSub(uuid: string) {

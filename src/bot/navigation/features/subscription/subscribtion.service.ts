@@ -13,10 +13,7 @@ export class SubscriptionMsgService extends Base {
 
   async init(ctx: BotContext, menu: Menu) {
     const session = ctx.session;
-
-    if (!session.user.uuid) {
-      await this.userService.init(ctx);
-    }
+    const user = await this.userService.init(ctx);
 
     const deviceLabel = mapDeviceLabel(session.selectedDevice!);
 

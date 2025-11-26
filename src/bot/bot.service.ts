@@ -8,7 +8,6 @@ import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { LocalisationService } from '@bot/localisation/localisation.service';
 import { MenuTree } from '@bot/navigation/menu.tree';
-import { conversations } from '@grammyjs/conversations';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
 

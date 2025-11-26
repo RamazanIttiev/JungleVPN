@@ -1,3 +1,4 @@
+import { BotContext } from '@bot/bot.types';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
 
@@ -71,6 +72,28 @@ export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
       return 'payment-period-button-label-3';
   }
 };
+
+export async function safeSendMessage(
+  bot: Bot<BotContext, Api<RawApi>>,
+  userId: number,
+  content: string,
+  options?: Other<RawApi, 'sendMessage', 'chat_id' | 'text'> | undefined,
+  onBlocked?: (error: GrammyError) => Promise<void>,
+) {
+  try {
+    await bot.api.sendMessage(userId, content, options);
+  } catch (err) {
+    const error = err as GrammyError;
+    if (error.error_code === 403 && error.description.includes('bot was blocked')) {
+      if (onBlocked) {
+        await onBlocked(error);
+      }
+    } else {
+      // rethrow other errors
+      throw error;
+    }
+  }
+}
 
 export const getAppLink = (device: UserDevice | undefined): string => {
   switch (device) {

@@ -3,6 +3,7 @@ import { BotContext } from '@bot/bot.types';
 import { LocalisationService } from '@bot/localisation/localisation.service';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+import { safeSendMessage } from '@utils/utils';
 import { Bot } from 'grammy';
 
 @Injectable()
@@ -28,7 +29,7 @@ export class TorrentListener {
     const locale = 'en';
     const text = this.localService.i18n.t(locale, 'torrent-warning-text');
 
-    await this.bot.api.sendMessage(payload.username, text, {
+    await safeSendMessage(this.bot, Number(payload.username), text, {
       parse_mode: 'HTML',
     });
   }
