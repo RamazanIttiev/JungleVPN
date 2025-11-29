@@ -1,4 +1,6 @@
 dear-friend = Дорогой друг!
+provider-description-text = Рад видеть тебя в JUNGLE 🌴
+
 connect-button-label = Подключиться 📶
 extend-button-label = Продлить ➕
 support-button-label = Нужна помощь?
@@ -6,6 +8,8 @@ back-button-label = ⤴ Назад
 payment-period-button-label-1 = 1 месяц ({ $amount }{ $currency })
 payment-period-button-label-2 = 3 месяца ({ $amount }{ $currency })
 payment-period-button-label-3 = 6 месяцев ({ $amount }{ $currency })
+payment-method-usd = 💰Visa/Master Card
+payment-method-rub = 💳 MIR/SPB
 pay-button-label = Оплатить подписку 💳
 home-button-label = Главное меню 🏠
 chanel-button-label = Телеграм канал 🌟
@@ -21,6 +25,7 @@ payment-pending = ❗ Платеж еще не оплачен.
 period-1mo = 1 месяц
 period-3mo = 3 месяца
 period-6mo = 6 месяцев
+
 days-left-label = { $daysLeft ->
     [one] { $daysLeft } день
     [few] { $daysLeft } дня

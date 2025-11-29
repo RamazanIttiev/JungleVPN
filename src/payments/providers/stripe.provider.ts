@@ -1,14 +1,13 @@
 import * as process from 'node:process';
 import { Injectable } from '@nestjs/common';
-import { CreatePaymentDto, PaymentProvider } from '@payments/payments.model';
+import { CreatePaymentDto, PaymentProvider, PaymentSession } from '@payments/payments.model';
 import { AbstractPaymentProvider } from './abstract.provider';
 
 @Injectable()
 export class StripeProvider extends AbstractPaymentProvider {
   readonly id: PaymentProvider = 'stripe';
 
-  async createPayment(dto: CreatePaymentDto) {
-    console.log(dto);
+  async createPayment(dto: CreatePaymentDto): Promise<PaymentSession> {
     const amount = dto.payment.amount;
     let linkId = '';
     let linkUrl = '';

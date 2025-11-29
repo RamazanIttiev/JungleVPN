@@ -1,4 +1,3 @@
-import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
 import { Base } from '@bot/navigation/menu.base';
@@ -29,14 +28,14 @@ export class PaymentMethodMsgService extends Base {
       return;
     }
 
-    const { id, url } = await this.paymentsService.createPayment(
+    const { url } = await this.paymentsService.createPayment(
       {
         userId: tgUser.id.toString(),
         payment: {
           amount: selectedAmount,
           provider,
           currency: provider === 'yookassa' ? 'RUB' : 'USD',
-          description: process.env.PAYMENT_PROVIDER_DESCRIPTION,
+          description: ctx.t('provider-description-text'),
         },
         metadata: {
           selectedPeriod: mapPeriodToDate(selectedPeriod),
@@ -47,13 +46,8 @@ export class PaymentMethodMsgService extends Base {
       provider,
     );
 
-    this.updateSession(ctx, id, url);
+    ctx.session.paymentUrl = url;
 
     await this.paymentMsgService.init(ctx);
-  }
-
-  private updateSession(ctx: BotContext, id: string, url: string) {
-    ctx.session.paymentId = id;
-    ctx.session.paymentUrl = url;
   }
 }

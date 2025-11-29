@@ -1,4 +1,6 @@
 dear-friend=Dear Friend
+provider-description-text = Happy to see you in the JUNGLE 🌴
+
 connect-button-label = Connect 📶
 extend-button-label = Extend ➕
 support-button-label = Need help?
@@ -6,7 +8,7 @@ home-button-label = Home 🏠
 download-button-label = Install 🔽
 back-button-label = ⤴ Back
 payment-method-usd = 💰Visa/Master Card
-payment-method-rub = ₽ MIR
+payment-method-rub = 💳 MIR/SPB
 payment-period-button-label-1 =  1  month ({ $amount }{ $currency })
 payment-period-button-label-2 =  3  months ({ $amount }{ $currency })
 payment-period-button-label-3 =  6  months ({ $amount }{ $currency })
@@ -23,6 +25,7 @@ payment-pending = ❗ Payment is still pending.
 period-1mo = 1 month
 period-3mo = 3 months
 period-6mo = 6 months
+
 days-left-label = { $daysLeft ->
     [one] { $daysLeft } day
     *[other] { $daysLeft } days
