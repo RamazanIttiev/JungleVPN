@@ -59,9 +59,7 @@ export class BroadcastCommand {
         }
       }
 
-      await ctx.reply(
-        `✅ Broadcast complete!\n\nSuccess: ${successCount}\nFailed: ${failureCount}`,
-      );
+      await ctx.reply(ctx.t('broadcast-sent-success'));
     });
   }
 }

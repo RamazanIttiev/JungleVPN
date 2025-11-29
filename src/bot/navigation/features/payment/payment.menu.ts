@@ -18,12 +18,12 @@ export class PaymentMenu extends Base implements OnModuleInit {
 
   onModuleInit() {
     this.menu
-      .url('💳 Оплатить подписку', (ctx) => {
+      .url((ctx) => ctx.t('pay-button-label'), (ctx) => {
         return ctx.session.paymentUrl || 'https://example.com';
       })
       .row()
       .text(
-        'Главное меню 🏠',
+        (ctx) => ctx.t('home-button-label'),
         async (ctx) => await this.mainMsgService.init(ctx, this.mainMenu.menu),
       );
   }

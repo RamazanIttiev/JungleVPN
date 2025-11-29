@@ -20,6 +20,7 @@ export class UserService {
   async init(ctx: BotContext): Promise<UserDto> {
     const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
+    const locale = tgUser.language_code;
 
     ctx.session.user = initialSession().user;
     const user = await this.remnaService.getUserByTgId(tgUser.id);
@@ -28,11 +29,18 @@ export class UserService {
       const newUser = await this.remnaService.createUser({
         telegramId: tgUser.id,
         username: tgUser.id.toString(),
+        description: locale,
       });
 
       session.redirectUrl = `${process.env.CLIENT_APP_URL}/${newUser.subscriptionUrl}`;
       return newUser;
     } else {
+      if (user.description !== locale) {
+        await this.remnaService.updateUser({
+          uuid: user.uuid,
+          description: locale,
+        });
+      }
       session.redirectUrl = `${process.env.CLIENT_APP_URL}/${user.subscriptionUrl}`;
       return user;
     }

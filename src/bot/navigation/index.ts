@@ -6,7 +6,7 @@ export class Menu extends GrammyMenu<BotContext> {
     super(id, {
       onMenuOutdated: async (ctx) => {
         try {
-          await ctx.reply('Что-то изменилось, попробуй заново /start');
+          await ctx.reply(ctx.t('error-menu-outdated'));
         } catch (e) {
           console.error('Failed to send outdated menu message:', e);
         }

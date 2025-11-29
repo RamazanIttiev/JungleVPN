@@ -29,7 +29,11 @@ export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
 
     this.menu.dynamic((_, range) => {
       this.paymentPeriodsMsgService.periods.forEach((period, index) => {
-        range.text(mapPeriodLabelToPriceLabel(period), async (ctx) => {
+        range.text( (ctx) =>
+          ctx.t(mapPeriodLabelToPriceLabel(period), {
+            amount: this.paymentPeriodsMsgService.amounts[index],
+            currency: '₽',
+          }), async (ctx) => {
           ctx.session.selectedPeriod = period;
           ctx.session.selectedAmount = this.paymentPeriodsMsgService.amounts[index];
           await this.paymentPeriodsMsgService.init(ctx);
@@ -38,7 +42,7 @@ export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
       });
 
       range.row();
-      range.text({ text: '⤴ Назад' }, async (ctx) => {
+      range.text({ text: (ctx) => ctx.t('back-button-label') }, async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
     });

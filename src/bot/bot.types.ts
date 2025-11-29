@@ -1,8 +1,9 @@
+import { I18nFlavor } from '@grammyjs/i18n';
 import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
 import { UserDevice, UserDto } from '@user/user.model';
 import { Context, SessionFlavor as GrammySessionFlavor } from 'grammy';
 
-export type BotContext = Context & SessionFlavor;
+export type BotContext = Context & SessionFlavor & I18nFlavor;
 
 export interface SessionData {
   paymentUrl: string | undefined;

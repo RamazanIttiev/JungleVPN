@@ -7,6 +7,7 @@ import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback'
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
+import { LocalisationService } from '@bot/localisation/localisation.service';
 import { MenuTree } from '@bot/navigation/menu.tree';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
@@ -24,6 +25,7 @@ export class BotService implements OnModuleInit {
     private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
     private readonly paymentPeriodsCallback: PaymentPeriodsCallback,
+    private readonly localService: LocalisationService,
     private readonly paymentMethodsCallback: PaymentMethodsCallback,
   ) {
     if (!this.token) {
@@ -36,6 +38,8 @@ export class BotService implements OnModuleInit {
   async onModuleInit() {
     this.bot.use(session({ initial: initialSession }));
 
+    this.bot.use(this.localService.i18n);
+
     const menuTree = this.menuTree.init();
 
     this.bot.use(menuTree);
@@ -43,7 +47,7 @@ export class BotService implements OnModuleInit {
     this.bot.on('pre_checkout_query', (ctx) => ctx.answerPreCheckoutQuery(true));
 
     this.bot.on(':successful_payment', async (ctx) => {
-      await ctx.reply('✅ Оплата прошла успешно! Спасибо за вашу поддержку.');
+      await ctx.reply(ctx.t('payment-success'));
     });
 
     this.startCommand.register(this.bot);

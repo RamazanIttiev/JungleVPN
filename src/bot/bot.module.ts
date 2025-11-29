@@ -9,6 +9,7 @@ import { PaymentStatusListener } from '@bot/listeners/payment-status.listener';
 import { TorrentListener } from '@bot/listeners/torrent.listener';
 import { UserExpireListener } from '@bot/listeners/user-expire.listener';
 import { UserNotConnectedListener } from '@bot/listeners/user-not-connected.listener';
+import { LocalisationService } from '@bot/localisation/localisation.service';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
@@ -34,6 +35,7 @@ import { BotService } from './bot.service';
     SubscriptionMsgService,
     RevokeSubMsgService,
     MainMenu,
+    LocalisationService,
     // HANDLERS
     UserExpireListener,
     UserNotConnectedListener,

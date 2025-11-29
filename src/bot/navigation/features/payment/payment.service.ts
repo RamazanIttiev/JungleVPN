@@ -1,8 +1,8 @@
 import { BotContext } from '@bot/bot.types';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { Base } from '@bot/navigation/menu.base';
-import { getPaymentPageContent } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { mapAmountLabel, mapPeriodLabel } from '@utils/utils';
 
 @Injectable()
 export class PaymentMsgService extends Base {
@@ -18,11 +18,14 @@ export class PaymentMsgService extends Base {
     const { selectedPeriod, selectedAmount } = session;
 
     if (!selectedPeriod || !selectedAmount) {
-      await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
+      await ctx.reply(ctx.t('error-generic-restart'));
       return;
     }
 
-    const content = getPaymentPageContent(selectedPeriod, selectedAmount);
+    const content = ctx.t('payment-text', {
+      amount: mapAmountLabel(selectedAmount),
+      period: ctx.t(mapPeriodLabel(selectedPeriod)),
+    });
 
     await this.render(ctx, content, this.paymentMenu.menu);
   }
