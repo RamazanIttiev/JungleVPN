@@ -1,44 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaymentProvider } from '@payments/payment.entity';
+import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
-import { CreatePaymentDto, IPaymentProvider, PaymentSession } from '@payments/payments.model';
+import { CreatePaymentDto, PaymentProvider, PaymentSession } from '@payments/payments.model';
 import { Repository } from 'typeorm';
-import { Payment } from './payment.entity';
 
 @Injectable()
-export class PaymentsService implements IPaymentProvider {
+export class PaymentsService {
   constructor(
     @InjectRepository(Payment) private paymentRepository: Repository<Payment>,
     private readonly factory: PaymentProviderFactory,
   ) {}
-
-  async findValidPayment(id: string) {
-    const payment = await this.paymentRepository.findOneBy({ id, status: 'pending' });
-
-    if (!payment || !payment.createdAt) return null;
-
-    const expiresAt = payment.createdAt.getTime() + 10 * 60 * 1000;
-    if (Date.now() < expiresAt) {
-      return payment;
-    } else {
-      return null;
-    }
-  }
 
   async createPayment(
     dto: CreatePaymentDto,
     providerName: PaymentProvider,
   ): Promise<PaymentSession> {
     const provider = this.factory.getProvider(providerName);
-    const session = await provider.createPayment(dto, providerName);
+    const session = await provider.createPayment(dto);
 
     const payment = this.paymentRepository.create({
+      ...dto.payment,
       id: session.id,
-      userId: dto.userId.toString(),
       provider: providerName,
-      amount: dto.amount,
-      currency: dto.currency,
       createdAt: new Date(),
       status: 'pending',
       url: session.url,
@@ -56,56 +40,4 @@ export class PaymentsService implements IPaymentProvider {
     Object.assign(payment, partial);
     await this.paymentRepository.save(payment);
   }
-  handleWebhook?: ((data: any) => Promise<void>) | undefined;
 }
-
-// TELEGRAM YOOKASSA PAYMENT EXAMPLE
-
-// await paymentsService.createPayment();
-// const invoice = {
-//   chatId,
-//   title: 'Subscription',
-//   description: 'Subscription to the service',
-//   payload: `invoice-${telegramId}-${Date.now()}`,
-//   provider_token: process.env.PAYMENT_TOKEN || '',
-//   currency: 'RUB',
-//   prices: [{ label: 'Subscription', amount: 50000 }],
-//   need_email: false,
-//   createdAt: new Date(),
-// };
-//
-// const provider_data = {
-//   receipt: {
-//     items: [
-//       {
-//         description: invoice.description,
-//         quantity: 1,
-//         amount: {
-//           value: '500.00',
-//           currency: invoice.currency,
-//         },
-//         vat_code: 1,
-//       },
-//     ],
-//   },
-// };
-//
-// try {
-//   const response = await ctx.api.sendInvoice(
-//     chatId,
-//     invoice.title,
-//     invoice.description,
-//     invoice.payload,
-//     invoice.currency,
-//     invoice.prices,
-//     {
-//       provider_token: invoice.provider_token,
-//       provider_data: JSON.stringify(provider_data),
-//     },
-//   );
-
-//   console.log(response);
-// } catch (error) {
-//   console.error('Error sending invoice:', error);
-//   await ctx.reply('Ошибка при создании счета. Пожалуйста, попробуйте позже.');
-// }

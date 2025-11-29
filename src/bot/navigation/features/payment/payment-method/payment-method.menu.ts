@@ -13,7 +13,9 @@ export class PaymentMethodMenu extends Base implements OnModuleInit {
 
   onModuleInit() {
     this.menu
-      .text('💰Visa/Master Card')
+      .text('💰Visa/Master Card', async (ctx) => {
+        await this.paymentMethodMsgService.handlePaymentMethod(ctx, 'stripe');
+      })
       .row()
       .text('₽ MIR', async (ctx) => {
         await this.paymentMethodMsgService.handlePaymentMethod(ctx, 'yookassa');

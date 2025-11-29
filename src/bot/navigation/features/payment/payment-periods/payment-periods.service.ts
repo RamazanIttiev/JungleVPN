@@ -10,9 +10,7 @@ export class PaymentPeriodsMsgService extends Base {
   readonly periods: PaymentPeriod[] = JSON.parse(
     process.env.PAYMENT_PERIODS || '["1mo", "3mo", "6mo"]',
   );
-  readonly amounts: PaymentAmount[] = JSON.parse(
-    process.env.PAYMENT_AMOUNTS || '["199.00", "599.00", "999.00"]',
-  );
+  readonly amounts: PaymentAmount[] = JSON.parse(process.env.PAYMENT_AMOUNTS || '["2", "4", "10"]');
 
   constructor(readonly paymentMethodsMenu: PaymentMethodMenu) {
     super();

@@ -1,18 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { IPaymentProvider } from '@payments/payments.model';
+import { AbstractPaymentProvider } from '@payments/providers/abstract.provider';
+import { StripeProvider } from '@payments/providers/stripe.provider';
 import { YooKassaProvider } from '@payments/providers/yookassa.provider';
 
 @Injectable()
 export class PaymentProviderFactory {
-  constructor(private readonly yookassa: YooKassaProvider) {}
+  private readonly providers: Map<string, AbstractPaymentProvider> = new Map();
 
-  getProvider(providerName: string): IPaymentProvider {
-    switch (providerName) {
-      case 'yookassa':
-        return this.yookassa;
+  constructor(
+    private readonly yookassa: YooKassaProvider,
+    private readonly stripe: StripeProvider,
+  ) {
+    this.register(this.yookassa);
+    this.register(this.stripe);
+  }
 
-      default:
-        throw new Error(`Unsupported payment provider: ${providerName}`);
+  private register(provider: AbstractPaymentProvider) {
+    this.providers.set(provider.id, provider);
+  }
+
+  getProvider(providerId: string): AbstractPaymentProvider {
+    const provider = this.providers.get(providerId);
+    if (!provider) {
+      throw new Error(`Unsupported payment provider: ${providerId}`);
     }
+    return provider;
   }
 }

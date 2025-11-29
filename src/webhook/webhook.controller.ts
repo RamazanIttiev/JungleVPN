@@ -2,7 +2,8 @@ import * as crypto from 'node:crypto';
 import * as process from 'node:process';
 import { BadRequestException, Body, Controller, Headers, Logger, Post, Res } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PaymentNotificationEvent, PaymentPayload } from '@payments/payments.model';
+import { PaymentNotificationEvent } from '@payments/payments.model';
+import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
 
@@ -66,7 +67,7 @@ export class WebhookController {
     @Headers('x-forwarded-for') ip: string,
     @Res() res: Response,
     @Body()
-    payload: { type: 'notification'; event: PaymentNotificationEvent; object: PaymentPayload },
+    payload: { type: 'notification'; event: PaymentNotificationEvent; object: YookassaPaymentPayload },
   ) {
     res.status(200).send('OK');
 

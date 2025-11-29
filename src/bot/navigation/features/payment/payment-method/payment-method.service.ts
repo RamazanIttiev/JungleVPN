@@ -5,7 +5,7 @@ import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { PaymentProvider } from '@payments/payment.entity';
+import { PaymentProvider } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
 import { mapPeriodToDate } from '@utils/utils';
@@ -41,15 +41,18 @@ export class PaymentMethodMsgService extends Base {
 
     const { id, url } = await this.paymentsService.createPayment(
       {
-        userId: tgUser.id,
-        amount: selectedAmount,
-        currency: provider === 'yookassa' ? 'RUB' : 'USD',
+        userId: tgUser.id.toString(),
+        payment: {
+          amount: selectedAmount,
+          provider,
+          currency: provider === 'yookassa' ? 'RUB' : 'USD',
+          description: process.env.PAYMENT_PROVIDER_DESCRIPTION,
+        },
         metadata: {
           selectedPeriod: mapPeriodToDate(selectedPeriod),
           telegramId: tgUser.id,
           telegramMessageId: ctx.msg?.message_id,
         },
-        description: process.env.PAYMENT_PROVIDER_DESCRIPTION,
       },
       provider,
     );

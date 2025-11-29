@@ -1,6 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
-export type PaymentProvider = 'yookassa' | 'stripe';
-export type PaymentStatus = 'pending' | 'succeeded';
+import { PaymentProvider, PaymentStatus } from './payments.model';
 
 @Entity('payments')
 export class Payment {
@@ -31,15 +30,3 @@ export class Payment {
   @Column({ nullable: true })
   url: string;
 }
-
-// export class Invoice {
-//   @Column() chatId: number;
-//   @Column() title: string;
-//   @Column() description: string;
-//   @Column() payload: string;
-//   @Column() provider_token: string;
-//   @Column({ length: 3, default: 'RUB' }) currency: string;
-//   @Column() prices: string;
-//   @Column() need_email: boolean;
-//   @CreateDateColumn() createdAt: Date;
-// }

@@ -6,8 +6,8 @@ import { OnEvent } from '@nestjs/event-emitter';
 import {
   PaymentMetadata,
   PaymentNotificationEvent,
-  PaymentPayload,
 } from '@payments/payments.model';
+import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
@@ -32,7 +32,7 @@ export class PaymentStatusListener {
   async handleSuccessfulPayment(payload: {
     type: 'notification';
     event: PaymentNotificationEvent;
-    object: PaymentPayload;
+    object: YookassaPaymentPayload;
   }) {
     const payment = payload.object;
 

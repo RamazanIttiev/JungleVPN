@@ -1,16 +1,56 @@
 import * as process from 'node:process';
 import { Injectable } from '@nestjs/common';
-import { Payment } from '@payments/payment.entity';
 import {
   CreatePaymentDto,
-  IPaymentProvider,
+  PaymentProvider,
   PaymentSession,
   PaymentStatus,
 } from '@payments/payments.model';
 import axios, { AxiosInstance } from 'axios';
+import { AbstractPaymentProvider } from './abstract.provider';
+
+export interface YookassaPaymentPayload {
+  id: string;
+  status: 'waiting_for_capture' | 'succeeded' | 'canceled' | 'pending' | string;
+  paid: boolean;
+  amount: {
+    value: string;
+    currency: string;
+  };
+  authorization_details?: {
+    rrn?: string;
+    auth_code?: string;
+    three_d_secure?: {
+      applied: boolean;
+    };
+  };
+  created_at: string; // ISO timestamp
+  description?: string;
+  expires_at?: string; // ISO timestamp
+  metadata: Record<string, any>;
+  payment_method?: {
+    type: string;
+    id: string;
+    saved: boolean;
+    card?: {
+      first6?: string;
+      last4?: string;
+      expiry_month?: string;
+      expiry_year?: string;
+      card_type?: string;
+      issuer_country?: string;
+      issuer_name?: string;
+    };
+    title?: string;
+  };
+  refundable: boolean;
+  test: boolean;
+}
 
 @Injectable()
-export class YooKassaProvider implements IPaymentProvider {
+export class YooKassaProvider extends AbstractPaymentProvider {
+  readonly id: PaymentProvider = 'yookassa';
+
   private yookassaApi: AxiosInstance = axios.create({
     baseURL: process.env.YOOKASSA_URL,
     withCredentials: true,
@@ -30,7 +70,7 @@ export class YooKassaProvider implements IPaymentProvider {
         '/',
         {
           amount: {
-            value: dto.amount,
+            value: dto.payment.amount,
             currency: 'RUB',
           },
           capture: true,
@@ -38,7 +78,7 @@ export class YooKassaProvider implements IPaymentProvider {
             type: 'redirect',
             return_url: process.env.YOOKASSA_RETURN_URL,
           },
-          description: dto.description,
+          description: dto.payment.description,
           metadata: dto.metadata,
         },
         {
@@ -67,6 +107,4 @@ export class YooKassaProvider implements IPaymentProvider {
       throw error;
     }
   }
-
-  updatePayment: (id: string, partial: Partial<Payment>) => Promise<void>;
 }
