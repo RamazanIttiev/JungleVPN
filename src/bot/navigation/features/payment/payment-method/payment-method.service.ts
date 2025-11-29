@@ -1,10 +1,8 @@
 import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
-import { Menu } from '@bot/navigation';
-import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
 import { Base } from '@bot/navigation/menu.base';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PaymentProvider } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
@@ -16,16 +14,8 @@ export class PaymentMethodMsgService extends Base {
     readonly remnaService: RemnaService,
     readonly paymentsService: PaymentsService,
     readonly paymentMsgService: PaymentMsgService,
-    @Inject(forwardRef(() => PaymentMenu))
-    readonly paymentMenu: PaymentMenu,
   ) {
     super();
-  }
-
-  async init(ctx: BotContext, menu: Menu) {
-    const content = 'Choose method';
-
-    await this.render(ctx, content, menu);
   }
 
   async handlePaymentMethod(ctx: BotContext, provider: PaymentProvider) {

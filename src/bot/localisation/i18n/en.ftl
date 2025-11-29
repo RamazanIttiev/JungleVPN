@@ -5,9 +5,11 @@ support-button-label = Need help?
 home-button-label = Home 🏠
 download-button-label = Install 🔽
 back-button-label = ⤴ Back
-payment-period-button-label-1 =  1  month ({ $amount } { $currency })
-payment-period-button-label-2 =  3  months ({ $amount } { $currency })
-payment-period-button-label-3 =  6  months ({ $amount } { $currency })
+payment-method-usd = 💰Visa/Master Card
+payment-method-rub = ₽ MIR
+payment-period-button-label-1 =  1  month ({ $amount }{ $currency })
+payment-period-button-label-2 =  3  months ({ $amount }{ $currency })
+payment-period-button-label-3 =  6  months ({ $amount }{ $currency })
 pay-button-label = Pay 💳
 add-profile-button-label = Add profile 🔗
 new-link-button-label = New link 🔄
@@ -63,10 +65,15 @@ payment-periods-text =
     <blockquote>If your subscription is active, the paid period will be added to the current one</blockquote>
 
 
+payment-methods-text =
+    You can pay any way you like!
+
+    We accept 🇷🇺Russian and 💰International payment methods
+
 payment-text =
     <b>As soon as you pay, come back to get the connection link</b>
 
-    <blockquote>You’re paying <b>{ $amount }₽</b> for <b>{ $period }</b></blockquote>
+    <blockquote>You’re paying <b>{ $amount }$</b> for <b>{ $period }</b></blockquote>
 
 
 subscription-text =

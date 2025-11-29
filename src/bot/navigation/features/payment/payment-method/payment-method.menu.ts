@@ -13,12 +13,18 @@ export class PaymentMethodMenu extends Base implements OnModuleInit {
 
   onModuleInit() {
     this.menu
-      .text('💰Visa/Master Card', async (ctx) => {
-        await this.paymentMethodMsgService.handlePaymentMethod(ctx, 'stripe');
-      })
+      .text(
+        (ctx) => ctx.t('payment-method-usd'),
+        async (ctx) => {
+          await this.paymentMethodMsgService.handlePaymentMethod(ctx, 'stripe');
+        },
+      )
       .row()
-      .text('₽ MIR', async (ctx) => {
-        await this.paymentMethodMsgService.handlePaymentMethod(ctx, 'yookassa');
-      });
+      .text(
+        (ctx) => ctx.t('payment-method-rub'),
+        async (ctx) => {
+          await this.paymentMethodMsgService.handlePaymentMethod(ctx, 'yookassa');
+        },
+      );
   }
 }

@@ -21,21 +21,13 @@ export class MainMenu extends Base {
       .text(
         (ctx) => ctx.t('connect-button-label'),
         async (ctx) => {
-          await ctx.editMessageText(ctx.t('devices-text'), {
-            parse_mode: 'HTML',
-            link_preview_options: { is_disabled: true },
-            reply_markup: this.devicesMenu.menu,
-          });
+          await this.render(ctx, ctx.t('devices-text'), this.devicesMenu.menu);
         },
       )
       .text(
         (ctx) => ctx.t('extend-button-label'),
         async (ctx) => {
-          await ctx.editMessageText(ctx.t('payment-periods-text'), {
-            parse_mode: 'HTML',
-            link_preview_options: { is_disabled: true },
-            reply_markup: this.paymentsPeriodsMenu.menu,
-          });
+          await this.render(ctx, ctx.t('payment-periods-text'), this.paymentsPeriodsMenu.menu);
         },
       )
       .row()

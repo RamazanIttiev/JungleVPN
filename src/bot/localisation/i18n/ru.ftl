@@ -3,9 +3,9 @@ connect-button-label = Подключиться 📶
 extend-button-label = Продлить ➕
 support-button-label = Нужна помощь?
 back-button-label = ⤴ Назад
-payment-period-button-label-1 = 1 месяц ({ $amount } { $currency })
-payment-period-button-label-2 = 3 месяца ({ $amount } { $currency })
-payment-period-button-label-3 = 6 месяцев ({ $amount } { $currency })
+payment-period-button-label-1 = 1 месяц ({ $amount }{ $currency })
+payment-period-button-label-2 = 3 месяца ({ $amount }{ $currency })
+payment-period-button-label-3 = 6 месяцев ({ $amount }{ $currency })
 pay-button-label = Оплатить подписку 💳
 home-button-label = Главное меню 🏠
 chanel-button-label = Телеграм канал 🌟
@@ -66,13 +66,16 @@ payment-periods-text =
     <blockquote>Если подписка активна, то оплаченный период добавится к текущему</blockquote>
 
 
+payment-methods-text =
+    Плати любым удобным способом!
+
+    Мы принимаем 🇷🇺Российские и 💰Международные способы оплаты
 
 
 payment-text =
     <b>Как только оплатишь, возвращайся обратно, чтобы получить ссылку на подключение</b>
 
-    <blockquote>Ты платишь <b>{ $amount }₽</b> за <b>{ $period }</b></blockquote>
-
+    <blockquote>Ты платишь <b>{ $amount }$</b> за <b>{ $period }</b></blockquote>
 
 
 

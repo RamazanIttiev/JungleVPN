@@ -1,8 +1,9 @@
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
-import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
+import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
 import { Base } from '@bot/navigation/menu.base';
+import { paymentAmounts, paymentPeriods } from '@bot/utils/constants';
 import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { mapPeriodLabelToPriceLabel } from '@utils/utils';
 
@@ -12,32 +13,32 @@ export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
 
   constructor(
     readonly mainMsgService: MainMsgService,
-    @Inject(forwardRef(() => PaymentPeriodsMsgService))
-    readonly paymentPeriodsMsgService: PaymentPeriodsMsgService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
+    readonly paymentMethodMenu: PaymentMethodMenu,
   ) {
     super();
   }
 
   onModuleInit() {
-    if (
-      this.paymentPeriodsMsgService.periods.length !== this.paymentPeriodsMsgService.amounts.length
-    ) {
+    if (paymentPeriods.length !== paymentAmounts.length) {
       throw new Error('PAYMENT_PERIODS and PAYMENT_AMOUNTS lengths must match');
     }
 
     this.menu.dynamic((_, range) => {
-      this.paymentPeriodsMsgService.periods.forEach((period, index) => {
-        range.text( (ctx) =>
-          ctx.t(mapPeriodLabelToPriceLabel(period), {
-            amount: this.paymentPeriodsMsgService.amounts[index],
-            currency: '₽',
-          }), async (ctx) => {
-          ctx.session.selectedPeriod = period;
-          ctx.session.selectedAmount = this.paymentPeriodsMsgService.amounts[index];
-          await this.paymentPeriodsMsgService.init(ctx);
-        });
+      paymentPeriods.forEach((period, index) => {
+        range.text(
+          (ctx) =>
+            ctx.t(mapPeriodLabelToPriceLabel(period), {
+              amount: paymentAmounts[index],
+              currency: '$',
+            }),
+          async (ctx) => {
+            ctx.session.selectedPeriod = period;
+            ctx.session.selectedAmount = paymentAmounts[index];
+            await this.render(ctx, ctx.t('payment-methods-text'), this.paymentMethodMenu.menu);
+          },
+        );
         range.row();
       });
 

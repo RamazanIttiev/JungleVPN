@@ -1,7 +1,7 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { LocalisationService } from '@bot/localisation/localisation.service';
-import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
+import { paymentAmounts, paymentPeriods } from '@bot/utils/constants';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
@@ -18,7 +18,6 @@ export class UserExpireListener {
   constructor(
     private readonly botService: BotService,
     private readonly localService: LocalisationService,
-    private readonly paymentPeriodsMsgService: PaymentPeriodsMsgService,
   ) {
     this.bot = this.botService.bot;
   }
@@ -51,8 +50,14 @@ export class UserExpireListener {
 
     const keyboard = new InlineKeyboard();
 
-    this.paymentPeriodsMsgService.periods.forEach((period) => {
-      keyboard.text(mapPeriodLabelToPriceLabel(period), `payment_for_${period}`);
+    paymentPeriods.forEach((period, index) => {
+      keyboard.text(
+        this.localService.i18n.t(locale, mapPeriodLabelToPriceLabel(period), {
+          amount: paymentAmounts[index],
+          currency: '$',
+        }),
+        `payment_for_${period}`,
+      );
       keyboard.row();
     });
 

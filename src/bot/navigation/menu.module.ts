@@ -4,7 +4,6 @@ import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
 import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
-import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
 import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
@@ -26,7 +25,6 @@ import { MenuTree } from './menu.tree';
     // MODELS
     MainMsgService,
     PaymentMsgService,
-    PaymentPeriodsMsgService,
     RevokeSubMsgService,
     SubscriptionMsgService,
     PaymentMethodMsgService,
@@ -52,7 +50,6 @@ import { MenuTree } from './menu.tree';
     PaymentMsgService,
     RevokeSubMsgService,
     SubscriptionMsgService,
-    PaymentPeriodsMsgService,
     PaymentMethodMsgService,
     // MENUS
     MenuTree,
