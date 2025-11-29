@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
-export type PaymentProvider = 'yookassa';
+export type PaymentProvider = 'yookassa' | 'stripe';
 export type PaymentStatus = 'pending' | 'succeeded';
 
 @Entity('payments')

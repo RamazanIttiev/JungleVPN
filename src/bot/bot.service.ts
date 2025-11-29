@@ -2,6 +2,7 @@ import * as process from 'node:process';
 import { BotContext, initialSession } from '@bot/bot.types';
 import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callback';
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
+import { PaymentMethodsCallback } from '@bot/callbacks/payment-methods.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast.command';
@@ -23,6 +24,7 @@ export class BotService implements OnModuleInit {
     private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
     private readonly paymentPeriodsCallback: PaymentPeriodsCallback,
+    private readonly paymentMethodsCallback: PaymentMethodsCallback,
   ) {
     if (!this.token) {
       throw new Error('TELEGRAM_BOT_TOKEN missing');
@@ -51,6 +53,7 @@ export class BotService implements OnModuleInit {
     this.navigateDevicesCallback.register(this.bot);
     this.paymentSuccessCallback.register(this.bot);
     this.paymentPeriodsCallback.register(this.bot);
+    this.paymentMethodsCallback.register(this.bot);
 
     this.bot.catch((err) => {
       const e = err.error;

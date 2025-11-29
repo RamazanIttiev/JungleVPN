@@ -1,10 +1,9 @@
-import { Payment } from '@payments/payment.entity';
+import { Payment, PaymentProvider } from '@payments/payment.entity';
 
 export type PaymentPeriod = '1mo' | '3mo' | '6mo';
 export type PaymentAmount = '99.00' | '149.00' | '499.00';
 export type PaymentStatus = 'pending' | 'succeeded';
-export type PaymentProvider = 'yookassa';
-export type PaymentCurrency = 'RUB';
+export type PaymentCurrency = 'RUB' | 'USD';
 export type PaymentNotificationEvent =
   | 'payment.succeeded'
   | 'payment.canceled'

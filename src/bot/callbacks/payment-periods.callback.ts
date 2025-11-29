@@ -9,8 +9,12 @@ export class PaymentPeriodsCallback {
   constructor(readonly paymentPeriodsMsgService: PaymentPeriodsMsgService) {}
   register(bot: Bot<BotContext>) {
     bot.callbackQuery(['payment_for_1mo', 'payment_for_3mo', 'payment_for_6mo'], async (ctx) => {
-      const period = ctx.callbackQuery.data.replace('payment_for_', '') as PaymentPeriod;
-      await this.paymentPeriodsMsgService.handlePaymentPeriod(ctx, period);
+      ctx.session.selectedPeriod = ctx.callbackQuery.data.replace(
+        'payment_for_',
+        '',
+      ) as PaymentPeriod;
+      console.log('PaymentPeriodsCallback');
+      // await this.paymentPeriodsMsgService.handlePaymentPeriod(ctx);
       await ctx.answerCallbackQuery();
     });
   }

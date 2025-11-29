@@ -1,12 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PaymentProvider } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
-import {
-  CreatePaymentDto,
-  IPaymentProvider,
-  PaymentProvider,
-  PaymentSession,
-} from '@payments/payments.model';
+import { CreatePaymentDto, IPaymentProvider, PaymentSession } from '@payments/payments.model';
 import { Repository } from 'typeorm';
 import { Payment } from './payment.entity';
 

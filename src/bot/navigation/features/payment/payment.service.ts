@@ -1,5 +1,4 @@
 import { BotContext } from '@bot/bot.types';
-import { Menu } from '@bot/navigation';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { getPaymentPageContent } from '@bot/utils/templates';
@@ -14,17 +13,17 @@ export class PaymentMsgService extends Base {
     super();
   }
 
-  async init(ctx: BotContext, menu: Menu) {
+  async init(ctx: BotContext) {
     const session = ctx.session;
-    const { paymentUrl, paymentId, selectedPeriod, selectedAmount } = session;
+    const { selectedPeriod, selectedAmount } = session;
 
-    if (!paymentUrl || !paymentId || !selectedPeriod || !selectedAmount) {
+    if (!selectedPeriod || !selectedAmount) {
       await ctx.reply('❗ Что-то пошло не так. Попробуй снова /start');
       return;
     }
 
     const content = getPaymentPageContent(selectedPeriod, selectedAmount);
 
-    await this.render(ctx, content, menu);
+    await this.render(ctx, content, this.paymentMenu.menu);
   }
 }

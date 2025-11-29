@@ -12,6 +12,7 @@ export class MainMsgService extends Base {
     super();
   }
 
+  // TODO remove menu
   async init(ctx: BotContext, menu: Menu, deleteOldMsg?: boolean) {
     const user = await this.userService.init(ctx);
 

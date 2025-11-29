@@ -18,15 +18,13 @@ export class PaymentMenu extends Base implements OnModuleInit {
 
   onModuleInit() {
     this.menu
-      .dynamic(async (ctx, range) => {
-        const paymentUrl = ctx.session.paymentUrl;
-        if (paymentUrl) {
-          range.url('💳 Оплатить подписку', paymentUrl);
-        }
+      .url('💳 Оплатить подписку', (ctx) => {
+        return ctx.session.paymentUrl || 'https://example.com';
       })
       .row()
-      .text('Главное меню 🏠', async (ctx) => {
-        await this.mainMsgService.init(ctx, this.mainMenu.menu);
-      });
+      .text(
+        'Главное меню 🏠',
+        async (ctx) => await this.mainMsgService.init(ctx, this.mainMenu.menu),
+      );
   }
 }
