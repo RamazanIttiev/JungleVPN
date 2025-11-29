@@ -27,7 +27,7 @@ days-left-label = { $daysLeft ->
   }
 
 
-main =
+main-text =
     🌴 Welcome to the <code>Jungle</code>, <b>{ $username }</b>!
 
     In the <code>JUNGLE</code> speed and security come first ❤️

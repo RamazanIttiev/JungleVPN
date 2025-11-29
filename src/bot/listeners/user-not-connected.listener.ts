@@ -28,7 +28,7 @@ export class UserNotConnectedListener {
     data: UserDto;
     timestamp: string;
   }) {
-    const locale = (payload.data.description || process.env.DEFAULT_LOCALE || 'ru') as USER_LOCALE;
+    const locale = (payload.data.description || process.env.DEFAULT_LOCALE || 'en') as USER_LOCALE;
     const keyboard = new InlineKeyboard()
       .text('Подключиться 📶', 'navigate_devices')
       .text('Главное меню 🏠', 'navigate_main')

@@ -20,7 +20,7 @@ export class MainMsgService extends Base {
       ? ctx.from?.username
       : ctx.t('dear-friend');
 
-    const content = ctx.t('main', {
+    const content = ctx.t('main-text', {
       username: username!,
       validUntil: toDateString(user.expireAt!),
       isExpired: isExpired ? 'true' : 'false',
