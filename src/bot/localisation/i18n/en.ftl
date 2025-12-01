@@ -22,9 +22,9 @@ error-menu-outdated = Something changed, try /start again
 error-generic-restart = ❗ Something went wrong. Try /start again
 payment-not-found = ❗ Payment not found. Try /start again
 payment-pending = ❗ Payment is still pending.
-period-1mo = 1 month
-period-3mo = 3 months
-period-6mo = 6 months
+period-month_1 = 1 month
+period-month_3 = 3 months
+period-month_6 = 6 months
 
 days-left-label = { $daysLeft ->
     [one] { $daysLeft } day
@@ -76,7 +76,7 @@ payment-methods-text =
 payment-text =
     <b>As soon as you pay, come back to get the connection link</b>
 
-    <blockquote>You’re paying <b>{ $amount }$</b> for <b>{ $period }</b></blockquote>
+    <blockquote>You’re paying <b>{ $amount }{ $currency }</b> for <b>{ $period }</b></blockquote>
 
 
 subscription-text =

@@ -6,7 +6,7 @@ import { Bot } from 'grammy';
 @Injectable()
 export class PaymentPeriodsCallback {
   register(bot: Bot<BotContext>) {
-    bot.callbackQuery(['payment_for_1mo', 'payment_for_3mo', 'payment_for_6mo'], async (ctx) => {
+    bot.callbackQuery(['payment_for_month_1', 'payment_for_month_3', 'payment_for_month_6'], async (ctx) => {
       ctx.session.selectedPeriod = ctx.callbackQuery.data.replace(
         'payment_for_',
         '',

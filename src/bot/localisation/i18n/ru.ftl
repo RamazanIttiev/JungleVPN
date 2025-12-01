@@ -22,9 +22,9 @@ payment-success = ✅ Оплата прошла успешно! Спасибо �
 error-generic-restart = ❗ Что-то пошло не так. Попробуй снова /start
 payment-not-found = ❗ Платеж не найден. Попробуй заново /start
 payment-pending = ❗ Платеж еще не оплачен.
-period-1mo = 1 месяц
-period-3mo = 3 месяца
-period-6mo = 6 месяцев
+period-month_1 = 1 месяц
+period-month_3 = 3 месяца
+period-month_6 = 6 месяцев
 
 days-left-label = { $daysLeft ->
     [one] { $daysLeft } день
@@ -80,7 +80,7 @@ payment-methods-text =
 payment-text =
     <b>Как только оплатишь, возвращайся обратно, чтобы получить ссылку на подключение</b>
 
-    <blockquote>Ты платишь <b>{ $amount }$</b> за <b>{ $period }</b></blockquote>
+    <blockquote>Ты платишь <b>{ $amount }{ $currency }</b> за <b>{ $period }</b></blockquote>
 
 
 

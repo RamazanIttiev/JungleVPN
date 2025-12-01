@@ -70,7 +70,7 @@ export class YooKassaProvider extends AbstractPaymentProvider {
         '/',
         {
           amount: {
-            value: dto.payment.amount,
+            value: `${dto.payment.amount}.00`,
             currency: 'RUB',
           },
           capture: true,

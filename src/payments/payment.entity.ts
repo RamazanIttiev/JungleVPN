@@ -12,8 +12,8 @@ export class Payment {
   @Column({ type: 'varchar' })
   provider: PaymentProvider;
 
-  @Column()
-  amount: string;
+  @Column({ nullable: true })
+  amount: number;
 
   @Column()
   currency: string;

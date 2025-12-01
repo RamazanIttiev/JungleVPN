@@ -1,5 +1,5 @@
 import { BotContext } from '@bot/bot.types';
-import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
+import { PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
 import { Api, Bot, GrammyError, RawApi } from 'grammy';
 import { Other } from 'grammy/out/core/api';
@@ -36,28 +36,13 @@ export const toDateString = (value: string) => {
   });
 };
 
-export const mapAmountLabel = (amount: PaymentAmount) => {
-  return parseInt(amount, 10);
-};
-
-export const mapPeriodLabel = (period: PaymentPeriod) => {
-  switch (period) {
-    case '1mo':
-      return 'period-1mo';
-    case '3mo':
-      return 'period-3mo';
-    case '6mo':
-      return 'period-6mo';
-  }
-};
-
 export const mapPeriodToDate = (period: PaymentPeriod | undefined) => {
   switch (period) {
-    case '1mo':
+    case 'month_1':
       return 1;
-    case '3mo':
+    case 'month_3':
       return 3;
-    case '6mo':
+    case 'month_6':
       return 6;
     default:
       return 1;
@@ -66,11 +51,11 @@ export const mapPeriodToDate = (period: PaymentPeriod | undefined) => {
 
 export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
   switch (period) {
-    case '1mo':
+    case 'month_1':
       return 'payment-period-button-label-1';
-    case '3mo':
+    case 'month_3':
       return 'payment-period-button-label-2';
-    case '6mo':
+    case 'month_6':
       return 'payment-period-button-label-3';
   }
 };

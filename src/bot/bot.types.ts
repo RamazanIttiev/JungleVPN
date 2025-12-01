@@ -1,5 +1,5 @@
 import { I18nFlavor } from '@grammyjs/i18n';
-import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
+import { PaymentPeriod, PaymentProvider } from '@payments/payments.model';
 import { UserDevice, UserDto } from '@user/user.model';
 import { Context, SessionFlavor as GrammySessionFlavor } from 'grammy';
 
@@ -10,7 +10,7 @@ export interface SessionData {
   paymentId: string | undefined;
   redirectUrl?: string;
   selectedDevice?: UserDevice;
-  selectedAmount?: PaymentAmount;
+  selectedProvider?: PaymentProvider;
   selectedPeriod?: PaymentPeriod;
   user: Partial<UserDto>;
 }
@@ -22,7 +22,6 @@ export const initialSession = (): SessionData => {
     paymentUrl: undefined,
     paymentId: undefined,
     selectedDevice: undefined,
-    selectedAmount: undefined,
     selectedPeriod: undefined,
     redirectUrl: undefined,
     user: {

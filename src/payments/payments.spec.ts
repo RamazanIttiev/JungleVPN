@@ -48,7 +48,7 @@ describe('Payment System', () => {
       const dto: CreatePaymentDto = {
         userId: '1',
         payment: {
-          amount: '2',
+          amount: 2,
           currency: 'USD',
           provider: 'stripe',
         },
@@ -63,7 +63,7 @@ describe('Payment System', () => {
       const dto: CreatePaymentDto = {
         userId: '1',
         payment: {
-          amount: '4',
+          amount: 4,
           currency: 'USD',
           provider: 'stripe',
         },

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export type UserDevice = 'ios' | 'android' | 'macOS' | 'windows';
-export type USER_LOCALE = 'en' | 'ru';
+export type UserLocale = 'en' | 'ru';
 
 export const CreateUserRequestSchema = z.object({
   username: z

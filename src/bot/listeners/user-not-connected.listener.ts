@@ -5,7 +5,7 @@ import { LocalisationService } from '@bot/localisation/localisation.service';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
-import { USER_LOCALE, UserDto } from '@user/user.model';
+import { UserDto, UserLocale } from '@user/user.model';
 import { safeSendMessage } from '@utils/utils';
 import { AxiosError } from 'axios';
 import { differenceInHours } from 'date-fns';
@@ -28,17 +28,19 @@ export class UserNotConnectedListener {
     data: UserDto;
     timestamp: string;
   }) {
-    const locale = (payload.data.description || process.env.DEFAULT_LOCALE || 'en') as USER_LOCALE;
-    const keyboard = new InlineKeyboard()
-      .text('Подключиться 📶', 'navigate_devices')
-      .text('Главное меню 🏠', 'navigate_main')
-      .url('Нужна помощь?', process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support');
+    const locale = (payload.data.description || process.env.DEFAULT_LOCALE || 'ru') as UserLocale;
     const createdAt = new Date(payload.data.createdAt);
     const timestamp = new Date(payload.timestamp);
     const diffHours = differenceInHours(timestamp, createdAt);
 
-    keyboard.text(this.localService.i18n.t(locale, 'connect-button-label'), 'navigate_devices');
-    keyboard.text(this.localService.i18n.t(locale, 'home-button-label'), 'navigate_main');
+    const keyboard = new InlineKeyboard()
+      .text(this.localService.i18n.t(locale, 'connect-button-label'), 'navigate_devices')
+      .text(this.localService.i18n.t(locale, 'home-button-label'), 'navigate_main')
+      .row()
+      .url(
+        this.localService.i18n.t(locale, 'support-button-label'),
+        process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support',
+      );
 
     if (!payload.data.telegramId) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
@@ -52,7 +54,7 @@ export class UserNotConnectedListener {
     await this.handleInitial(payload.data.telegramId, locale, keyboard);
   }
 
-  async handleThreeDays(telegramId: number, locale: USER_LOCALE, keyboard: InlineKeyboard) {
+  async handleThreeDays(telegramId: number, locale: UserLocale, keyboard: InlineKeyboard) {
     const text = this.localService.i18n.t(locale, 'user-not-connected-72');
 
     await safeSendMessage(this.bot, telegramId, text, {
@@ -61,7 +63,7 @@ export class UserNotConnectedListener {
     });
   }
 
-  async handleInitial(telegramId: number, locale: USER_LOCALE, keyboard: InlineKeyboard) {
+  async handleInitial(telegramId: number, locale: UserLocale, keyboard: InlineKeyboard) {
     const text = this.localService.i18n.t(locale, 'user-not-connected-24');
 
     await safeSendMessage(this.bot, telegramId, text, {

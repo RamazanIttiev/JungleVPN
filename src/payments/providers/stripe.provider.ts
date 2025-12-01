@@ -13,15 +13,15 @@ export class StripeProvider extends AbstractPaymentProvider {
     let linkUrl = '';
 
     switch (amount) {
-      case '2':
+      case Number(process.env.PRICE_USD_MONTH_1):
         linkId = process.env.STRIPE_SUB_LINK_1 || '';
         linkUrl = process.env.STRIPE_SUB_LINK_1 || '';
         break;
-      case '4':
+      case Number(process.env.PRICE_USD_MONTH_3):
         linkId = process.env.STRIPE_SUB_LINK_2 || '';
         linkUrl = process.env.STRIPE_SUB_LINK_2 || '';
         break;
-      case '10':
+      case Number(process.env.PRICE_USD_MONTH_6):
         linkId = process.env.STRIPE_SUB_LINK_3 || '';
         linkUrl = process.env.STRIPE_SUB_LINK_3 || '';
         break;

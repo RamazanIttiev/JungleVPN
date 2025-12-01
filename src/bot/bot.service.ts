@@ -25,8 +25,8 @@ export class BotService implements OnModuleInit {
     private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
     private readonly paymentPeriodsCallback: PaymentPeriodsCallback,
-    private readonly localService: LocalisationService,
     private readonly paymentMethodsCallback: PaymentMethodsCallback,
+    private readonly localService: LocalisationService,
   ) {
     if (!this.token) {
       throw new Error('TELEGRAM_BOT_TOKEN missing');
@@ -43,12 +43,6 @@ export class BotService implements OnModuleInit {
     const menuTree = this.menuTree.init();
 
     this.bot.use(menuTree);
-
-    this.bot.on('pre_checkout_query', (ctx) => ctx.answerPreCheckoutQuery(true));
-
-    this.bot.on(':successful_payment', async (ctx) => {
-      await ctx.reply(ctx.t('payment-success'));
-    });
 
     this.startCommand.register(this.bot);
     this.broadcastCommand.register(this.bot);

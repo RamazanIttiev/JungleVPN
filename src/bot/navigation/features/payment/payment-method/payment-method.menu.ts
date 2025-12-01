@@ -21,6 +21,7 @@ export class PaymentMethodMenu extends Base implements OnModuleInit {
       .text(
         (ctx) => ctx.t('payment-method-usd'),
         async (ctx) => {
+          ctx.session.selectedProvider = 'stripe';
           await this.paymentMethodMsgService.handlePaymentMethod(ctx, 'stripe');
         },
       )
@@ -28,6 +29,7 @@ export class PaymentMethodMenu extends Base implements OnModuleInit {
       .text(
         (ctx) => ctx.t('payment-method-rub'),
         async (ctx) => {
+          ctx.session.selectedProvider = 'yookassa';
           await this.paymentMethodMsgService.handlePaymentMethod(ctx, 'yookassa');
         },
       )

@@ -9,6 +9,7 @@ import { SubscriptionMsgService } from '@bot/navigation/features/subscription/su
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CurrencyService } from '@payments/currency-service/currency.service';
 import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
 import { PaymentsService } from '@payments/payments.service';
@@ -43,6 +44,7 @@ import { MenuTree } from './menu.tree';
     YooKassaProvider,
     StripeProvider,
     UserService,
+    CurrencyService,
   ],
   exports: [
     // MODELS

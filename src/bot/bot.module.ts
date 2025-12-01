@@ -17,6 +17,7 @@ import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revok
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { MenuModule } from '@bot/navigation/menu.module';
 import { Module } from '@nestjs/common';
+import { CurrencyService } from '@payments/currency-service/currency.service';
 import { PaymentsModule } from '@payments/payments.module';
 import { RemnaModule } from '@remna/remna.module';
 import { RemnaService } from '@remna/remna.service';
@@ -36,6 +37,7 @@ import { BotService } from './bot.service';
     RevokeSubMsgService,
     MainMenu,
     LocalisationService,
+    CurrencyService,
     // HANDLERS
     UserExpireListener,
     UserNotConnectedListener,

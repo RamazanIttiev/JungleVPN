@@ -1,8 +1,7 @@
 export type PaymentProvider = 'yookassa' | 'stripe';
 export type PaymentStatus = 'pending' | 'succeeded';
 
-export type PaymentPeriod = '1mo' | '3mo' | '6mo';
-export type PaymentAmount = '2' | '4' | '10';
+export type PaymentPeriod = 'month_1' | 'month_3' | 'month_6';
 export type PaymentCurrency = 'RUB' | 'USD';
 export type PaymentNotificationEvent =
   | 'payment.succeeded'
@@ -19,7 +18,7 @@ export interface CreatePaymentDto {
   readonly userId: string;
   readonly payment: {
     provider: PaymentProvider;
-    amount: PaymentAmount;
+    amount: number;
     currency: PaymentCurrency;
     description?: string;
   };

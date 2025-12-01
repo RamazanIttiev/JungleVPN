@@ -1,8 +1,9 @@
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { LocalisationService } from '@bot/localisation/localisation.service';
-import { paymentAmounts, paymentPeriods } from '@bot/utils/constants';
+import { paymentPeriods } from '@bot/utils/constants';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
@@ -16,6 +17,7 @@ export class UserExpireListener {
   bot: Bot<BotContext>;
 
   constructor(
+    private readonly config: ConfigService,
     private readonly botService: BotService,
     private readonly localService: LocalisationService,
   ) {
@@ -46,15 +48,18 @@ export class UserExpireListener {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
-    const locale = payload.data.description || process.env.DEFAULT_LOCALE || 'en';
+    const locale = payload.data.description || process.env.DEFAULT_LOCALE || 'ru';
 
     const keyboard = new InlineKeyboard();
 
-    paymentPeriods.forEach((period, index) => {
+    paymentPeriods.forEach((period) => {
       keyboard.text(
         this.localService.i18n.t(locale, mapPeriodLabelToPriceLabel(period), {
-          amount: paymentAmounts[index],
-          currency: '$',
+          amount:
+            this.config.get<number>(
+              locale === 'ru' ? `PRICE_RUB_${period}` : `PRICE_USD_${period}`,
+            ) || 0,
+          currency: locale === 'ru' ? '₽' : '$',
         }),
         `payment_for_${period}`,
       );
