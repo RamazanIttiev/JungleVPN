@@ -13,7 +13,7 @@ import { CurrencyService } from '@payments/currency-service/currency.service';
 import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
 import { PaymentsService } from '@payments/payments.service';
-import { StripeProvider } from '@payments/providers/stripe.provider';
+import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
 import { YooKassaProvider } from '@payments/providers/yookassa.provider';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';

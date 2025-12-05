@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AbstractPaymentProvider } from '@payments/providers/abstract.provider';
-import { StripeProvider } from '@payments/providers/stripe.provider';
+import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
 import { YooKassaProvider } from '@payments/providers/yookassa.provider';
 
 @Injectable()

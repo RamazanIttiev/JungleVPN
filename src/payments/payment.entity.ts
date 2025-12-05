@@ -9,13 +9,19 @@ export class Payment {
   @Column({ nullable: true })
   userId: string;
 
+  @Column({ nullable: true })
+  stripeCustomerId: string;
+
+  @Column({ nullable: true })
+  stripeSubscriptionId: string;
+
   @Column({ type: 'varchar' })
   provider: PaymentProvider;
 
   @Column({ nullable: true })
   amount: number;
 
-  @Column()
+  @Column({ nullable: true })
   currency: string;
 
   @Column({ default: 'pending', type: 'varchar' })
@@ -24,7 +30,7 @@ export class Payment {
   @CreateDateColumn()
   createdAt: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ nullable: true })
   paidAt: Date;
 
   @Column({ nullable: true })

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
-import { StripeProvider } from '@payments/providers/stripe.provider';
+import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
 import { YooKassaProvider } from '@payments/providers/yookassa.provider';
 import { PaymentsService } from './payments.service';
 

@@ -76,7 +76,7 @@ export class YooKassaProvider extends AbstractPaymentProvider {
           capture: true,
           confirmation: {
             type: 'redirect',
-            return_url: process.env.YOOKASSA_RETURN_URL,
+            return_url: process.env.RETURN_URL,
           },
           description: dto.payment.description,
           metadata: dto.metadata,

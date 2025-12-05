@@ -20,12 +20,14 @@ export class PaymentsService {
     const session = await provider.createPayment(dto);
 
     const payment = this.paymentRepository.create({
-      ...dto.payment,
+      userId: dto.userId,
+      stripeCustomerId: session.customer,
+      provider: dto.payment.provider,
+      amount: dto.payment.amount,
+      currency: dto.payment.currency,
       id: session.id,
-      provider: providerName,
-      createdAt: new Date(),
-      status: 'pending',
       url: session.url,
+      createdAt: new Date(),
     });
 
     await this.paymentRepository.save(payment);

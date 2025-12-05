@@ -14,9 +14,9 @@ export const dataSourceOptions: DataSourceOptions = {
   database: process.env.POSTGRES_DB,
   entities: [Payment],
   migrations: ['dist/db/migrations/**/*.js'],
-  migrationsRun: false,
-  synchronize: false,
-  logging: process.env.ENV === 'development',
+  migrationsRun: process.env.NODE_ENV === 'development',
+  synchronize: process.env.NODE_ENV === 'development',
+  logging: process.env.NODE_ENV === 'development',
   autoLoadEntities: true,
 };
 

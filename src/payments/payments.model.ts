@@ -1,5 +1,7 @@
+import Stripe from 'stripe';
+
 export type PaymentProvider = 'yookassa' | 'stripe';
-export type PaymentStatus = 'pending' | 'succeeded';
+export type PaymentStatus = 'pending' | 'succeeded' | Stripe.Subscription.Status;
 
 export type PaymentPeriod = 'month_1' | 'month_3' | 'month_6';
 export type PaymentCurrency = 'RUB' | 'USD';
@@ -28,4 +30,5 @@ export interface CreatePaymentDto {
 export type PaymentSession = {
   id: string;
   url: string;
+  customer?: string;
 };
