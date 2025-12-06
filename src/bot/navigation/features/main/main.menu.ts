@@ -2,6 +2,7 @@ import * as process from 'node:process';
 import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
+import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
@@ -14,6 +15,8 @@ export class MainMenu extends Base {
     readonly devicesMenu: DevicesMenu,
     @Inject(forwardRef(() => PaymentsPeriodsMenu))
     readonly paymentsPeriodsMenu: PaymentsPeriodsMenu,
+    @Inject(forwardRef(() => ProfileMenu))
+    readonly profileMenu: ProfileMenu,
   ) {
     super();
 
@@ -28,6 +31,13 @@ export class MainMenu extends Base {
         (ctx) => ctx.t('extend-button-label'),
         async (ctx) => {
           await this.render(ctx, ctx.t('payment-periods-text'), this.paymentsPeriodsMenu.menu);
+        },
+      )
+      .row()
+      .text(
+        (ctx) => ctx.t('profile-button-label'),
+        async (ctx) => {
+          await this.render(ctx, ctx.t('profile-text'), this.profileMenu.menu);
         },
       )
       .row()

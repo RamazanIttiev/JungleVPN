@@ -4,6 +4,7 @@ import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
 import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
+import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
@@ -37,6 +38,7 @@ import { MenuTree } from './menu.tree';
     PaymentMenu,
     SubscriptionMenu,
     PaymentMethodMenu,
+    ProfileMenu,
     // SERVICES
     RemnaService,
     PaymentsService,
@@ -61,6 +63,7 @@ import { MenuTree } from './menu.tree';
     PaymentMenu,
     SubscriptionMenu,
     PaymentMethodMenu,
+    ProfileMenu,
   ],
   imports: [TypeOrmModule.forFeature([Payment])],
 })

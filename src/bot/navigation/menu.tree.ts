@@ -4,6 +4,7 @@ import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
+import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Injectable } from '@nestjs/common';
 
@@ -16,6 +17,7 @@ export class MenuTree {
     private readonly paymentsPeriodsMenu: PaymentsPeriodsMenu,
     private readonly paymentMethodsMenu: PaymentMethodMenu,
     private readonly subscriptionMenu: SubscriptionMenu,
+    private readonly profileMenu: ProfileMenu,
   ) {}
 
   init(): Menu {
@@ -25,12 +27,14 @@ export class MenuTree {
     const paymentMenu = this.paymentMenu.menu;
     const paymentsPeriodsMenu = this.paymentsPeriodsMenu.menu;
     const paymentMethodsMenu = this.paymentMethodsMenu.menu;
+    const profileMenu = this.profileMenu.menu;
 
     main.register(devices);
     main.register(paymentMenu);
     main.register(paymentsPeriodsMenu);
     main.register(subscriptionMenu);
     main.register(paymentMethodsMenu);
+    main.register(profileMenu);
 
     return main;
   }
