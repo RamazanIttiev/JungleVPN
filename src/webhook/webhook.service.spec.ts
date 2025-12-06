@@ -1,11 +1,9 @@
 import 'reflect-metadata';
 import { BadRequestException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PaymentsService } from '@payments/payments.service';
+import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { WebhookService } from './webhook.service';
-import { BotService } from '@bot/bot.service';
-import { RemnaService } from '@remna/remna.service';
 
 vi.mock('@payments/payment.entity', () => {
   return {
@@ -20,17 +18,12 @@ describe('WebhookService', () => {
     emit: vi.fn(),
   };
 
-  const mockPaymentsService = {
-    updatePayment: vi.fn(),
-    findOneByStripeCustomerId: vi.fn(),
-  };
-
-
+  const mockStripeProvider = {};
 
   beforeEach(() => {
     service = new WebhookService(
       mockEventEmitter as unknown as EventEmitter2,
-      mockPaymentsService as unknown as PaymentsService,
+      mockStripeProvider as unknown as StripeProvider,
     );
   });
 

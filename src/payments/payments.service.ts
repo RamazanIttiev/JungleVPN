@@ -43,7 +43,8 @@ export class PaymentsService {
     await this.paymentRepository.save(payment);
   }
 
-  async findOneByStripeCustomerId(stripeCustomerId: string): Promise<Payment | null> {
+  async findOneByStripeCustomerId(stripeCustomerId: string | null): Promise<Payment | null> {
+    if (!stripeCustomerId) return null;
     return this.paymentRepository.findOne({
       where: { stripeCustomerId },
       order: { createdAt: 'DESC' },

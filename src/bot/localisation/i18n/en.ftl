@@ -6,7 +6,7 @@ extend-button-label = Extend ➕
 support-button-label = Need help?
 home-button-label = Home 🏠
 profile-button-label = Profile 👤
-subscription-button-label = Autopayment
+subscription-button-label = Autopayment 🔄
 download-button-label = Install 🔽
 back-button-label = ⤴ Back
 payment-method-usd = 💰Visa/Master Card
@@ -150,7 +150,7 @@ invoice-payment-success-text =
 
     Thank you for staying in the <code>Jungle</code>
 
-    You can easily manage it by clicking the button below
+    You can easily manage your subscription by clicking the button below
 
 
 

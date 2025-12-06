@@ -30,7 +30,7 @@ export class StripeProvider extends AbstractPaymentProvider {
       return this.createCheckoutSession(priceId, dto, customerId);
     }
 
-    const newCustomer = await this.getOrCreateCustomer(dto.userId, null);
+    const newCustomer = await this.getOrCreateCustomer(dto, null);
     return this.createCheckoutSession(priceId, dto, newCustomer);
   }
 
@@ -59,14 +59,20 @@ export class StripeProvider extends AbstractPaymentProvider {
     }
   }
 
-  private async getOrCreateCustomer(userId: string, customer: string | null): Promise<string> {
+  async retrieveCustomer(customerId: string | null) {
+    if (!customerId) return null;
+    return await this.stripe.customers.retrieve(customerId);
+  }
+
+  private async getOrCreateCustomer(
+    paymentDto: CreatePaymentDto,
+    customer: string | null,
+  ): Promise<string> {
     if (customer) {
       return customer;
     }
     const newCustomer = await this.stripe.customers.create({
-      metadata: {
-        telegramId: userId,
-      },
+      metadata: { ...paymentDto.metadata },
     });
     return newCustomer.id;
   }

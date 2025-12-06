@@ -8,7 +8,6 @@ import {
   PaymentMetadata,
   PaymentNotificationEvent,
   StripeInvoicePayload,
-  StripePaymentPayload,
 } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
@@ -32,39 +31,6 @@ export class PaymentStatusListener {
     this.bot = this.botService.bot;
   }
 
-  @OnEvent('customer.subscription.created')
-  async handleCreatedStripeSubscription(payload: {
-    type: 'notification';
-    event: 'customer.subscription.created';
-    object: StripePaymentPayload;
-  }) {
-    const data = payload.object;
-    const telegramId = Number(data.metadata.telegramId);
-
-    if (!telegramId) {
-      this.logger.warn('No telegramId found in payment metadata or via fallback');
-      return;
-    }
-
-    const user = await this.loadUser(telegramId);
-    if (!user || !user.telegramId) {
-      this.logger.warn('No user found');
-      return;
-    }
-
-    const isSucceeded = data.status === 'active';
-
-    if (isSucceeded) {
-      await this.paymentsService.updatePayment(data.id, {
-        status: data.status,
-        stripeSubscriptionId: data.subscriptionId,
-        paidAt: new Date(),
-      });
-      await this.updateUserExpiryDate(user, data.metadata.selectedPeriod);
-      await this.sendSuccessMessage(user.telegramId);
-    }
-  }
-
   @OnEvent('invoice.payment_succeeded')
   async handleInvoicePaymentSucceeded(payload: {
     type: 'notification';
@@ -72,7 +38,9 @@ export class PaymentStatusListener {
     object: StripeInvoicePayload;
   }) {
     const data = payload.object;
-    const telegramId = Number(data.metadata.telegramId);
+    const metadata = data.metadata;
+
+    const telegramId = Number(metadata.telegramId);
 
     if (!telegramId) {
       this.logger.warn('No telegramId found in payment metadata or via fallback');
@@ -85,15 +53,19 @@ export class PaymentStatusListener {
       return;
     }
 
-    const payment = await this.paymentsService.findOneByStripeCustomerId(data.customer);
+    const payment = await this.paymentsService.findOneByStripeCustomerId(data.subscriptionId);
+    if (!payment) {
+      this.logger.warn('No payment found by findOneByStripeCustomerId');
+    }
+
     if (payment) {
       await this.paymentsService.updatePayment(payment.id, {
-        status: 'active',
+        status: data.status,
         paidAt: new Date(),
       });
     }
 
-    await this.updateUserExpiryDate(user, data.monthsToAdd);
+    await this.updateUserExpiryDate(user, metadata.monthsToAdd);
     await this.sendSuccessStripePaymentMessage(user.telegramId);
   }
 
@@ -139,11 +111,11 @@ export class PaymentStatusListener {
     return user?.telegramId ? user : null;
   }
 
-  private async updateUserExpiryDate(user: UserDto, selectedPeriod: number) {
+  private async updateUserExpiryDate(user: UserDto, selectedPeriod: number | string) {
     const { uuid, expireAt } = user;
 
     const newExpireAt = add(expireAt, {
-      months: selectedPeriod,
+      months: Number(selectedPeriod),
     }).toISOString();
 
     await this.remnaService.updateUser({
@@ -181,14 +153,9 @@ export class PaymentStatusListener {
       });
     }
 
-    await safeSendMessage(
-      this.bot,
-      telegramId,
-      i18n.t(locale, 'payment-success'),
-      {
+    await safeSendMessage(this.bot, telegramId, i18n.t(locale, 'payment-success'), {
       reply_markup: successMenu,
-      },
-    );
+    });
   }
 
   private async sendSuccessStripePaymentMessage(telegramId: number) {

@@ -33,26 +33,10 @@ export type PaymentSession = {
   customer?: string;
 };
 
-export interface StripePaymentPayload {
-  id: string;
-  subscriptionId: string;
-  status: Stripe.Subscription.Status;
-  customer: string;
-  metadata: {
-    telegramId: string | undefined;
-    selectedPeriod: number;
-  };
-}
-
 export interface StripeInvoicePayload {
-  paymentId: string;
-  amount: number;
-  currency: string;
-  status: Stripe.Invoice.Status;
-  customer: string;
-  subscriptionId: string;
-  monthsToAdd: number;
-  metadata: {
-    telegramId: string | undefined;
-  };
+  id: string;
+  subscriptionId: string | null;
+  customerId: string;
+  status: Stripe.Subscription.Status;
+  metadata: Stripe.Metadata;
 }
