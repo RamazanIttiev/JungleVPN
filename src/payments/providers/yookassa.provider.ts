@@ -9,9 +9,11 @@ import {
 import axios, { AxiosInstance } from 'axios';
 import { AbstractPaymentProvider } from './abstract.provider';
 
+export type YookassaPaymentStatus = 'succeeded' | 'canceled' | 'pending';
+
 export interface YookassaPaymentPayload {
   id: string;
-  status: 'waiting_for_capture' | 'succeeded' | 'canceled' | 'pending' | string;
+  status: YookassaPaymentStatus;
   paid: boolean;
   amount: {
     value: string;

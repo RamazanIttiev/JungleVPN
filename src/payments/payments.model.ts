@@ -32,3 +32,14 @@ export type PaymentSession = {
   url: string;
   customer?: string;
 };
+
+export interface StripePaymentPayload {
+  id: string;
+  subscriptionId: string;
+  status: Stripe.Subscription.Status;
+  customer: string;
+  metadata: {
+    telegramId: string | undefined;
+    selectedPeriod: number;
+  };
+}

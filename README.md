@@ -60,56 +60,12 @@ sudo rm -rf /etc/postgresql /var/lib/postgresql /var/log/postgresql
 sudo rm -rf /var/run/postgresql
 ```
 
-
-## Firewall
-
-Allow SSH (so you can still log in)
-```bash
-
-sudo ufw allow from <YOUR_IP> to any port 22
-```
-```bash
-
-sudo ufw delete allow 22
-```
-
-Allow HTTP/HTTPS
-```bash
-
-sudo ufw allow 80
-```
-```bash
-
-sudo ufw allow 443
-```
-
-Enable firewall
-
-```bash
-
-sudo ufw enable
-```
-
-Check status
-
-```bash
-
-sudo ufw status
-```
-
-# SSL cert
-
-```bash
-
-certbot certonly --nginx -d domain
-```
-
-```bash
-
-certbot renew --dry-run
-```
-
 # Node setup
+
+```bash
+
+ssh root@IP
+```
 
 ```bash
 
@@ -121,24 +77,18 @@ sudo dpkg-reconfigure --priority=low unattended-upgrades
 
 ```bash
 
-sudo nano /etc/ssh/sshd_config
-# Port 1702
-# PermitRootLogin no
-# PasswordAuthentication no
-
-sudo systemctl restart ssh
-```
-
-```bash
-
-adduser jungle
-usermod -aG sudo jungle
-su - jungle
-
 sudo systemctl stop ssh.socket
 sudo systemctl disable ssh.socket
 sudo systemctl enable ssh.service
 sudo systemctl restart ssh.service
+```
+
+Install node
+
+```bash
+
+curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnanode.sh | sudo bash -s -- @ install
+
 ```
 
 ```bash
@@ -149,29 +99,31 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw allow 1702 
 sudo ufw allow 443/tcp 
-sudo ufw allow NODE_PORT
-sudo ufw enable
 ```
 
-Install remnanode https://docs.rw/docs/install/remnawave-node
+# SSH keys
 
-Add log volume and rotate https://docs.rw/docs/install/remnawave-node#node-logs
-
-### SSH keys
-
-Generate a key
+LOCAL
 ```bash
 
 ssh-keygen -t ed25519 -C “ramazan.ittiev@gmail.com”
 ```
 
-Copy to VPS
+VPS
 ```bash
 
-ssh-copy-id -i ~/.ssh/KEY.pub -p 1702 jungle@IP
+sudo nano /etc/ssh/sshd_config
+# Port 1702
+# PasswordAuthentication no
+
+sudo systemctl restart ssh
 ```
 
-Edit ssh config on LOCAL machine
+LOCAL
+```bash
+
+ssh-copy-id -i ~/.ssh/KEY.pub -p 1702 root@IP
+```
 ```bash
 
 nano ~/.ssh/config
@@ -179,12 +131,11 @@ nano ~/.ssh/config
 Host HOST
   HostName IP
   Port 1702
-  User jungle
+  User root
   IdentityFile ~/.ssh/HOST
-  
 ```
 
-On VPS
+VPS
 ```bash
 
 sudo ufw deny 22

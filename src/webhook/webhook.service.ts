@@ -2,7 +2,7 @@ import * as crypto from 'node:crypto';
 import * as process from 'node:process';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PaymentNotificationEvent } from '@payments/payments.model';
+import { PaymentNotificationEvent, StripePaymentPayload } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import { customerToId } from '@payments/providers/stripe/stripe.utils';
 import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
@@ -16,7 +16,6 @@ const CIDRMatcher = require('cidr-matcher');
 @Injectable()
 export class WebhookService {
   private readonly logger = new Logger(WebhookService.name);
-
   constructor(
     private readonly eventEmitter: EventEmitter2,
     private readonly paymentService: PaymentsService,
@@ -90,17 +89,30 @@ export class WebhookService {
         const subscription = event.data.object as Stripe.Subscription;
         this.logger.log(`subscription for ${subscription.id} was successful!`);
 
-        const customer = subscription.customer;
-        const id = customerToId(customer);
+        const customerId = customerToId(subscription.customer);
+        const payment = await this.paymentService.findOneByStripeCustomerId(customerId);
 
-        if (id) {
-          await this.paymentService.updatePayment(id, {
-            status: subscription.status,
-            stripeCustomerId: id,
-            stripeSubscriptionId: subscription.id,
-          });
-        }
+        const payload: StripePaymentPayload = {
+          id: customerId,
+          subscriptionId: subscription.id,
+          status: subscription.status,
+          customer: subscription.customer as string,
+          metadata: {
+            telegramId: payment?.userId,
+            selectedPeriod: subscription.items.data[0].plan.interval_count,
+          },
+        };
+
+        this.eventEmitter.emit('customer.subscription.created', {
+          type: 'notification',
+          event: 'customer.subscription.created',
+          object: payload,
+        });
         break;
+      }
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object as Stripe.Subscription;
+        console.log(subscription.items.data[0].plan.interval_count);
       }
     }
   }

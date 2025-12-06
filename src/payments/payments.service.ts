@@ -42,4 +42,11 @@ export class PaymentsService {
     Object.assign(payment, partial);
     await this.paymentRepository.save(payment);
   }
+
+  async findOneByStripeCustomerId(stripeCustomerId: string): Promise<Payment | null> {
+    return this.paymentRepository.findOne({
+      where: { stripeCustomerId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }

@@ -6,9 +6,10 @@ import { OnEvent } from '@nestjs/event-emitter';
 import {
   PaymentMetadata,
   PaymentNotificationEvent,
+  StripePaymentPayload,
 } from '@payments/payments.model';
-import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { PaymentsService } from '@payments/payments.service';
+import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
 import { safeSendMessage } from '@utils/utils';
@@ -26,6 +27,39 @@ export class PaymentStatusListener {
     private readonly remnaService: RemnaService,
   ) {
     this.bot = this.botService.bot;
+  }
+
+  @OnEvent('customer.subscription.created')
+  async handleCreatedStripeSubscription(payload: {
+    type: 'notification';
+    event: 'customer.subscription.created';
+    object: StripePaymentPayload;
+  }) {
+    const data = payload.object;
+    const telegramId = Number(data.metadata.telegramId);
+
+    if (!telegramId) {
+      this.logger.warn('No telegramId found in payment metadata or via fallback');
+      return;
+    }
+
+    const user = await this.loadUser(telegramId);
+    if (!user || !user.telegramId) {
+      this.logger.warn('No user found');
+      return;
+    }
+
+    const isSucceeded = data.status === 'active';
+
+    if (isSucceeded) {
+      await this.paymentsService.updatePayment(data.id, {
+        status: data.status,
+        stripeSubscriptionId: data.subscriptionId,
+        paidAt: new Date(),
+      });
+      await this.updateUserExpiryDate(user, data.metadata.selectedPeriod);
+      await this.sendSuccessMessage(user.telegramId);
+    }
   }
 
   @OnEvent('payment.succeeded')
@@ -55,11 +89,12 @@ export class PaymentStatusListener {
 
     const { status } = payment;
 
-    if (status !== 'succeeded') {
-      return this.notifyPendingPayment(user.telegramId);
-    }
+    await this.paymentsService.updatePayment(payment.id, {
+      status,
+      paidAt: new Date(),
+    });
 
-    await this.processSuccessfulPayment(payment.id, metadata, user);
+    await this.updateUserExpiryDate(user, metadata.selectedPeriod);
     await this.cleanUpTelegramMessage(user.telegramId, metadata.telegramMessageId);
     await this.sendSuccessMessage(user.telegramId);
   }
@@ -69,21 +104,12 @@ export class PaymentStatusListener {
     return user?.telegramId ? user : null;
   }
 
-  private async processSuccessfulPayment(
-    paymentId: string,
-    metadata: PaymentMetadata,
-    user: UserDto,
-  ) {
+  private async updateUserExpiryDate(user: UserDto, selectedPeriod: number) {
     const { uuid, expireAt } = user;
 
     const newExpireAt = add(expireAt, {
-      months: metadata.selectedPeriod,
+      months: selectedPeriod,
     }).toISOString();
-
-    await this.paymentsService.updatePayment(paymentId, {
-      status: 'succeeded',
-      paidAt: new Date(),
-    });
 
     await this.remnaService.updateUser({
       uuid,
@@ -120,9 +146,5 @@ export class PaymentStatusListener {
     await safeSendMessage(this.bot, telegramId, '✅ Оплата прошла успешно!', {
       reply_markup: successMenu,
     });
-  }
-
-  private async notifyPendingPayment(telegramId: number) {
-    await safeSendMessage(this.bot, telegramId, '✅ Оплата прошла успешно!');
   }
 }

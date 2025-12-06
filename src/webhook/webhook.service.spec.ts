@@ -4,6 +4,8 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PaymentsService } from '@payments/payments.service';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { WebhookService } from './webhook.service';
+import { BotService } from '@bot/bot.service';
+import { RemnaService } from '@remna/remna.service';
 
 vi.mock('@payments/payment.entity', () => {
   return {
@@ -20,7 +22,10 @@ describe('WebhookService', () => {
 
   const mockPaymentsService = {
     updatePayment: vi.fn(),
+    findOneByStripeCustomerId: vi.fn(),
   };
+
+
 
   beforeEach(() => {
     service = new WebhookService(
@@ -57,6 +62,37 @@ describe('WebhookService', () => {
       const payload = { username: 'test' } as any;
       service.validateAndProcessTorrent('token', payload);
       expect(mockEventEmitter.emit).toHaveBeenCalledWith('torrent.event', payload);
+    });
+  });
+
+  describe('processStripeEvent', () => {
+    it('should emit payment.succeeded event with correct payload', async () => {
+      const event = {
+        type: 'customer.subscription.created',
+        data: {
+          object: {
+            id: 'sub_123',
+            customer: 'cus_123',
+            status: 'active',
+            current_period_end: 1700000000,
+            metadata: { telegramId: '12345' },
+          },
+        },
+      } as any;
+
+      await service.processStripeEvent(event);
+
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith('payment.succeeded', {
+        type: 'notification',
+        event: 'payment.succeeded',
+        object: {
+          id: 'sub_123',
+          status: 'active',
+          metadata: { telegramId: '12345', selectedPeriod: undefined },
+          customer: 'cus_123',
+          current_period_end: 1700000000,
+        },
+      });
     });
   });
 });
