@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
@@ -36,13 +37,26 @@ export const toDateString = (value: string) => {
   });
 };
 
-export const mapPeriodToDate = (period: PaymentPeriod | undefined) => {
+export const mapPeriodToMonthsNumber = (period: PaymentPeriod | undefined) => {
   switch (period) {
     case 'month_1':
       return 1;
     case 'month_3':
       return 3;
     case 'month_6':
+      return 6;
+    default:
+      return 1;
+  }
+};
+
+export const mapUSDAmountToMonthsNumber = (amount: string | undefined) => {
+  switch (amount) {
+    case `${process.env.PRICE_USD_MONTH_1}00`:
+      return 1;
+    case `${process.env.PRICE_USD_MONTH_3}00`:
+      return 3;
+    case `${process.env.PRICE_USD_MONTH_6}00`:
       return 6;
     default:
       return 1;

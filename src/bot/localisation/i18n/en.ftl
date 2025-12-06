@@ -140,3 +140,12 @@ torrent-warning-text =
     Please use the VPN only for legal purposes and follow the service rules.
 
     Thank you for understanding!
+
+
+
+invoice-payment-success-text =
+    Your payment has been successful! 🙂
+
+    Thank you for staying in the <code>Jungle</code>
+
+    You can easily manage it by clicking the button below

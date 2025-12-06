@@ -6,7 +6,7 @@ import { CurrencyService } from '@payments/currency-service/currency.service';
 import { PaymentProvider } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
-import { mapPeriodToDate } from '@utils/utils';
+import { mapPeriodToMonthsNumber } from '@utils/utils';
 
 @Injectable()
 export class PaymentMethodMsgService extends Base {
@@ -42,7 +42,7 @@ export class PaymentMethodMsgService extends Base {
           description: ctx.t('provider-description-text'),
         },
         metadata: {
-          selectedPeriod: mapPeriodToDate(selectedPeriod),
+          selectedPeriod: mapPeriodToMonthsNumber(selectedPeriod),
           telegramId: tgUser.id,
           telegramMessageId: ctx.msg?.message_id,
         },

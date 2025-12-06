@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { LocalisationService } from '@bot/localisation/localisation.service';

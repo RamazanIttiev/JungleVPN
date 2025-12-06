@@ -43,3 +43,16 @@ export interface StripePaymentPayload {
     selectedPeriod: number;
   };
 }
+
+export interface StripeInvoicePayload {
+  paymentId: string;
+  amount: number;
+  currency: string;
+  status: Stripe.Invoice.Status;
+  customer: string;
+  subscriptionId: string;
+  monthsToAdd: number;
+  metadata: {
+    telegramId: string | undefined;
+  };
+}

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
+import * as process from 'node:process';
 import { Payment } from '@payments/payment.entity';
-import process from 'process';
 import { Repository } from 'typeorm';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PaymentProviderFactory } from './payments.factory';
