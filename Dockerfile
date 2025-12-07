@@ -1,26 +1,19 @@
-# Development stage
-FROM node:20-alpine AS development
-WORKDIR /usr/src/app
+FROM node:20-alpine AS builder
+WORKDIR /app
+
 COPY package*.json ./
 RUN npm install
 COPY . .
-USER node
-
-# Build stage
-FROM node:20-alpine AS build
-WORKDIR /usr/src/app
-COPY package*.json ./
-COPY --from=development /usr/src/app/node_modules ./node_modules
-COPY . .
 RUN npm run build
-ENV NODE_ENV production
-RUN npm install --only=production && npm cache clean --force
-USER node
+RUN npm install --omit=dev
 
-# Production stage
 FROM node:20-alpine AS production
-WORKDIR /usr/src/app
-COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist ./dist
-EXPOSE 5000/tcp
+WORKDIR /app
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+
+EXPOSE 5000
+
 CMD ["node", "dist/src/main.js"]
