@@ -1,12 +1,6 @@
-import {
-  Body,
-  Controller,
-  Headers,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Headers, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
 import { PaymentNotificationEvent } from '@payments/payments.model';
+import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
 import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
@@ -16,7 +10,10 @@ import { WebhookService } from './webhook.service';
 
 @Controller('webhook')
 export class WebhookController {
-  constructor(private readonly webhookService: WebhookService) {}
+  constructor(
+    private readonly webhookService: WebhookService,
+    private readonly stripeProvider: StripeProvider,
+  ) {}
 
   @Post('remna')
   async handleRemnaEvents(
@@ -63,9 +60,26 @@ export class WebhookController {
   }
 
   @Post('payment/stripe')
-  async handleStripeEvents(@Res() res: Response, @Req() req: Request) {
+  async handleStripeEvents(
+    @Headers('stripe-signature') signature: string,
+    @Res() res: Response,
+    @Req() req: RawBodyRequest<Request>,
+  ) {
+    const body = req.rawBody;
+
+    if (!body) return res.status(400).send({});
+    let event: Stripe.Event;
+    try {
+      event = this.stripeProvider.stripe.webhooks.constructEvent(
+        body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET || '',
+      );
+    } catch (err) {
+      return res.status(400).send(`Webhook Error: ${err}`);
+    }
+
     res.status(200).send('OK');
-    const event: Stripe.Event = req.body as unknown as Stripe.Event;
     await this.webhookService.processStripeEvent(event);
   }
 }

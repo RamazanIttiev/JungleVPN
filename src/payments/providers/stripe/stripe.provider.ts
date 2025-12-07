@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class StripeProvider extends AbstractPaymentProvider {
   readonly id: PaymentProvider = 'stripe';
-  private readonly stripe: Stripe;
+  readonly stripe: Stripe;
   private readonly logger = new Logger(StripeProvider.name);
 
   constructor(@InjectRepository(Payment) private paymentRepository: Repository<Payment>) {
