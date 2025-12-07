@@ -50,13 +50,13 @@ export const mapPeriodToMonthsNumber = (period: PaymentPeriod | undefined) => {
   }
 };
 
-export const mapUSDAmountToMonthsNumber = (amount: string | undefined) => {
+export const mapEURAmountToMonthsNumber = (amount: string | undefined) => {
   switch (amount) {
-    case `${process.env.PRICE_USD_MONTH_1}00`:
+    case `${process.env.PRICE_EUR_MONTH_1}00`:
       return 1;
-    case `${process.env.PRICE_USD_MONTH_3}00`:
+    case `${process.env.PRICE_EUR_MONTH_3}00`:
       return 3;
-    case `${process.env.PRICE_USD_MONTH_6}00`:
+    case `${process.env.PRICE_EUR_MONTH_6}00`:
       return 6;
     default:
       return 1;

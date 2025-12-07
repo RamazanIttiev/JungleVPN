@@ -35,9 +35,9 @@ export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
             ctx.t(mapPeriodLabelToPriceLabel(item), {
               amount:
                 this.config.get<number>(
-                  locale === 'ru' ? `PRICE_RUB_${period}` : `PRICE_USD_${period}`,
+                  locale === 'ru' ? `PRICE_RUB_${period}` : `PRICE_EUR_${period}`,
                 ) || 0,
-              currency: locale === 'ru' ? '₽' : '$',
+              currency: locale === 'ru' ? '₽' : '€',
             }),
 
           async (ctx) => {

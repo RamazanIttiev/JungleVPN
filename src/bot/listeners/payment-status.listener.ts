@@ -139,7 +139,7 @@ export class PaymentStatusListener {
     const locale = 'en';
     const i18n = this.localService.i18n;
 
-    const stickerId = process.env.PAYMENT_SUCCESS_STICKER;
+    const stickerId = process.env.SUCCESS_STICKER;
 
     const successMenu = new InlineKeyboard()
       .text(i18n.t(locale, 'connect-button-label'), 'paymentSuccess')

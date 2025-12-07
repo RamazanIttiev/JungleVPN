@@ -139,14 +139,14 @@ export class StripeProvider extends AbstractPaymentProvider {
   private getPriceId(amount: number): string {
     let priceId = '';
     switch (amount) {
-      case Number(process.env.PRICE_USD_MONTH_1):
-        priceId = process.env.PRICE_ID_MONTH_1 || '';
+      case Number(process.env.PRICE_EUR_MONTH_1):
+        priceId = process.env.STRIPE_PRICE_ID_MONTH_1 || '';
         break;
-      case Number(process.env.PRICE_USD_MONTH_3):
-        priceId = process.env.PRICE_ID_MONTH_3 || '';
+      case Number(process.env.PRICE_EUR_MONTH_3):
+        priceId = process.env.STRIPE_PRICE_ID_MONTH_3 || '';
         break;
-      case Number(process.env.PRICE_USD_MONTH_6):
-        priceId = process.env.PRICE_ID_MONTH_6 || '';
+      case Number(process.env.PRICE_EUR_MONTH_6):
+        priceId = process.env.STRIPE_PRICE_ID_MONTH_6 || '';
         break;
       default:
         this.logger.error(`Unknown amount: ${amount}`);

@@ -99,8 +99,8 @@ describe('Payment System', () => {
 
   describe('StripeProvider', () => {
     it('should create session for amount 2 (new customer)', async () => {
-      process.env.PRICE_USD_MONTH_1 = '2';
-      process.env.PRICE_ID_MONTH_1 = 'price_1';
+      process.env.PRICE_EUR_MONTH_1 = '2';
+      process.env.STRIPE_PRICE_ID_MONTH_1 = 'price_1';
       process.env.STRIPE_SECRET_KEY = 'sk_test';
 
       mockPaymentRepositoryFindOne.mockResolvedValue(null);
@@ -136,8 +136,8 @@ describe('Payment System', () => {
     });
 
     it('should reuse customer if exists but no active subscription', async () => {
-      process.env.PRICE_USD_MONTH_1 = '2';
-      process.env.PRICE_ID_MONTH_1 = 'price_1';
+      process.env.PRICE_EUR_MONTH_1 = '2';
+      process.env.STRIPE_PRICE_ID_MONTH_1 = 'price_1';
       process.env.STRIPE_SECRET_KEY = 'sk_test';
 
       mockPaymentRepositoryFindOne.mockResolvedValue({ stripeCustomerId: 'cus_existing' });
@@ -172,8 +172,8 @@ describe('Payment System', () => {
     });
 
     it('should return portal link if active subscription exists', async () => {
-      process.env.PRICE_USD_MONTH_1 = '2';
-      process.env.PRICE_ID_MONTH_1 = 'price_1';
+      process.env.PRICE_EUR_MONTH_1 = '2';
+      process.env.STRIPE_PRICE_ID_MONTH_1 = 'price_1';
       process.env.STRIPE_SECRET_KEY = 'sk_test';
 
       mockPaymentRepositoryFindOne.mockResolvedValue({ stripeCustomerId: 'cus_active' });

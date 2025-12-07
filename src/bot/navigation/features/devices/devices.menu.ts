@@ -14,7 +14,7 @@ import { mapDeviceLabel } from '@utils/utils';
 export class DevicesMenu extends Base {
   readonly menu = new Menu('devices-menu');
   private devices: UserDevice[] = JSON.parse(
-    process.env.USER_DEVICES || '["ios","android","macOS","windows"]',
+    process.env.CLIENT_DEVICES || '["ios","android","macOS","windows"]',
   );
 
   constructor(

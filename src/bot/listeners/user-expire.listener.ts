@@ -58,9 +58,9 @@ export class UserExpireListener {
         this.localService.i18n.t(locale, mapPeriodLabelToPriceLabel(period), {
           amount:
             this.config.get<number>(
-              locale === 'ru' ? `PRICE_RUB_${period}` : `PRICE_USD_${period}`,
+              locale === 'ru' ? `PRICE_RUB_${period}` : `PRICE_EUR_${period}`,
             ) || 0,
-          currency: locale === 'ru' ? '₽' : '$',
+          currency: locale === 'ru' ? '₽' : '€',
         }),
         `payment_for_${period}`,
       );

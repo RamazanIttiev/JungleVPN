@@ -8,7 +8,7 @@ import { customerToId, subscriptionToId } from '@payments/providers/stripe/strip
 import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
-import { mapToCorrectAmount, mapUSDAmountToMonthsNumber } from '@utils/utils';
+import { mapToCorrectAmount, mapEURAmountToMonthsNumber } from '@utils/utils';
 import Stripe from 'stripe';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -93,7 +93,7 @@ export class WebhookService {
         const subscriptionId = subscriptionToId(invoice.parent?.subscription_details?.subscription);
 
         const customer = await this.stripeProvider.retrieveCustomer(customerId);
-        const monthsToAdd = mapUSDAmountToMonthsNumber(invoice.amount_paid.toString());
+        const monthsToAdd = mapEURAmountToMonthsNumber(invoice.amount_paid.toString());
 
         const amount = mapToCorrectAmount(invoice.amount_paid);
 
