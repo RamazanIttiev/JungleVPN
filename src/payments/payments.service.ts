@@ -19,6 +19,8 @@ export class PaymentsService {
     const provider = this.factory.getProvider(providerName);
     const session = await provider.createPayment(dto);
 
+    const existingPayment = await this.paymentRepository.findOne({ where: { id: session.id } });
+
     const payment = this.paymentRepository.create({
       userId: dto.userId,
       stripeCustomerId: session.customer,
@@ -27,7 +29,7 @@ export class PaymentsService {
       currency: dto.payment.currency,
       id: session.id,
       url: session.url,
-      createdAt: new Date(),
+      createdAt: existingPayment?.createdAt || new Date(),
     });
 
     await this.paymentRepository.save(payment);
