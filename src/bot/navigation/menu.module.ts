@@ -5,6 +5,7 @@ import { PaymentMsgService } from '@bot/navigation/features/payment/payment.serv
 import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
 import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
+import { ProfileMenuService } from '@bot/navigation/features/profile/profile-menu.service';
 import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
@@ -30,6 +31,7 @@ import { MenuTree } from './menu.tree';
     RevokeSubMsgService,
     SubscriptionMsgService,
     PaymentMethodMsgService,
+    ProfileMenuService,
     // MENUS
     MenuTree,
     MainMenu,
@@ -55,6 +57,7 @@ import { MenuTree } from './menu.tree';
     RevokeSubMsgService,
     SubscriptionMsgService,
     PaymentMethodMsgService,
+    ProfileMenuService,
     // MENUS
     MenuTree,
     MainMenu,

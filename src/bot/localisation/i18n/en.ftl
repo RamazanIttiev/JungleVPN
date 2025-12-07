@@ -156,4 +156,16 @@ invoice-payment-success-text =
 
 
 profile-text =
-    Here you can manage your profile
+    Here you can manage your profile.
+
+    <blockquote>Autopayments</blockquote>
+    Currently, autopayments are supported only for non-Russian payment methods.
+
+
+
+no-active-subscription-text =
+    You don't have any active autopayment set up.
+
+    Currently, autopayments are supported only for non-Russian payment methods.
+
+    Purchase a subscription via international payment method to enable autopayments.

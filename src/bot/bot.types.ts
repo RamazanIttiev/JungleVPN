@@ -12,6 +12,8 @@ export interface SessionData {
   selectedDevice?: UserDevice;
   selectedProvider?: PaymentProvider;
   selectedPeriod?: PaymentPeriod;
+  billingPortalUrl?: string;
+  hasActiveSubscription?: boolean;
   user: Partial<UserDto>;
 }
 
@@ -24,6 +26,8 @@ export const initialSession = (): SessionData => {
     selectedDevice: undefined,
     selectedPeriod: undefined,
     redirectUrl: undefined,
+    billingPortalUrl: undefined,
+    hasActiveSubscription: false,
     user: {
       uuid: undefined,
       telegramId: undefined,

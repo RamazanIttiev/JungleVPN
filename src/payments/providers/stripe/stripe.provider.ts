@@ -34,7 +34,7 @@ export class StripeProvider extends AbstractPaymentProvider {
     return this.createCheckoutSession(priceId, dto, newCustomer);
   }
 
-  private async createPortalSession(customer: string): Promise<PaymentSession> {
+  async createPortalSession(customer: string): Promise<PaymentSession> {
     try {
       const session = await this.stripe.billingPortal.sessions.create({
         customer,
