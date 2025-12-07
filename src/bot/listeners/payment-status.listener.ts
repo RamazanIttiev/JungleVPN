@@ -54,15 +54,13 @@ export class PaymentStatusListener {
     }
 
     const payment = await this.paymentsService.findOneByStripeCustomerId(data.subscriptionId);
-    if (!payment) {
-      this.logger.warn('No payment found by findOneByStripeCustomerId');
-    }
-
     if (payment) {
       await this.paymentsService.updatePayment(payment.id, {
         status: data.status,
         paidAt: new Date(),
       });
+    } else {
+      this.logger.warn('No payment found by findOneByStripeCustomerId');
     }
 
     await this.updateUserExpiryDate(user, metadata.monthsToAdd);
