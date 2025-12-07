@@ -8,7 +8,7 @@ import { customerToId, subscriptionToId } from '@payments/providers/stripe/strip
 import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
-import { mapToCorrectAmount, mapEURAmountToMonthsNumber } from '@utils/utils';
+import { mapEURAmountToMonthsNumber, mapToCorrectAmount } from '@utils/utils';
 import Stripe from 'stripe';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -5,7 +5,6 @@ import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
 import { Response } from 'express';
-import Stripe from 'stripe';
 import { WebhookService } from './webhook.service';
 
 @Controller('webhook')
@@ -68,18 +67,17 @@ export class WebhookController {
     const body = req.rawBody;
 
     if (!body) return res.status(400).send({});
-    let event: Stripe.Event;
     try {
-      event = this.stripeProvider.stripe.webhooks.constructEvent(
+      const event = this.stripeProvider.stripe.webhooks.constructEvent(
         body,
         signature,
         process.env.STRIPE_WEBHOOK_SECRET || '',
       );
+
+      await this.webhookService.processStripeEvent(event);
+      res.status(200).send('OK');
     } catch (err) {
       return res.status(400).send(`Webhook Error: ${err}`);
     }
-
-    res.status(200).send('OK');
-    await this.webhookService.processStripeEvent(event);
   }
 }
