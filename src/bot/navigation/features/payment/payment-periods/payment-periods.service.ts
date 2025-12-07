@@ -16,7 +16,7 @@ export class PaymentPeriodsMsgService extends Base {
     process.env.PAYMENT_PERIODS || '["1mo", "3mo", "6mo"]',
   );
   readonly amounts: PaymentAmount[] = JSON.parse(
-    process.env.PAYMENT_AMOUNTS || '["199.00", "599.00", "999.00"]',
+    process.env.PAYMENT_AMOUNTS || '["99.00", "159.00", "499.00"]',
   );
 
   readonly periodAmounts = this.periods.reduce(

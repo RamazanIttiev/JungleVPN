@@ -13,7 +13,7 @@ export class Payment {
   @Column({ type: 'varchar' })
   provider: PaymentProvider;
 
-  @Column()
+  @Column({ type: 'varchar' })
   amount: string;
 
   @Column()
