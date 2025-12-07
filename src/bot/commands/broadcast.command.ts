@@ -3,7 +3,7 @@ import { BotContext } from '@bot/bot.types';
 import { Injectable, Logger } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { safeSendMessage } from '@utils/utils';
-import { Bot, InlineKeyboard } from 'grammy';
+import { Bot } from 'grammy';
 
 @Injectable()
 export class BroadcastCommand {
@@ -41,9 +41,7 @@ export class BroadcastCommand {
 
         const promises = batch.map(async (user) => {
           try {
-            await safeSendMessage(bot, user.telegramId || 0, textToSend, {
-              reply_markup: new InlineKeyboard().text('Подключиться 📶', 'navigate_devices'),
-            });
+            await safeSendMessage(bot, user.telegramId || 0, textToSend);
             successCount++;
           } catch (e) {
             const error = e as Error;
