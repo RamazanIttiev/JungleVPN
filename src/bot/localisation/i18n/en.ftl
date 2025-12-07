@@ -9,8 +9,8 @@ profile-button-label = Profile 👤
 subscription-button-label = Autopayment 🔄
 download-button-label = Install 🔽
 back-button-label = ⤴ Back
-payment-method-usd = 💰Visa/Master Card
-payment-method-rub = 💳 MIR/SPB
+payment-method-eur = 💶 Pay in €
+payment-method-rub = 💳 Pay in ₽
 payment-period-button-label-1 =  1  month ({ $amount }{ $currency })
 payment-period-button-label-2 =  3  months ({ $amount }{ $currency })
 payment-period-button-label-3 =  6  months ({ $amount }{ $currency })
@@ -73,7 +73,7 @@ payment-periods-text =
 payment-methods-text =
     You can pay any way you like!
 
-    We accept 🇷🇺Russian and 💰International payment methods
+    We accept 🇷🇺Russian and 🌍International payment methods
 
 payment-text =
     <b>As soon as you pay, come back to get the connection link</b>

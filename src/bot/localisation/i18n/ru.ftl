@@ -8,8 +8,8 @@ back-button-label = ⤴ Назад
 payment-period-button-label-1 = 1 месяц ({ $amount }{ $currency })
 payment-period-button-label-2 = 3 месяца ({ $amount }{ $currency })
 payment-period-button-label-3 = 6 месяцев ({ $amount }{ $currency })
-payment-method-usd = 💰Visa/Master Card
-payment-method-rub = 💳 MIR/SPB
+payment-method-eur = 💶 Оплата в €
+payment-method-rub = 💳 Оплата в ₽
 pay-button-label = Оплатить подписку 💳
 home-button-label = Главное меню 🏠
 chanel-button-label = Телеграм канал 🌟
@@ -74,7 +74,7 @@ payment-periods-text =
 payment-methods-text =
     Плати любым удобным способом!
 
-    Мы принимаем 🇷🇺Российские и 💰Международные способы оплаты
+    Мы принимаем 🇷🇺Российские и 🌍Международные способы оплаты
 
 
 payment-text =
