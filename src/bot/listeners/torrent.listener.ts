@@ -31,7 +31,7 @@ export class TorrentListener {
     timestamp: string;
   }) {
     const user = await this.remnaService.getUserByTgId(Number(payload.username));
-    const locale = (user?.description || process.env.DEFAULT_LOCALE || 'ru') as UserLocale;
+    const locale = (user?.description || process.env.DEFAULT_LOCALE || 'en') as UserLocale;
     const text = this.localService.i18n.t(locale, 'torrent-warning-text');
 
     await safeSendMessage(this.bot, Number(payload.username), text, {

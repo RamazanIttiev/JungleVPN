@@ -49,7 +49,7 @@ export class UserExpireListener {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
-    const locale = payload.data.description || process.env.DEFAULT_LOCALE || 'ru';
+    const locale = payload.data.description || process.env.DEFAULT_LOCALE || 'en';
 
     const keyboard = new InlineKeyboard();
 

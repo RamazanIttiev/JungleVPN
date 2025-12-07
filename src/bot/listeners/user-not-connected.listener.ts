@@ -28,7 +28,7 @@ export class UserNotConnectedListener {
     data: UserDto;
     timestamp: string;
   }) {
-    const locale = (payload.data.description || process.env.DEFAULT_LOCALE || 'ru') as UserLocale;
+    const locale = (payload.data.description || process.env.DEFAULT_LOCALE || 'en') as UserLocale;
     const createdAt = new Date(payload.data.createdAt);
     const timestamp = new Date(payload.timestamp);
     const diffHours = differenceInHours(timestamp, createdAt);

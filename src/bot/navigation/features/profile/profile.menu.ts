@@ -20,7 +20,7 @@ export class ProfileMenu extends Base {
     this.menu.dynamic(async (ctx, range) => {
       const keyboard = new InlineKeyboard();
 
-      if (ctx.session.hasActiveSubscription) {
+      if (!ctx.session.hasActiveSubscription) {
         range.text(
           (ctx) => ctx.t('subscription-button-label'),
           async (ctx) => {
