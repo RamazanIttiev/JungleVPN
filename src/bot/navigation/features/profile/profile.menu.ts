@@ -17,29 +17,35 @@ export class ProfileMenu extends Base {
   ) {
     super();
 
-    this.menu.dynamic(async (ctx, range) => {
-      const keyboard = new InlineKeyboard();
+    this.menu
+      .dynamic(async (ctx, range) => {
+        const keyboard = new InlineKeyboard();
 
-      if (ctx.session.hasActiveSubscription) {
-        range.text(
-          (ctx) => ctx.t('subscription-button-label'),
-          async (ctx) => {
-            await this.render(
-              ctx,
-              ctx.t('no-active-subscription-text'),
-              keyboard.text(ctx.t('home-button-label'), 'navigate_main'),
-              true,
-            );
-          },
-        );
-      } else {
-        range.url(
-          (ctx) => ctx.t('subscription-button-label'),
-          async (ctx) => {
-            return ctx.session.billingPortalUrl || 'https://example.com';
-          },
-        );
-      }
-    });
+        if (ctx.session.hasActiveSubscription) {
+          range.url(
+            (ctx) => ctx.t('subscription-button-label'),
+            async (ctx) => {
+              return ctx.session.billingPortalUrl || 'https://example.com';
+            },
+          );
+        } else {
+          range.text(
+            (ctx) => ctx.t('subscription-button-label'),
+            async (ctx) => {
+              await this.render(
+                ctx,
+                ctx.t('no-active-subscription-text'),
+                keyboard.text(ctx.t('home-button-label'), 'navigate_main'),
+                true,
+              );
+            },
+          );
+        }
+      })
+      .row()
+      .text(
+        async (ctx) => ctx.t('home-button-label'),
+        async (ctx) => this.mainMsgService.init(ctx, this.mainMenu.menu),
+      );
   }
 }

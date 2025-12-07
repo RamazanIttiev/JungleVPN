@@ -1,5 +1,6 @@
 import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callback';
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
+import { NavigateProfileCallback } from '@bot/callbacks/navigate-profile.callback';
 import { PaymentMethodsCallback } from '@bot/callbacks/payment-methods.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
@@ -52,6 +53,7 @@ import { BotService } from './bot.service';
     PaymentMethodsCallback,
     NavigateMainCallback,
     NavigateDevicesCallback,
+    NavigateProfileCallback,
   ],
   exports: [BotService],
 })
