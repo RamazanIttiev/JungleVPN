@@ -63,6 +63,10 @@ export const mapUSDAmountToMonthsNumber = (amount: string | undefined) => {
   }
 };
 
+export const mapToCorrectAmount = (amount: number) => {
+  return +amount.toString().slice(0, amount.toString().length - 2);
+};
+
 export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
   switch (period) {
     case 'month_1':

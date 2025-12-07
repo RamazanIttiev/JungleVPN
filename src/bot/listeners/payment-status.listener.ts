@@ -53,10 +53,11 @@ export class PaymentStatusListener {
       return;
     }
 
-    const payment = await this.paymentsService.findOneByStripeCustomerId(data.subscriptionId);
+    const payment = await this.paymentsService.findOneByStripeCustomerId(data.customerId);
     if (payment) {
       await this.paymentsService.updatePayment(payment.id, {
         status: data.status,
+        amount: data.amount,
         paidAt: new Date(),
       });
     } else {
@@ -161,10 +162,10 @@ export class PaymentStatusListener {
     const i18n = this.localService.i18n;
     const text = this.localService.i18n.t(locale, 'invoice-payment-success-text');
 
-    const successMenu = new InlineKeyboard().text(
-      i18n.t(locale, 'home-button-label'),
-      'navigate_main',
-    );
+    const successMenu = new InlineKeyboard()
+      .text(i18n.t(locale, 'profile-button-label'), 'navigate_profile')
+      .row()
+      .text(i18n.t(locale, 'home-button-label'), 'navigate_main');
 
     await safeSendMessage(this.bot, telegramId, text, {
       reply_markup: successMenu,

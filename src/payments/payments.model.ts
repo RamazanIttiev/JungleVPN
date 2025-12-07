@@ -37,6 +37,7 @@ export interface StripeInvoicePayload {
   id: string;
   subscriptionId: string | null;
   customerId: string;
+  amount: number;
   status: Stripe.Subscription.Status;
   metadata: Stripe.Metadata;
 }
