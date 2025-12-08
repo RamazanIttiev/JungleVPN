@@ -1,38 +1,44 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
-import { PaymentProvider, PaymentStatus } from './payments.model';
+import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { PaymentCurrency, PaymentProvider, PaymentStatus } from './payments.model';
 
 @Entity('payments')
 export class Payment {
   @PrimaryColumn()
   id: string;
 
-  @Column({ nullable: true })
-  userId: string;
+  @Column({ nullable: true, type: 'varchar' })
+  userId: string | null;
 
-  @Column({ nullable: true })
-  stripeCustomerId: string;
+  @Column({ nullable: true, type: 'varchar' })
+  stripeCustomerId: string | null;
 
-  @Column({ nullable: true })
-  stripeSubscriptionId: string;
+  @Column({ nullable: true, type: 'varchar' })
+  stripeSubscriptionId: string | null;
 
   @Column({ type: 'varchar' })
   provider: PaymentProvider;
 
-  @Column({ nullable: true })
-  amount: number;
+  @Column({ type: 'int', nullable: true })
+  amount: number | null;
 
-  @Column({ nullable: true })
-  currency: string;
+  @Column({ type: 'varchar', nullable: true })
+  currency: PaymentCurrency | null;
 
-  @Column({ default: 'pending', type: 'varchar' })
+  @Column({ type: 'varchar', default: 'pending' })
   status: PaymentStatus;
 
-  @CreateDateColumn()
+  @Column({ type: 'varchar', nullable: true })
+  url: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  invoiceUrl: string | null;
+
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @CreateDateColumn({ nullable: true })
-  paidAt: Date;
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
 
-  @Column({ nullable: true })
-  url: string;
+  @Column({ type: 'timestamptz', nullable: true })
+  paidAt: Date | null;
 }

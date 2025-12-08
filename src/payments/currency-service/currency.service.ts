@@ -14,9 +14,9 @@ export class CurrencyService {
     currency: PaymentCurrency;
   } {
     const rub = this.config.get<number>(`PRICE_RUB_${period.toUpperCase()}`);
-    const usd = this.config.get<number>(`PRICE_EUR_${period.toUpperCase()}`);
+    const eur = this.config.get<number>(`PRICE_EUR_${period.toUpperCase()}`);
 
-    if (!rub || !usd) {
+    if (!rub || !eur) {
       throw new Error(`Missing price for period: ${period}`);
     }
 
@@ -25,7 +25,7 @@ export class CurrencyService {
         return { amount: Number(rub), currency: 'RUB' };
       }
       default: {
-        return { amount: Number(usd), currency: 'EUR' };
+        return { amount: Number(eur), currency: 'EUR' };
       }
     }
   }

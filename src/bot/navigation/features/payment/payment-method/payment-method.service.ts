@@ -32,23 +32,20 @@ export class PaymentMethodMsgService extends Base {
 
     const { amount, currency } = this.currencyService.getPriceForPeriod(selectedPeriod, provider);
 
-    const { url } = await this.paymentsService.createPayment(
-      {
-        userId: tgUser.id.toString(),
-        payment: {
-          amount,
-          provider,
-          currency,
-          description: ctx.t('provider-description-text'),
-        },
-        metadata: {
-          selectedPeriod: mapPeriodToMonthsNumber(selectedPeriod),
-          telegramId: tgUser.id,
-          telegramMessageId: ctx.msg?.message_id,
-        },
+    const { url } = await this.paymentsService.createPaymentFromProvider({
+      userId: tgUser.id.toString(),
+      payment: {
+        amount,
+        currency,
+        provider,
       },
-      provider,
-    );
+      metadata: {
+        description: ctx.t('provider-description-text'),
+        selectedPeriod: mapPeriodToMonthsNumber(selectedPeriod),
+        telegramMessageId: ctx.msg?.message_id,
+        telegramId: tgUser.id.toString(),
+      },
+    });
 
     ctx.session.paymentUrl = url;
 

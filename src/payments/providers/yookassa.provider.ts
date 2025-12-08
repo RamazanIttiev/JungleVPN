@@ -9,7 +9,7 @@ import {
 import axios, { AxiosInstance } from 'axios';
 import { AbstractPaymentProvider } from './abstract.provider';
 
-export type YookassaPaymentStatus = 'succeeded' | 'canceled' | 'pending';
+export type YookassaPaymentStatus = 'succeeded' | 'pending';
 
 export interface YookassaPaymentPayload {
   id: string;
@@ -80,7 +80,7 @@ export class YooKassaProvider extends AbstractPaymentProvider {
             type: 'redirect',
             return_url: process.env.RETURN_URL,
           },
-          description: dto.payment.description,
+          description: dto.metadata?.description,
           metadata: dto.metadata,
         },
         {
@@ -93,6 +93,7 @@ export class YooKassaProvider extends AbstractPaymentProvider {
       return {
         id: data.id,
         url: data.confirmation.confirmation_url,
+        customer: null,
       };
     } catch (error) {
       console.error('Error creating payment:', error);

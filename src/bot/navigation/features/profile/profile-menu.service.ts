@@ -23,7 +23,7 @@ export class ProfileMenuService extends Base {
 
     const payment = await this.paymentService.findOneByTelegramId(tgUser?.id);
 
-    if (payment?.status === 'active') {
+    if (payment?.status === 'paid' && payment.stripeCustomerId) {
       const { url } = await this.stripeProvider.createPortalSession(payment.stripeCustomerId);
       session.billingPortalUrl = url;
       session.hasActiveSubscription = true;

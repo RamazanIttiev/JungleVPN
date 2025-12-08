@@ -5,6 +5,7 @@ import { LocalisationService } from '@bot/localisation/localisation.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import {
+  IPayment,
   PaymentMetadata,
   PaymentNotificationEvent,
   StripeInvoicePayload,
@@ -35,12 +36,10 @@ export class PaymentStatusListener {
   async handleInvoicePaymentSucceeded(payload: {
     type: 'notification';
     event: 'invoice.payment_succeeded';
-    object: StripeInvoicePayload;
+    object: IPayment;
   }) {
-    const data = payload.object;
-    const metadata = data.metadata;
-
-    const telegramId = Number(metadata.telegramId);
+    const { metadata, ...data } = payload.object;
+    const telegramId = Number(data.userId);
 
     if (!telegramId) {
       this.logger.warn('No telegramId found in payment metadata or via fallback');
@@ -53,20 +52,43 @@ export class PaymentStatusListener {
       return;
     }
 
-    const payment = await this.paymentsService.findOneByStripeCustomerId(data.customerId);
+    const payment = await this.paymentsService.findOneByStripeCustomerId(data.stripeCustomerId);
+
+    if (!payment?.stripeCustomerId) {
+      this.logger.warn('No stripeCustomerId in payment');
+      return;
+    }
+
     if (payment) {
-      await this.paymentsService.updatePayment(payment.id, {
-        status: data.status,
-        amount: data.amount,
-        paidAt: new Date(),
-      });
+      await this.paymentsService.updatePayment(payment.id, { ...data });
     } else {
       this.logger.warn('No payment found by findOneByStripeCustomerId');
     }
 
-    const updatedUser = await this.updateUserExpiryDate(user, metadata.selectedPeriod);
-    await this.cleanUpTelegramMessage(user.telegramId, metadata.telegramMessageId);
+    const updatedUser = await this.updateUserExpiryDate(user, metadata?.selectedPeriod);
+    await this.cleanUpTelegramMessage(user.telegramId, metadata?.telegramMessageId);
     await this.sendSuccessStripePaymentMessage(updatedUser);
+  }
+
+  @OnEvent('invoice.payment_failed')
+  async handleInvoicePaymentFailed(payload: {
+    type: 'notification';
+    event: 'invoice.payment_failed';
+    object: StripeInvoicePayload;
+  }) {
+    const { metadata, ...data } = payload.object;
+    const telegramId = Number(metadata.telegramId);
+
+    if (!telegramId) return;
+
+    const user = await this.loadUser(telegramId);
+    if (!user || !user.telegramId) return;
+
+    await this.paymentsService.createPayment({ ...data });
+
+    const locale = user.description || process.env.DEFAULT_LOCALE || 'en';
+
+    await this.sendFailureStripePaymentMessage(user.telegramId, locale);
   }
 
   @OnEvent('payment.succeeded')
@@ -97,7 +119,7 @@ export class PaymentStatusListener {
     const { status } = payment;
 
     await this.paymentsService.updatePayment(payment.id, {
-      status,
+      status: status,
       paidAt: new Date(),
     });
 
@@ -180,6 +202,25 @@ export class PaymentStatusListener {
 
     await safeSendMessage(this.bot, user.telegramId, text, {
       reply_markup: successMenu,
+      parse_mode: 'HTML',
+    });
+  }
+
+  private async sendFailureStripePaymentMessage(telegramId: number, locale: string) {
+    const i18n = this.localService.i18n;
+    // Ensure locale is valid string or default
+    const lang =
+      locale && ['en', 'ru'].includes(locale) ? locale : process.env.DEFAULT_LOCALE || 'en';
+
+    const text = i18n.t(lang, 'invoice-payment-failed-text');
+
+    const menu = new InlineKeyboard().text(
+      i18n.t(lang, 'profile-button-label'),
+      'navigate_profile',
+    );
+
+    await safeSendMessage(this.bot, telegramId, text, {
+      reply_markup: menu,
       parse_mode: 'HTML',
     });
   }

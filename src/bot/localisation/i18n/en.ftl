@@ -157,6 +157,16 @@ invoice-payment-success-text =
 
 
 
+invoice-payment-failed-text =
+    ❗ <b>Autopayment failed</b>
+
+    We couldn't charge your card for the subscription renewal.
+    Please check your payment method or update your card details.
+
+    You can manage your subscription via the Profile menu.
+
+
+
 
 profile-text =
     Here you can manage your profile.

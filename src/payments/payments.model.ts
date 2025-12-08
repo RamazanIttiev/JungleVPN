@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 
 export type PaymentProvider = 'yookassa' | 'stripe';
-export type PaymentStatus = 'pending' | 'succeeded' | Stripe.Subscription.Status;
+export type PaymentStatus = 'pending' | 'succeeded' | Stripe.Invoice.Status;
 
 export type PaymentPeriod = 'month_1' | 'month_3' | 'month_6';
 export type PaymentCurrency = 'RUB' | 'EUR';
@@ -9,6 +9,21 @@ export type PaymentNotificationEvent =
   | 'payment.succeeded'
   | 'payment.canceled'
   | 'payment.waiting_for_capture';
+
+export interface IPayment {
+  id: string;
+  userId: string | null;
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  provider: PaymentProvider;
+  amount: number | null;
+  currency: PaymentCurrency | null;
+  status: PaymentStatus;
+  url: string | null;
+  invoiceUrl: string | null;
+  paidAt: Date | null;
+  metadata?: Record<string, any>;
+}
 
 export interface PaymentMetadata {
   selectedPeriod: number;
@@ -19,10 +34,9 @@ export interface PaymentMetadata {
 export interface CreatePaymentDto {
   readonly userId: string;
   readonly payment: {
-    provider: PaymentProvider;
-    amount: number;
-    currency: PaymentCurrency;
-    description?: string;
+    readonly provider: PaymentProvider;
+    readonly amount: number;
+    readonly currency: PaymentCurrency;
   };
   readonly metadata?: Record<string, any>;
 }
@@ -30,14 +44,9 @@ export interface CreatePaymentDto {
 export type PaymentSession = {
   id: string;
   url: string;
-  customer?: string;
+  customer: string | null;
 };
 
-export interface StripeInvoicePayload {
-  id: string;
-  subscriptionId: string | null;
-  customerId: string;
-  amount: number;
-  status: Stripe.Subscription.Status;
+export interface StripeInvoicePayload extends IPayment {
   metadata: Stripe.Metadata;
 }

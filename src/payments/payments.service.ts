@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
-import { CreatePaymentDto, PaymentProvider, PaymentSession } from '@payments/payments.model';
+import { CreatePaymentDto, IPayment, PaymentSession } from '@payments/payments.model';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -12,32 +12,35 @@ export class PaymentsService {
     private readonly factory: PaymentProviderFactory,
   ) {}
 
-  async createPayment(
-    dto: CreatePaymentDto,
-    providerName: PaymentProvider,
-  ): Promise<PaymentSession> {
-    const provider = this.factory.getProvider(providerName);
+  async createPayment(dto: Omit<IPayment, 'metadata'>) {
+    const payment = this.paymentRepository.create(dto);
+
+    return await this.paymentRepository.save(payment);
+  }
+  async createPaymentFromProvider(dto: CreatePaymentDto): Promise<PaymentSession> {
+    const provider = this.factory.getProvider(dto.payment.provider);
     const session = await provider.createPayment(dto);
 
-    const existingPayment = await this.paymentRepository.findOne({ where: { id: session.id } });
-
     const payment = this.paymentRepository.create({
-      userId: dto.userId,
-      stripeCustomerId: session.customer,
-      provider: dto.payment.provider,
-      amount: dto.payment.amount,
-      currency: dto.payment.currency,
       id: session.id,
       url: session.url,
-      createdAt: existingPayment?.createdAt || new Date(),
+      stripeCustomerId: session.customer,
+      status: 'pending',
+      amount: dto.payment.amount,
+      currency: dto.payment.currency,
+      userId: dto.userId,
+      provider: provider.id,
+      paidAt: null,
+      stripeSubscriptionId: null,
+      invoiceUrl: null,
     });
 
     await this.paymentRepository.save(payment);
 
-    return { id: session.id, url: session.url };
+    return { id: payment.id, url: payment.url || '', customer: payment.stripeCustomerId };
   }
 
-  async updatePayment(id: string, partial: Partial<Payment>) {
+  async updatePayment(id: string, partial: Partial<IPayment>) {
     const payment = await this.paymentRepository.findOneBy({ id });
     if (!payment) throw new Error(`Payment ${id} not found`);
 
@@ -45,7 +48,7 @@ export class PaymentsService {
     await this.paymentRepository.save(payment);
   }
 
-  async findOneByStripeCustomerId(stripeCustomerId: string | null): Promise<Payment | null> {
+  async findOneByStripeCustomerId(stripeCustomerId: string | null): Promise<IPayment | null> {
     if (!stripeCustomerId) return null;
     return this.paymentRepository.findOne({
       where: { stripeCustomerId },
@@ -53,7 +56,7 @@ export class PaymentsService {
     });
   }
 
-  async findOneByTelegramId(telegramId: number): Promise<Payment | null> {
+  async findOneByTelegramId(telegramId: number): Promise<IPayment | null> {
     return this.paymentRepository.findOne({
       where: { userId: telegramId.toString() },
       order: { createdAt: 'DESC' },

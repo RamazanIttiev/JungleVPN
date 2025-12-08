@@ -100,15 +100,20 @@ export class WebhookService {
         if (customer && !customer.deleted) {
           const payload: StripeInvoicePayload = {
             id: customer.id,
-            subscriptionId,
-            status: 'active',
+            stripeSubscriptionId: subscriptionId,
+            status: invoice.status || 'paid',
             amount,
-            customerId: customer.id,
+            stripeCustomerId: customer.id,
+            invoiceUrl: invoice.hosted_invoice_url || null,
             metadata: {
               ...customer.metadata,
-              telegramId: customer.metadata.telegramId,
               selectedPeriod: monthsToAdd.toString(),
             },
+            userId: customer.metadata.telegramId,
+            provider: 'stripe',
+            currency: 'EUR',
+            paidAt: new Date(),
+            url: null,
           };
 
           this.eventEmitter.emit('invoice.payment_succeeded', {
@@ -118,6 +123,41 @@ export class WebhookService {
           });
         }
 
+        break;
+      }
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerId = customerToId(invoice.customer);
+        const subscriptionId = subscriptionToId(invoice.parent?.subscription_details?.subscription);
+
+        const customer = await this.stripeProvider.retrieveCustomer(customerId);
+        const amount = mapToCorrectAmount(invoice.amount_due); // amount_due since it failed
+
+        if (customer && !customer.deleted) {
+          const payload: StripeInvoicePayload = {
+            id: invoice.id,
+            stripeSubscriptionId: subscriptionId,
+            status: invoice.status || 'open',
+            amount,
+            stripeCustomerId: customer.id,
+            invoiceUrl: invoice.hosted_invoice_url || null,
+            metadata: {
+              ...customer.metadata,
+              telegramId: customer.metadata.telegramId,
+            },
+            userId: customer.metadata.telegramId,
+            provider: 'stripe',
+            currency: 'EUR',
+            url: null,
+            paidAt: null,
+          };
+
+          this.eventEmitter.emit('invoice.payment_failed', {
+            type: 'notification',
+            event: 'invoice.payment_failed',
+            object: payload,
+          });
+        }
         break;
       }
     }

@@ -10,6 +10,8 @@ payment-period-button-label-2 = 3 месяца ({ $amount }{ $currency })
 payment-period-button-label-3 = 6 месяцев ({ $amount }{ $currency })
 payment-method-eur = 💶 Оплата в €
 payment-method-rub = 💳 Оплата в ₽
+profile-button-label = Профиль 👤
+subscription-button-label = Автоплатеж 🔄
 pay-button-label = Оплатить подписку 💳
 home-button-label = Главное меню 🏠
 chanel-button-label = Телеграм канал 🌟
@@ -165,3 +167,13 @@ profile-text =
 
 no-active-subscription-text =
     У тебя пока нет автоплатежа, но ты можешь активировать его оформив подписку с помощью международного способа оплаты
+
+
+
+invoice-payment-failed-text =
+    ❗ <b>Автоплатеж не прошел</b>
+
+    Мы не смогли списать оплату за продление подписки.
+    Пожалуйста, проверьте карту или обновите данные.
+
+    Управлять подпиской можно в меню Профиль.

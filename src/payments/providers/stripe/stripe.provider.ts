@@ -27,11 +27,40 @@ export class StripeProvider extends AbstractPaymentProvider {
       if (hasActiveSubscription) {
         return this.createPortalSession(customerId);
       }
-      return this.createCheckoutSession(priceId, dto, customerId);
+      return this.createCheckoutSession(priceId, customerId);
     }
 
     const newCustomer = await this.getOrCreateCustomer(dto, null);
-    return this.createCheckoutSession(priceId, dto, newCustomer);
+    return this.createCheckoutSession(priceId, newCustomer);
+  }
+
+  private async createCheckoutSession(priceId: string, customer: string): Promise<PaymentSession> {
+    try {
+      const session = await this.stripe.checkout.sessions.create({
+        customer,
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        mode: 'subscription',
+        success_url: process.env.RETURN_URL || 'https://t.me/your_bot_username',
+        cancel_url: process.env.RETURN_URL || 'https://t.me/your_bot_username',
+        phone_number_collection: {
+          enabled: false,
+        },
+      });
+
+      return {
+        id: customer,
+        url: session.url || '',
+        customer,
+      };
+    } catch (error) {
+      this.logger.error('Error creating Stripe session', error);
+      throw error;
+    }
   }
 
   async createPortalSession(customer: string): Promise<PaymentSession> {
@@ -65,52 +94,16 @@ export class StripeProvider extends AbstractPaymentProvider {
   }
 
   private async getOrCreateCustomer(
-    paymentDto: CreatePaymentDto,
+    dto: CreatePaymentDto,
     customer: string | null,
   ): Promise<string> {
     if (customer) {
       return customer;
     }
     const newCustomer = await this.stripe.customers.create({
-      metadata: { ...paymentDto.metadata },
+      metadata: { ...dto.metadata },
     });
     return newCustomer.id;
-  }
-
-  private async createCheckoutSession(
-    priceId: string,
-    dto: CreatePaymentDto,
-    customer: string,
-  ): Promise<PaymentSession> {
-    try {
-      const session = await this.stripe.checkout.sessions.create({
-        customer,
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
-        mode: 'subscription',
-        success_url: process.env.RETURN_URL || 'https://t.me/your_bot_username',
-        cancel_url: process.env.RETURN_URL || 'https://t.me/your_bot_username',
-        metadata: {
-          telegramId: dto.userId,
-        },
-        phone_number_collection: {
-          enabled: false,
-        },
-      });
-
-      return {
-        id: customer,
-        url: session.url || '',
-        customer,
-      };
-    } catch (error) {
-      this.logger.error('Error creating Stripe session', error);
-      throw error;
-    }
   }
 
   private async getCustomerId(userId: string): Promise<string | null> {
