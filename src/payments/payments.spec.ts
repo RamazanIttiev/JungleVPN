@@ -114,7 +114,7 @@ describe('Payment System', () => {
         userId: '123',
         payment: {
           amount: 2,
-          currency: 'USD',
+          currency: 'EUR',
           provider: 'stripe',
         },
       };
@@ -151,7 +151,7 @@ describe('Payment System', () => {
         userId: '123',
         payment: {
           amount: 2,
-          currency: 'USD',
+          currency: 'EUR',
           provider: 'stripe',
         },
       };
@@ -190,7 +190,7 @@ describe('Payment System', () => {
         userId: '123',
         payment: {
           amount: 2,
-          currency: 'USD',
+          currency: 'EUR',
           provider: 'stripe',
         },
       };

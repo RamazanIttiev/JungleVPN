@@ -31,7 +31,7 @@ export class PaymentMsgService extends Base {
     const content = ctx.t('payment-text', {
       amount,
       period: ctx.t(`period-${selectedPeriod}`),
-      currency: currency === 'USD' ? '€' : '₽',
+      currency: currency === 'EUR' ? '€' : '₽',
     });
 
     await this.render(ctx, content, this.paymentMenu.menu);

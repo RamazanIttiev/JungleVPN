@@ -25,7 +25,7 @@ export class CurrencyService {
         return { amount: Number(rub), currency: 'RUB' };
       }
       default: {
-        return { amount: Number(usd), currency: 'USD' };
+        return { amount: Number(usd), currency: 'EUR' };
       }
     }
   }

@@ -4,7 +4,7 @@ export type PaymentProvider = 'yookassa' | 'stripe';
 export type PaymentStatus = 'pending' | 'succeeded' | Stripe.Subscription.Status;
 
 export type PaymentPeriod = 'month_1' | 'month_3' | 'month_6';
-export type PaymentCurrency = 'RUB' | 'USD';
+export type PaymentCurrency = 'RUB' | 'EUR';
 export type PaymentNotificationEvent =
   | 'payment.succeeded'
   | 'payment.canceled'
