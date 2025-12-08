@@ -13,7 +13,7 @@ export type PaymentNotificationEvent =
 export interface PaymentMetadata {
   selectedPeriod: number;
   telegramId: number;
-  telegramMessageId: number | undefined;
+  telegramMessageId: number | string | undefined;
 }
 
 export interface CreatePaymentDto {

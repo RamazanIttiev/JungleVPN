@@ -54,7 +54,7 @@ main-text =
     { $isExpired ->
     [true]   🆘🆘🆘 <b>Your subscription has expired 🥲</b>
     *[false]  📅 <b>Subscription end date:</b>
-    <blockquote>{ $validUntil } (MSK)</blockquote>
+    <blockquote>{ $expireAt } (MSK)</blockquote>
     }
 
 
@@ -151,6 +151,9 @@ invoice-payment-success-text =
     Thank you for staying in the <code>Jungle</code>
 
     You can easily manage your subscription by clicking the button below
+
+    📅 <b>New subscription end date:</b> 🌟
+    <blockquote>{ $expireAt }</blockquote>
 
 
 

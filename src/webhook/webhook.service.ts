@@ -106,6 +106,7 @@ export class WebhookService {
             customerId: customer.id,
             metadata: {
               ...customer.metadata,
+              telegramId: customer.metadata.telegramId,
               selectedPeriod: monthsToAdd.toString(),
             },
           };

@@ -52,7 +52,7 @@ main-text =
     { $isExpired ->
     [true]  🆘🆘🆘 <b>У тебя закончилась подписка 🥲</b>
     *[false]  📅 <b>Подписка закончится:</b>
-    <blockquote>{ $validUntil } (МСК)</blockquote>
+    <blockquote>{ $expireAt } (МСК)</blockquote>
     }
 
 

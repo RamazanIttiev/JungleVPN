@@ -13,7 +13,7 @@ import { PaymentsService } from '@payments/payments.service';
 import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
-import { safeSendMessage } from '@utils/utils';
+import { safeSendMessage, toDateString } from '@utils/utils';
 import { add } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
 
@@ -64,8 +64,9 @@ export class PaymentStatusListener {
       this.logger.warn('No payment found by findOneByStripeCustomerId');
     }
 
-    await this.updateUserExpiryDate(user, metadata.monthsToAdd);
-    await this.sendSuccessStripePaymentMessage(user.telegramId);
+    const updatedUser = await this.updateUserExpiryDate(user, metadata.selectedPeriod);
+    await this.cleanUpTelegramMessage(user.telegramId, metadata.telegramMessageId);
+    await this.sendSuccessStripePaymentMessage(updatedUser);
   }
 
   @OnEvent('payment.succeeded')
@@ -110,23 +111,26 @@ export class PaymentStatusListener {
     return user?.telegramId ? user : null;
   }
 
-  private async updateUserExpiryDate(user: UserDto, selectedPeriod: number | string) {
+  private async updateUserExpiryDate(
+    user: UserDto,
+    selectedPeriod: number | string,
+  ): Promise<UserDto> {
     const { uuid, expireAt } = user;
 
     const newExpireAt = add(expireAt, {
       months: Number(selectedPeriod),
     }).toISOString();
 
-    await this.remnaService.updateUser({
+    return await this.remnaService.updateUser({
       uuid,
       expireAt: newExpireAt,
     });
   }
 
-  private async cleanUpTelegramMessage(telegramId: number, messageId?: number) {
+  private async cleanUpTelegramMessage(telegramId: number, messageId?: number | string) {
     if (messageId) {
       try {
-        await this.bot.api.deleteMessage(telegramId, messageId);
+        await this.bot.api.deleteMessage(telegramId, +messageId);
       } catch (err) {
         console.log('Failed to delete Telegram message:', err);
       }
@@ -157,17 +161,24 @@ export class PaymentStatusListener {
     });
   }
 
-  private async sendSuccessStripePaymentMessage(telegramId: number) {
+  private async sendSuccessStripePaymentMessage(user: UserDto) {
     const locale = 'en';
     const i18n = this.localService.i18n;
-    const text = this.localService.i18n.t(locale, 'invoice-payment-success-text');
+
+    if (!user.telegramId) return;
+
+    const expireAt = toDateString(user.expireAt);
+
+    const text = this.localService.i18n.t(locale, 'invoice-payment-success-text', {
+      expireAt,
+    });
 
     const successMenu = new InlineKeyboard()
       .text(i18n.t(locale, 'profile-button-label'), 'navigate_profile')
       .row()
       .text(i18n.t(locale, 'home-button-label'), 'navigate_main');
 
-    await safeSendMessage(this.bot, telegramId, text, {
+    await safeSendMessage(this.bot, user.telegramId, text, {
       reply_markup: successMenu,
       parse_mode: 'HTML',
     });
