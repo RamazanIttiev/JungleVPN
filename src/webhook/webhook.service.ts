@@ -86,80 +86,54 @@ export class WebhookService {
 
   async processStripeEvent(event: Stripe.Event) {
     switch (event.type) {
-      case 'invoice.payment_succeeded': {
-        const invoice = event.data.object as Stripe.Invoice;
-
-        const customerId = customerToId(invoice.customer);
-        const subscriptionId = subscriptionToId(invoice.parent?.subscription_details?.subscription);
-
-        const customer = await this.stripeProvider.retrieveCustomer(customerId);
-        const monthsToAdd = mapEURAmountToMonthsNumber(invoice.amount_paid.toString());
-
-        const amount = mapToCorrectAmount(invoice.amount_paid);
-
-        if (customer && !customer.deleted) {
-          const payload: StripeInvoicePayload = {
-            id: customer.id,
-            stripeSubscriptionId: subscriptionId,
-            status: invoice.status || 'paid',
-            amount,
-            stripeCustomerId: customer.id,
-            invoiceUrl: invoice.hosted_invoice_url || null,
-            metadata: {
-              ...customer.metadata,
-              selectedPeriod: monthsToAdd.toString(),
-            },
-            userId: customer.metadata.telegramId,
-            provider: 'stripe',
-            currency: 'EUR',
-            paidAt: new Date(),
-            url: null,
-          };
-
-          this.eventEmitter.emit('invoice.payment_succeeded', {
-            type: 'notification',
-            event: 'invoice.payment_succeeded',
-            object: payload,
-          });
-        }
-
+      case 'invoice.payment_succeeded':
+      case 'invoice.payment_failed':
+        await this.handleInvoiceEvent(event);
         break;
-      }
-      case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice;
-        const customerId = customerToId(invoice.customer);
-        const subscriptionId = subscriptionToId(invoice.parent?.subscription_details?.subscription);
+    }
+  }
 
-        const customer = await this.stripeProvider.retrieveCustomer(customerId);
-        const amount = mapToCorrectAmount(invoice.amount_due); // amount_due since it failed
+  private async handleInvoiceEvent(event: Stripe.Event) {
+    const invoice = event.data.object as Stripe.Invoice;
+    const customerId = customerToId(invoice.customer);
+    const subscriptionId = subscriptionToId(invoice.parent?.subscription_details?.subscription);
 
-        if (customer && !customer.deleted) {
-          const payload: StripeInvoicePayload = {
-            id: invoice.id,
-            stripeSubscriptionId: subscriptionId,
-            status: invoice.status || 'open',
-            amount,
-            stripeCustomerId: customer.id,
-            invoiceUrl: invoice.hosted_invoice_url || null,
-            metadata: {
-              ...customer.metadata,
-              telegramId: customer.metadata.telegramId,
-            },
-            userId: customer.metadata.telegramId,
-            provider: 'stripe',
-            currency: 'EUR',
-            url: null,
-            paidAt: null,
-          };
+    const customer = await this.stripeProvider.retrieveCustomer(customerId);
 
-          this.eventEmitter.emit('invoice.payment_failed', {
-            type: 'notification',
-            event: 'invoice.payment_failed',
-            object: payload,
-          });
-        }
-        break;
-      }
+    const isSuccess = event.type === 'invoice.payment_succeeded';
+    const amountVal = isSuccess ? invoice.amount_paid : invoice.amount_due;
+    const paidAt = isSuccess ? new Date() : null;
+    const amount = mapToCorrectAmount(amountVal);
+
+    const fallbackStatus = isSuccess ? 'paid' : 'open';
+
+    const monthsToAdd = mapEURAmountToMonthsNumber(amountVal.toString());
+
+    if (customer && !customer.deleted) {
+      const payload: StripeInvoicePayload = {
+        id: invoice.id,
+        stripeSubscriptionId: subscriptionId,
+        status: invoice.status || fallbackStatus,
+        amount,
+        stripeCustomerId: customer.id,
+        invoiceUrl: invoice.hosted_invoice_url || null,
+        metadata: {
+          ...customer.metadata,
+          telegramId: customer.metadata.telegramId,
+          selectedPeriod: monthsToAdd.toString(),
+        },
+        userId: customer.metadata.telegramId,
+        provider: 'stripe',
+        currency: 'EUR',
+        paidAt,
+        url: null,
+      };
+
+      this.eventEmitter.emit(event.type, {
+        type: 'notification',
+        event: event.type,
+        object: payload,
+      });
     }
   }
 }
