@@ -6,6 +6,7 @@ extend-button-label = Extend ➕
 support-button-label = Need help?
 home-button-label = Home 🏠
 profile-button-label = Profile 👤
+invoice-button-label = Invoice 📄
 subscription-button-label = Autopayment 🔄
 download-button-label = Install 🔽
 back-button-label = ⤴ Back

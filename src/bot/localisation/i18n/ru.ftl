@@ -11,6 +11,7 @@ payment-period-button-label-3 = 6 месяцев ({ $amount }{ $currency })
 payment-method-eur = 💶 Оплата в €
 payment-method-rub = 💳 Оплата в ₽
 profile-button-label = Профиль 👤
+invoice-button-label = Чек 📄
 subscription-button-label = Автоплатеж 🔄
 pay-button-label = Оплатить подписку 💳
 home-button-label = Главное меню 🏠

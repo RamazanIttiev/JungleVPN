@@ -56,7 +56,6 @@ export class PaymentStatusListener {
 
     if (!payment?.stripeCustomerId) {
       this.logger.warn('No stripeCustomerId in payment');
-      return;
     }
 
     if (payment) {
@@ -67,7 +66,7 @@ export class PaymentStatusListener {
 
     const updatedUser = await this.updateUserExpiryDate(user, metadata?.selectedPeriod);
     await this.cleanUpTelegramMessage(user.telegramId, metadata?.telegramMessageId);
-    await this.sendSuccessStripePaymentMessage(updatedUser);
+    await this.sendSuccessStripePaymentMessage(updatedUser, data);
   }
 
   @OnEvent('invoice.payment_failed')
@@ -123,9 +122,11 @@ export class PaymentStatusListener {
       paidAt: new Date(),
     });
 
+    const locale = user.description || process.env.DEFAULT_LOCALE || 'en';
+
     await this.updateUserExpiryDate(user, metadata.selectedPeriod);
     await this.cleanUpTelegramMessage(user.telegramId, metadata.telegramMessageId);
-    await this.sendSuccessMessage(user.telegramId);
+    await this.sendSuccessMessage(user.telegramId, locale);
   }
 
   private async loadUser(telegramId: number) {
@@ -161,8 +162,7 @@ export class PaymentStatusListener {
     }
   }
 
-  private async sendSuccessMessage(telegramId: number) {
-    const locale = 'en';
+  private async sendSuccessMessage(telegramId: number, locale: string) {
     const i18n = this.localService.i18n;
 
     const stickerId = process.env.SUCCESS_STICKER;
@@ -183,8 +183,8 @@ export class PaymentStatusListener {
     });
   }
 
-  private async sendSuccessStripePaymentMessage(user: UserDto) {
-    const locale = 'en';
+  private async sendSuccessStripePaymentMessage(user: UserDto, data: IPayment) {
+    const locale = user.description || process.env.DEFAULT_LOCALE || 'en';
     const i18n = this.localService.i18n;
 
     if (!user.telegramId) return;
@@ -197,6 +197,7 @@ export class PaymentStatusListener {
 
     const successMenu = new InlineKeyboard()
       .text(i18n.t(locale, 'profile-button-label'), 'navigate_profile')
+      .url(i18n.t(locale, 'invoice-button-label'), data.invoiceUrl || user.subscriptionUrl)
       .row()
       .text(i18n.t(locale, 'home-button-label'), 'navigate_main');
 
@@ -208,14 +209,11 @@ export class PaymentStatusListener {
 
   private async sendFailureStripePaymentMessage(telegramId: number, locale: string) {
     const i18n = this.localService.i18n;
-    // Ensure locale is valid string or default
-    const lang =
-      locale && ['en', 'ru'].includes(locale) ? locale : process.env.DEFAULT_LOCALE || 'en';
 
-    const text = i18n.t(lang, 'invoice-payment-failed-text');
+    const text = i18n.t(locale, 'invoice-payment-failed-text');
 
     const menu = new InlineKeyboard().text(
-      i18n.t(lang, 'profile-button-label'),
+      i18n.t(locale, 'profile-button-label'),
       'navigate_profile',
     );
 
