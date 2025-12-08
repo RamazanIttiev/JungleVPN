@@ -54,14 +54,9 @@ export class PaymentStatusListener {
 
     const payment = await this.paymentsService.findOneByStripeCustomerId(data.stripeCustomerId);
 
-    if (!payment?.stripeCustomerId) {
-      this.logger.warn('No stripeCustomerId in payment');
-    }
-
+    await this.paymentsService.createPayment(data);
     if (payment) {
-      await this.paymentsService.updatePayment(payment.id, { ...data });
-    } else {
-      this.logger.warn('No payment found by findOneByStripeCustomerId');
+      await this.paymentsService.deletePayment(payment.id);
     }
 
     const updatedUser = await this.updateUserExpiryDate(user, metadata?.selectedPeriod);

@@ -48,6 +48,10 @@ export class PaymentsService {
     await this.paymentRepository.save(payment);
   }
 
+  async deletePayment(id: string) {
+    await this.paymentRepository.delete({ id });
+  }
+
   async findOneByStripeCustomerId(stripeCustomerId: string | null): Promise<IPayment | null> {
     if (!stripeCustomerId) return null;
     return this.paymentRepository.findOne({
