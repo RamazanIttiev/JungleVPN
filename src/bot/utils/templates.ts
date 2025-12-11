@@ -146,24 +146,21 @@ export const getExpiredSubscriptionContent = (expireAt: string) => {
   switch (daysLeft) {
     case 1:
       return `
-🆘🆘🆘
-
-<b>Твоя подписка закончится <blockquote>${formattedDate}</blockquote></b>
-
-😱Это уже через <b>${mapDaysLeftLabel(daysLeft)}</b>
-
-
-Чтобы продолжить пользоваться VPN, продли подписку 🙂
-`;
-    default:
-      return `
 🌴Jungle напоминает:
 
 <b>Твоя подписка закончится <blockquote>${formattedDate}</blockquote></b>
 
 
-⏳Осталось всего <b>${mapDaysLeftLabel(daysLeft)}</b>
-      `;
+⏳У тебя еще есть <b>${mapDaysLeftLabel(daysLeft)}</b> 🙂
+`;
+    default:
+      return `
+У тебя только что истекла подписка. Это очень грустно 🥲
+
+Но не переживай, ты можешь легко продлить её и продолжить пользоваться VPN 🙂
+
+Снова жду тебя в Jungle! 🌴
+`;
   }
 };
 
@@ -171,16 +168,6 @@ export const getUserNotConnected24Content = () => {
   return `
 🌴🐵🌴
 
-Псст... В <code>Jungle</code> youtube без рекламы!
-А еще... В <code>Jungle</code> нет лимита на трафик!
-
-
-Подключайся и наслаждайся безопасным интернетом 🙂
-`;
-};
-
-export const getUserNotConnected72Content = () => {
-  return `
 Вижу ты еще не подключался 🥲
 
 Давай я помогу? Займет меньше минуты 🙂

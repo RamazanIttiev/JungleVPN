@@ -36,7 +36,7 @@ export class YooKassaProvider implements IPaymentProvider {
           capture: true,
           confirmation: {
             type: 'redirect',
-            return_url: process.env.YOOKASSA_RETURN_URL,
+            return_url: process.env.RETURN_URL,
           },
           description: dto.description,
           metadata: dto.metadata,

@@ -21,8 +21,8 @@ export class UserExpireListener {
     this.bot = this.botService.bot;
   }
 
-  @OnEvent('user.expires_in_24_hours')
-  async listenToUser24ExpiresEvent(payload: {
+  @OnEvent('user.expired')
+  async listenToUserExpiresEvent(payload: {
     event: WebHookEvent;
     data: UserDto;
     timestamp: string;
@@ -30,8 +30,8 @@ export class UserExpireListener {
     await this.handleUserExpiresEvent(payload);
   }
 
-  @OnEvent('user.expires_in_72_hours')
-  async listenToUser72ExpiresEvent(payload: {
+  @OnEvent('user.expires_in_24_hours')
+  async listenToUser24ExpiresEvent(payload: {
     event: WebHookEvent;
     data: UserDto;
     timestamp: string;
