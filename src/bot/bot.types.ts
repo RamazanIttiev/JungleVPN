@@ -11,6 +11,9 @@ export interface SessionData {
   selectedDevice?: UserDevice;
   selectedAmount?: PaymentAmount;
   selectedPeriod?: PaymentPeriod;
+  metadata?: {
+    messageId?: number;
+  };
   user: Partial<UserDto>;
 }
 
@@ -24,6 +27,9 @@ export const initialSession = (): SessionData => {
     selectedAmount: undefined,
     selectedPeriod: undefined,
     redirectUrl: undefined,
+    metadata: {
+      messageId: undefined,
+    },
     user: {
       uuid: undefined,
       telegramId: undefined,

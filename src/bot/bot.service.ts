@@ -4,7 +4,7 @@ import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callbac
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
-import { BroadcastCommand } from '@bot/commands/broadcast.command';
+import { BroadcastCommand } from '@bot/commands/broadcast/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { MenuTree } from '@bot/navigation/menu.tree';
 import { Injectable, OnModuleInit } from '@nestjs/common';

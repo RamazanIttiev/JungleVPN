@@ -2,7 +2,9 @@ import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callbac
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
-import { BroadcastCommand } from '@bot/commands/broadcast.command';
+import { BroadcastCommand } from '@bot/commands/broadcast/broadcast.command';
+import { Broadcast } from '@bot/commands/broadcast/entities/broadcast.entity';
+import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-message.entity';
 import { StartCommand } from '@bot/commands/start.command';
 import { PaymentStatusListener } from '@bot/listeners/payment-status.listener';
 import { TorrentListener } from '@bot/listeners/torrent.listener';
@@ -15,6 +17,7 @@ import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revok
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { MenuModule } from '@bot/navigation/menu.module';
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaymentsModule } from '@payments/payments.module';
 import { RemnaModule } from '@remna/remna.module';
 import { RemnaService } from '@remna/remna.service';
@@ -23,7 +26,13 @@ import { UserModule } from '@user/users.module';
 import { BotService } from './bot.service';
 
 @Module({
-  imports: [PaymentsModule, RemnaModule, MenuModule, UserModule],
+  imports: [
+    TypeOrmModule.forFeature([Broadcast, BroadcastMessage]),
+    PaymentsModule,
+    RemnaModule,
+    MenuModule,
+    UserModule,
+  ],
   providers: [
     BotService,
     RemnaService,

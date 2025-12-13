@@ -30,7 +30,8 @@
     "rimraf": "^6.0.1",
     "rxjs": "^7.8.1",
     "tweetnacl": "^1.0.3",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.3",
@@ -43,8 +44,7 @@
     "@types/node": "^20.12.12",
     "typescript": "^5.4.5",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4",
-    "zod": "^4.1.12"
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=20.0.0"
