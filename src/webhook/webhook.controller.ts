@@ -71,7 +71,6 @@ export class WebhookController {
     @Body()
     payload: YookassaWebhookPayload,
   ) {
-    const isProd = process.env.NODE_ENV === 'production';
     res.status(200).send('OK');
 
     try {
