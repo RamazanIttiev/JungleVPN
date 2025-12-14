@@ -1,3 +1,5 @@
+import { Broadcast } from '@bot/commands/broadcast/entities/broadcast.entity';
+import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-message.entity';
 import { Payment } from '@payments/payment.entity';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -12,9 +14,9 @@ export const dataSourceOptions: DataSourceOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  entities: [Payment],
+  entities: [Payment, Broadcast, BroadcastMessage],
   migrations: ['dist/db/migrations/**/*.js'],
-  migrationsRun: process.env.NODE_ENV === 'development',
+  migrationsRun: true,
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
   autoLoadEntities: true,

@@ -86,17 +86,37 @@ export async function safeSendMessage(
   onBlocked?: (error: GrammyError) => Promise<void>,
 ) {
   try {
-    await bot.api.sendMessage(userId, content, options);
+    return await bot.api.sendMessage(userId, content, {
+      parse_mode: 'HTML',
+      ...options,
+    });
   } catch (err) {
     const error = err as GrammyError;
     if (error.error_code === 403 && error.description.includes('bot was blocked')) {
       if (onBlocked) {
         await onBlocked(error);
       }
-    } else {
-      // rethrow other errors
-      throw error;
     }
+    return error;
+  }
+}
+
+export async function safeEditMessage(
+  bot: Bot<BotContext, Api<RawApi>>,
+  userId: number | string,
+  messageId: number,
+  text: string,
+  options?:
+    | Other<RawApi, 'editMessageText', 'chat_id' | 'text' | 'message_id' | 'inline_message_id'>
+    | undefined,
+) {
+  try {
+    return await bot.api.editMessageText(Number(userId), messageId, text, {
+      parse_mode: 'HTML',
+      ...options,
+    });
+  } catch (err) {
+    return err as GrammyError;
   }
 }
 

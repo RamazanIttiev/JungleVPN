@@ -11,7 +11,10 @@ import {
   StripeInvoicePayload,
 } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
-import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
+import {
+  YookassaNotificationEvent,
+  YookassaPaymentPayload,
+} from '@payments/providers/yookassa/yookassa.model';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
 import { safeSendMessage, toDateString } from '@utils/utils';
@@ -88,7 +91,7 @@ export class PaymentStatusListener {
   @OnEvent('payment.succeeded')
   async handleSuccessfulPayment(payload: {
     type: 'notification';
-    event: PaymentNotificationEvent;
+    event: YookassaNotificationEvent;
     object: YookassaPaymentPayload;
   }) {
     const payment = payload.object;

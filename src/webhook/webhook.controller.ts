@@ -1,4 +1,10 @@
-import { Body, Controller, Headers, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
+import * as crypto from 'node:crypto';
+import * as process from 'node:process';
+import { BadRequestException, Body, Controller, Headers, Logger,RawBodyRequest, Req, Post, Res } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { PaymentsService } from '@payments/payments.service';
+import { YookassaWebhookPayload } from '@payments/providers/yookassa/yookassa.model';
+import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
 import { PaymentNotificationEvent } from '@payments/payments.model';
 import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
 import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
@@ -9,9 +15,13 @@ import { WebhookService } from './webhook.service';
 
 @Controller('webhook')
 export class WebhookController {
+  logger = new Logger('WebhookController');
+
   constructor(
     private readonly webhookService: WebhookService,
+    private readonly paymentsService: PaymentsService,
     private readonly stripeProvider: StripeProvider,
+    private readonly yooKassaProvider: YooKassaProvider,
   ) {}
 
   @Post('remna')
@@ -45,17 +55,33 @@ export class WebhookController {
 
   @Post('payment/yookassa')
   async handleYookassaEvents(
-    @Headers('x-forwarded-for') ip: string,
+    @Headers('x-forwarded-for') xForwardedFor: string,
+    @Headers('x-real-ip') xRealIp: string,
     @Res() res: Response,
     @Body()
-    payload: {
-      type: 'notification';
-      event: PaymentNotificationEvent;
-      object: YookassaPaymentPayload;
-    },
+    payload: YookassaWebhookPayload,
   ) {
     res.status(200).send('OK');
-    this.webhookService.validateAndProcessYookassa(ip, payload);
+
+    try {
+      const ip = xForwardedFor || xRealIp;
+
+      const isIPRangeValid = await this.yooKassaProvider.isIPRangeValid(ip);
+      if (!isIPRangeValid) return;
+
+      const result = await this.paymentsService.handleWebhook(payload, 'yookassa');
+      const event = result.event;
+
+      if (!result.shouldProcess || !event) {
+        this.logger.warn(result.reason || 'Webhook rejected by payment service');
+        return;
+      }
+
+      // ToDo Implement error reply to the user
+      this.eventEmitter.emit(event, payload);
+    } catch (error) {
+      this.logger.error('Unexpected error processing YooKassa webhook', error);
+    }
   }
 
   @Post('payment/stripe')

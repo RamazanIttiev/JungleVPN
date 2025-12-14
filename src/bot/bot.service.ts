@@ -6,7 +6,7 @@ import { NavigateProfileCallback } from '@bot/callbacks/navigate-profile.callbac
 import { PaymentMethodsCallback } from '@bot/callbacks/payment-methods.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
-import { BroadcastCommand } from '@bot/commands/broadcast.command';
+import { BroadcastCommand } from '@bot/commands/broadcast/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { LocalisationService } from '@bot/localisation/localisation.service';
 import { MenuTree } from '@bot/navigation/menu.tree';

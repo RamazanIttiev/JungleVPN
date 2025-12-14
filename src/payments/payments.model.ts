@@ -1,7 +1,12 @@
 import Stripe from 'stripe';
+import {
+  YookassaPaymentStatus,
+  YookassaWebhookPayload,
+} from '@payments/providers/yookassa/yookassa.model';
 
 export type PaymentProvider = 'yookassa' | 'stripe';
-export type PaymentStatus = 'pending' | 'succeeded' | Stripe.Invoice.Status;
+export type PaymentStatus = YookassaPaymentStatus | Stripe.Invoice.Status;
+export type PaymentWebhookPayload = YookassaWebhookPayload;
 
 export type PaymentPeriod = 'month_1' | 'month_3' | 'month_6';
 export type PaymentCurrency = 'RUB' | 'EUR';
@@ -29,6 +34,12 @@ export interface PaymentMetadata {
   selectedPeriod: number;
   telegramId: number;
   telegramMessageId: number | string | undefined;
+}
+
+export interface WebhookResult {
+  paymentId: string;
+  status: PaymentStatus;
+  event: string;
 }
 
 export interface CreatePaymentDto {
