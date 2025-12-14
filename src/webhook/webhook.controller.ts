@@ -2,20 +2,22 @@ import * as crypto from 'node:crypto';
 import * as process from 'node:process';
 import { BadRequestException, Body, Controller, Headers, Logger, Post, Res } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PaymentNotificationEvent, PaymentPayload } from '@payments/payments.model';
+import { PaymentsService } from '@payments/payments.service';
+import { YookassaWebhookPayload } from '@payments/providers/yookassa/yookassa.model';
+import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const CIDRMatcher = require('cidr-matcher');
-
 import { Response } from 'express';
 
 @Controller('webhook')
 export class WebhookController {
-  logger = new Logger();
+  logger = new Logger('WebhookController');
 
-  constructor(private eventEmitter: EventEmitter2) {}
+  constructor(
+    private eventEmitter: EventEmitter2,
+    private paymentsService: PaymentsService,
+    private yooKassaProvider: YooKassaProvider,
+  ) {}
 
   @Post('remna')
   async handleRemnaWebhook(
@@ -63,28 +65,33 @@ export class WebhookController {
 
   @Post('payments')
   async handlePaymentsWebhook(
-    @Headers('x-forwarded-for') ip: string,
+    @Headers('x-forwarded-for') xForwardedFor: string,
+    @Headers('x-real-ip') xRealIp: string,
     @Res() res: Response,
     @Body()
-    payload: { type: 'notification'; event: PaymentNotificationEvent; object: PaymentPayload },
+    payload: YookassaWebhookPayload,
   ) {
+    const isProd = process.env.NODE_ENV === 'production';
     res.status(200).send('OK');
 
-    const validIpAddresses = JSON.parse(process.env.PAYMENT_VALID_IP_ADDRESS || '[]') as string[];
+    try {
+      const ip = xForwardedFor || xRealIp;
 
-    const normalizedIps = validIpAddresses.map((ip) => {
-      if (ip.includes('/')) return ip;
-      return ip.includes(':') ? `${ip}/128` : `${ip}/32`;
-    });
-    const matcher = new CIDRMatcher(normalizedIps);
+      const isIPRangeValid = await this.yooKassaProvider.isIPRangeValid(ip);
+      if (!isIPRangeValid) return;
 
-    const ips = ip.split(',').map((i) => i.trim());
+      const result = await this.paymentsService.handleWebhook(payload, 'yookassa');
+      const event = result.event;
 
-    if (process.env.NODE_ENV === 'production' && !ips.some((i) => matcher.contains(i))) {
-      this.logger.warn(`Invalid YooKassa IP: ${ip}`);
-      return;
+      if (!result.shouldProcess || !event) {
+        this.logger.warn(result.reason || 'Webhook rejected by payment service');
+        return;
+      }
+
+      // ToDo Implement error reply to the user
+      this.eventEmitter.emit(event, payload);
+    } catch (error) {
+      this.logger.error('Unexpected error processing YooKassa webhook', error);
     }
-
-    this.eventEmitter.emit(payload.event, payload);
   }
 }

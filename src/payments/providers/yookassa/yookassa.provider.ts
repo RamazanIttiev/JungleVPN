@@ -1,16 +1,29 @@
 import * as process from 'node:process';
-import { Injectable } from '@nestjs/common';
-import { Payment } from '@payments/payment.entity';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   CreatePaymentDto,
   IPaymentProvider,
   PaymentSession,
   PaymentStatus,
+  WebhookResult,
 } from '@payments/payments.model';
+import {
+  YookassaNotificationEvent,
+  YookassaWebhookPayload,
+} from '@payments/providers/yookassa/yookassa.model';
 import axios, { AxiosInstance } from 'axios';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const CIDRMatcher = require('cidr-matcher');
 
 @Injectable()
 export class YooKassaProvider implements IPaymentProvider {
+  logger = new Logger('YooKassaProvider');
+
+  private readonly validIpAddresses: string[] = JSON.parse(
+    process.env.YOOKASSA_PAYMENT_VALID_IP_ADDRESS || '[]',
+  );
+
   private yookassaApi: AxiosInstance = axios.create({
     baseURL: process.env.YOOKASSA_URL,
     withCredentials: true,
@@ -58,6 +71,28 @@ export class YooKassaProvider implements IPaymentProvider {
     }
   }
 
+  async isIPRangeValid(ip: string): Promise<boolean> {
+    const normalizedIps = this.getNormalizedIPs();
+
+    const matcher = new CIDRMatcher(normalizedIps);
+
+    const ips = ip.split(',').map((i) => i.trim());
+
+    if (!ips.some((i) => matcher.contains(i))) {
+      this.logger.warn(`Invalid YooKassa IP: ${ip}`);
+      return false;
+    }
+
+    return true;
+  }
+
+  private getNormalizedIPs(): string[] {
+    return this.validIpAddresses.map((ipAddr) => {
+      if (ipAddr.includes('/')) return ipAddr;
+      return ipAddr.includes(':') ? `${ipAddr}/128` : `${ipAddr}/32`;
+    });
+  }
+
   async checkPaymentStatus(paymentId: string): Promise<PaymentStatus> {
     try {
       const { data } = await this.yookassaApi.get(`/${paymentId}`);
@@ -68,5 +103,23 @@ export class YooKassaProvider implements IPaymentProvider {
     }
   }
 
-  updatePayment: (id: string, partial: Partial<Payment>) => Promise<void>;
+  isValidNotificationEvent(event: string): event is YookassaNotificationEvent {
+    return ['payment.succeeded', 'payment.canceled', 'payment.waiting_for_capture'].includes(event);
+  }
+
+  isValidWebhookPayload(payload: YookassaWebhookPayload): boolean {
+    return (
+      payload?.object &&
+      payload.type === 'notification' &&
+      this.isValidNotificationEvent(payload.event)
+    );
+  }
+
+  parseWebhook(payload: YookassaWebhookPayload): WebhookResult {
+    return {
+      paymentId: payload.object.id,
+      status: payload.object.status,
+      event: payload.event,
+    };
+  }
 }

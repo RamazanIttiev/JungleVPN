@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IPaymentProvider } from '@payments/payments.model';
-import { YooKassaProvider } from '@payments/providers/yookassa.provider';
+import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
 
 @Injectable()
 export class PaymentProviderFactory {

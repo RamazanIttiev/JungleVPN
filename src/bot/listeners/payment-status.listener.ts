@@ -3,12 +3,12 @@ import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import {
-  PaymentMetadata,
-  PaymentNotificationEvent,
-  PaymentPayload,
-} from '@payments/payments.model';
+import { PaymentMetadata } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
+import {
+  YookassaNotificationEvent,
+  YookassaPaymentPayload,
+} from '@payments/providers/yookassa/yookassa.model';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
 import { safeSendMessage } from '@utils/utils';
@@ -31,8 +31,8 @@ export class PaymentStatusListener {
   @OnEvent('payment.succeeded')
   async handleSuccessfulPayment(payload: {
     type: 'notification';
-    event: PaymentNotificationEvent;
-    object: PaymentPayload;
+    event: YookassaNotificationEvent;
+    object: YookassaPaymentPayload;
   }) {
     const payment = payload.object;
 
@@ -104,7 +104,7 @@ export class PaymentStatusListener {
   }
 
   private async sendSuccessMessage(telegramId: number) {
-    const stickerId = process.env.PAYMENT_SUCCESS_STICKER;
+    const stickerId = process.env.SUCCESS_STICKER;
 
     const successMenu = new InlineKeyboard()
       .text('Подключиться 📶', 'paymentSuccess')
@@ -123,6 +123,6 @@ export class PaymentStatusListener {
   }
 
   private async notifyPendingPayment(telegramId: number) {
-    await safeSendMessage(this.bot, telegramId, '✅ Оплата прошла успешно!');
+    await safeSendMessage(this.bot, telegramId, 'Оплата еще не прошла!');
   }
 }

@@ -12,7 +12,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
 import { PaymentsService } from '@payments/payments.service';
-import { YooKassaProvider } from '@payments/providers/yookassa.provider';
+import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
 import { DevicesMenu } from './features/devices/devices.menu';

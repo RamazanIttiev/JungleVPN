@@ -3,15 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaymentProviderFactory } from '@payments/payments.factory';
 import {
   CreatePaymentDto,
-  IPaymentProvider,
   PaymentProvider,
   PaymentSession,
+  PaymentWebhookPayload,
 } from '@payments/payments.model';
+
 import { Repository } from 'typeorm';
 import { Payment } from './payment.entity';
 
 @Injectable()
-export class PaymentsService implements IPaymentProvider {
+export class PaymentsService {
   constructor(
     @InjectRepository(Payment) private paymentRepository: Repository<Payment>,
     private readonly factory: PaymentProviderFactory,
@@ -60,56 +61,44 @@ export class PaymentsService implements IPaymentProvider {
     Object.assign(payment, partial);
     await this.paymentRepository.save(payment);
   }
-  handleWebhook?: ((data: any) => Promise<void>) | undefined;
+
+  async handleWebhook(
+    payload: PaymentWebhookPayload,
+    providerName: PaymentProvider,
+  ): Promise<{
+    shouldProcess: boolean;
+    reason?: string;
+    paymentId?: string;
+    event?: string;
+  }> {
+    const provider = this.factory.getProvider(providerName);
+
+    if (!provider.isValidWebhookPayload(payload)) {
+      return {
+        shouldProcess: false,
+        reason: 'Invalid webhook payload structure',
+      };
+    }
+
+    const { paymentId, status: webhookStatus, event } = provider.parseWebhook(payload);
+
+    try {
+      const status = await provider.checkPaymentStatus(paymentId);
+      if (status !== webhookStatus) {
+        return {
+          shouldProcess: false,
+          reason: `Payment ${paymentId} status mismatch! Webhook: ${webhookStatus}, API: ${status}. Possible fake webhook.`,
+          paymentId,
+        };
+      }
+    } catch (apiError) {
+      console.error(`API verification failed for payment ${paymentId}`, apiError);
+    }
+
+    return {
+      shouldProcess: true,
+      paymentId,
+      event,
+    };
+  }
 }
-
-// TELEGRAM YOOKASSA PAYMENT EXAMPLE
-
-// await paymentsService.createPayment();
-// const invoice = {
-//   chatId,
-//   title: 'Subscription',
-//   description: 'Subscription to the service',
-//   payload: `invoice-${telegramId}-${Date.now()}`,
-//   provider_token: process.env.PAYMENT_TOKEN || '',
-//   currency: 'RUB',
-//   prices: [{ label: 'Subscription', amount: 50000 }],
-//   need_email: false,
-//   createdAt: new Date(),
-// };
-//
-// const provider_data = {
-//   receipt: {
-//     items: [
-//       {
-//         description: invoice.description,
-//         quantity: 1,
-//         amount: {
-//           value: '500.00',
-//           currency: invoice.currency,
-//         },
-//         vat_code: 1,
-//       },
-//     ],
-//   },
-// };
-//
-// try {
-//   const response = await ctx.api.sendInvoice(
-//     chatId,
-//     invoice.title,
-//     invoice.description,
-//     invoice.payload,
-//     invoice.currency,
-//     invoice.prices,
-//     {
-//       provider_token: invoice.provider_token,
-//       provider_data: JSON.stringify(provider_data),
-//     },
-//   );
-
-//   console.log(response);
-// } catch (error) {
-//   console.error('Error sending invoice:', error);
-//   await ctx.reply('Ошибка при создании счета. Пожалуйста, попробуйте позже.');
-// }
