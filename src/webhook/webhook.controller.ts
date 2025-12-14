@@ -1,13 +1,10 @@
-import * as crypto from 'node:crypto';
 import * as process from 'node:process';
-import { BadRequestException, Body, Controller, Headers, Logger,RawBodyRequest, Req, Post, Res } from '@nestjs/common';
+import { Body, Controller, Headers, Logger, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PaymentsService } from '@payments/payments.service';
+import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
 import { YookassaWebhookPayload } from '@payments/providers/yookassa/yookassa.model';
 import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
-import { PaymentNotificationEvent } from '@payments/payments.model';
-import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
-import { YookassaPaymentPayload } from '@payments/providers/yookassa.provider';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
 import { Response } from 'express';
@@ -18,6 +15,7 @@ export class WebhookController {
   logger = new Logger('WebhookController');
 
   constructor(
+    private readonly eventEmitter: EventEmitter2,
     private readonly webhookService: WebhookService,
     private readonly paymentsService: PaymentsService,
     private readonly stripeProvider: StripeProvider,

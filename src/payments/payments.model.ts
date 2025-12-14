@@ -1,8 +1,8 @@
-import Stripe from 'stripe';
 import {
   YookassaPaymentStatus,
   YookassaWebhookPayload,
 } from '@payments/providers/yookassa/yookassa.model';
+import Stripe from 'stripe';
 
 export type PaymentProvider = 'yookassa' | 'stripe';
 export type PaymentStatus = YookassaPaymentStatus | Stripe.Invoice.Status;
@@ -48,6 +48,7 @@ export interface CreatePaymentDto {
     readonly provider: PaymentProvider;
     readonly amount: number;
     readonly currency: PaymentCurrency;
+    readonly description?: string;
   };
   readonly metadata?: Record<string, any>;
 }

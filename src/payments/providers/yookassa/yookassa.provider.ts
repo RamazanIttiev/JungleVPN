@@ -2,11 +2,12 @@ import * as process from 'node:process';
 import { Injectable, Logger } from '@nestjs/common';
 import {
   CreatePaymentDto,
-  IPaymentProvider,
+  PaymentProvider,
   PaymentSession,
   PaymentStatus,
   WebhookResult,
 } from '@payments/payments.model';
+import { AbstractPaymentProvider } from '@payments/providers/abstract.provider';
 import {
   YookassaNotificationEvent,
   YookassaWebhookPayload,
@@ -17,8 +18,9 @@ import axios, { AxiosInstance } from 'axios';
 const CIDRMatcher = require('cidr-matcher');
 
 @Injectable()
-export class YooKassaProvider implements IPaymentProvider {
-  logger = new Logger('YooKassaProvider');
+export class YooKassaProvider implements AbstractPaymentProvider {
+  readonly id: PaymentProvider = 'yookassa';
+  logger = new Logger(YooKassaProvider.name);
 
   private readonly validIpAddresses: string[] = JSON.parse(
     process.env.YOOKASSA_PAYMENT_VALID_IP_ADDRESS || '[]',
@@ -43,7 +45,7 @@ export class YooKassaProvider implements IPaymentProvider {
         '/',
         {
           amount: {
-            value: dto.amount,
+            value: dto.payment.amount,
             currency: 'RUB',
           },
           capture: true,
@@ -51,7 +53,7 @@ export class YooKassaProvider implements IPaymentProvider {
             type: 'redirect',
             return_url: process.env.RETURN_URL,
           },
-          description: dto.description,
+          description: dto.payment.description,
           metadata: dto.metadata,
         },
         {
@@ -64,6 +66,7 @@ export class YooKassaProvider implements IPaymentProvider {
       return {
         id: data.id,
         url: data.confirmation.confirmation_url,
+        customer: null,
       };
     } catch (error) {
       console.error('Error creating payment:', error);

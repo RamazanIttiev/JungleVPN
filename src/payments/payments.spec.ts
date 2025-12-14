@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import * as process from 'node:process';
 import { Payment } from '@payments/payment.entity';
+import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
 import { Repository } from 'typeorm';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PaymentProviderFactory } from './payments.factory';
 import { CreatePaymentDto } from './payments.model';
 import { StripeProvider } from './providers/stripe/stripe.provider';
-import { YooKassaProvider } from './providers/yookassa.provider';
 
 // Mock Stripe class
 const mockSessionsCreate = vi.fn();

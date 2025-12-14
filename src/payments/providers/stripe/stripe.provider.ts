@@ -2,13 +2,29 @@ import * as process from 'node:process';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
-import { CreatePaymentDto, PaymentProvider, PaymentSession } from '@payments/payments.model';
+import {
+  CreatePaymentDto,
+  PaymentProvider,
+  PaymentSession,
+  PaymentStatus,
+  WebhookResult,
+} from '@payments/payments.model';
 import { AbstractPaymentProvider } from '@payments/providers/abstract.provider';
 import Stripe from 'stripe';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class StripeProvider extends AbstractPaymentProvider {
+  checkPaymentStatus(paymentId: string): Promise<PaymentStatus> {
+    throw new Error('Method not implemented.');
+  }
+  isValidWebhookPayload(payload: any): boolean {
+    throw new Error('Method not implemented.');
+  }
+  parseWebhook(payload: any): WebhookResult {
+    throw new Error('Method not implemented.');
+  }
+
   readonly id: PaymentProvider = 'stripe';
   readonly stripe: Stripe;
   private readonly logger = new Logger(StripeProvider.name);
