@@ -2,13 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
-import {
-  CreatePaymentDto,
-  IPayment,
-  PaymentProvider,
-  PaymentSession,
-  PaymentWebhookPayload,
-} from '@payments/payments.model';
+import { CreatePaymentDto, IPayment, PaymentSession } from '@payments/payments.model';
 
 import { Repository } from 'typeorm';
 
@@ -53,46 +47,6 @@ export class PaymentsService {
 
     Object.assign(payment, partial);
     await this.paymentRepository.save(payment);
-  }
-
-  async handleWebhook(
-    payload: PaymentWebhookPayload,
-    providerName: PaymentProvider,
-  ): Promise<{
-    shouldProcess: boolean;
-    reason?: string;
-    paymentId?: string;
-    event?: string;
-  }> {
-    const provider = this.factory.getProvider(providerName);
-
-    if (!provider.isValidWebhookPayload(payload)) {
-      return {
-        shouldProcess: false,
-        reason: 'Invalid webhook payload structure',
-      };
-    }
-
-    const { paymentId, status: webhookStatus, event } = provider.parseWebhook(payload);
-
-    try {
-      const status = await provider.checkPaymentStatus(paymentId);
-      if (status !== webhookStatus) {
-        return {
-          shouldProcess: false,
-          reason: `Payment ${paymentId} status mismatch! Webhook: ${webhookStatus}, API: ${status}. Possible fake webhook.`,
-          paymentId,
-        };
-      }
-    } catch (apiError) {
-      console.error(`API verification failed for payment ${paymentId}`, apiError);
-    }
-
-    return {
-      shouldProcess: true,
-      paymentId,
-      event,
-    };
   }
 
   async deletePayment(id: string) {

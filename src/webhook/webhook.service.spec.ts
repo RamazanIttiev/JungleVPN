@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { BadRequestException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
+import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { WebhookService } from './webhook.service';
 
@@ -19,11 +20,13 @@ describe('WebhookService', () => {
   };
 
   const mockStripeProvider = {};
+  const mockYookassaProvider = {};
 
   beforeEach(() => {
     service = new WebhookService(
       mockEventEmitter as unknown as EventEmitter2,
       mockStripeProvider as unknown as StripeProvider,
+      mockYookassaProvider as unknown as YooKassaProvider,
     );
   });
 
@@ -73,7 +76,7 @@ describe('WebhookService', () => {
         },
       } as any;
 
-      await service.processStripeEvent(event);
+      await service.handleStripeWebhook(event);
 
       expect(mockEventEmitter.emit).toHaveBeenCalledWith('payment.succeeded', {
         type: 'notification',

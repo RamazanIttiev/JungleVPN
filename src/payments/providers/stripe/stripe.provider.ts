@@ -2,36 +2,27 @@ import * as process from 'node:process';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
-import {
-  CreatePaymentDto,
-  PaymentProvider,
-  PaymentSession,
-  PaymentStatus,
-  WebhookResult,
-} from '@payments/payments.model';
+import { CreatePaymentDto, PaymentProvider, PaymentSession } from '@payments/payments.model';
 import { AbstractPaymentProvider } from '@payments/providers/abstract.provider';
+import { StripeWebhookService } from '@payments/providers/stripe/stripe-webhook.service';
 import Stripe from 'stripe';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class StripeProvider extends AbstractPaymentProvider {
-  checkPaymentStatus(paymentId: string): Promise<PaymentStatus> {
-    throw new Error('Method not implemented.');
-  }
-  isValidWebhookPayload(payload: any): boolean {
-    throw new Error('Method not implemented.');
-  }
-  parseWebhook(payload: any): WebhookResult {
-    throw new Error('Method not implemented.');
-  }
-
+export class StripeProvider implements AbstractPaymentProvider {
   readonly id: PaymentProvider = 'stripe';
   readonly stripe: Stripe;
   private readonly logger = new Logger(StripeProvider.name);
 
-  constructor(@InjectRepository(Payment) private paymentRepository: Repository<Payment>) {
-    super();
+  constructor(
+    readonly stripeWebhookService: StripeWebhookService,
+    @InjectRepository(Payment) private paymentRepository: Repository<Payment>,
+  ) {
     this.stripe = new Stripe(process.env.STRIPE_API_KEY || '');
+  }
+
+  async handleWebhook(payload: Stripe.Event) {
+    await this.stripeWebhookService.handleWebhook(payload);
   }
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentSession> {

@@ -15,8 +15,8 @@ import { CurrencyService } from '@payments/currency-service/currency.service';
 import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
 import { PaymentsService } from '@payments/payments.service';
-import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
-import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
+import { StripeModule } from '@payments/providers/stripe/stripe.module';
+import { YookassaModule } from '@payments/providers/yookassa/yookassa.module';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
 import { DevicesMenu } from './features/devices/devices.menu';
@@ -45,8 +45,6 @@ import { MenuTree } from './menu.tree';
     RemnaService,
     PaymentsService,
     PaymentProviderFactory,
-    YooKassaProvider,
-    StripeProvider,
     UserService,
     CurrencyService,
   ],
@@ -68,6 +66,6 @@ import { MenuTree } from './menu.tree';
     PaymentMethodMenu,
     ProfileMenu,
   ],
-  imports: [TypeOrmModule.forFeature([Payment])],
+  imports: [TypeOrmModule.forFeature([Payment]), YookassaModule, StripeModule],
 })
 export class MenuModule {}

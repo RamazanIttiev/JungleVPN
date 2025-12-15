@@ -1,7 +1,9 @@
 import 'reflect-metadata';
 import * as process from 'node:process';
 import { Payment } from '@payments/payment.entity';
+import { StripeWebhookService } from '@payments/providers/stripe/stripe-webhook.service';
 import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
+import { YookassaWebhookService } from '@payments/providers/yookassa/yookassa-webhook.service';
 import { Repository } from 'typeorm';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PaymentProviderFactory } from './payments.factory';
@@ -48,6 +50,8 @@ vi.mock('stripe', () => {
 describe('Payment System', () => {
   let factory: PaymentProviderFactory;
   let stripeProvider: StripeProvider;
+  let stripeWebhookService: StripeWebhookService;
+  let yookassaWebhookService: YookassaWebhookService;
   let yookassaProvider: YooKassaProvider;
   let paymentRepository: Repository<Payment>;
   let mockPaymentRepositoryFind: any;
@@ -60,14 +64,17 @@ describe('Payment System', () => {
     mockPaymentRepositoryFindOne = vi.fn();
     mockPaymentRepositoryUpdate = vi.fn();
 
+    stripeWebhookService = {} as unknown as StripeWebhookService;
+    yookassaWebhookService = {} as unknown as YookassaWebhookService;
+
     // Mock providers
     paymentRepository = {
       find: mockPaymentRepositoryFind,
       findOne: mockPaymentRepositoryFindOne,
       update: mockPaymentRepositoryUpdate,
     } as unknown as Repository<Payment>;
-    stripeProvider = new StripeProvider(paymentRepository);
-    yookassaProvider = new YooKassaProvider();
+    stripeProvider = new StripeProvider(stripeWebhookService, paymentRepository);
+    yookassaProvider = new YooKassaProvider(yookassaWebhookService);
 
     // Manually inject dependencies
     factory = new PaymentProviderFactory(yookassaProvider, stripeProvider);

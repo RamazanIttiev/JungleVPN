@@ -61,25 +61,7 @@ export class WebhookController {
   ) {
     res.status(200).send('OK');
 
-    try {
-      const ip = xForwardedFor || xRealIp;
-
-      const isIPRangeValid = await this.yooKassaProvider.isIPRangeValid(ip);
-      if (!isIPRangeValid) return;
-
-      const result = await this.paymentsService.handleWebhook(payload, 'yookassa');
-      const event = result.event;
-
-      if (!result.shouldProcess || !event) {
-        this.logger.warn(result.reason || 'Webhook rejected by payment service');
-        return;
-      }
-
-      // ToDo Implement error reply to the user
-      this.eventEmitter.emit(event, payload);
-    } catch (error) {
-      this.logger.error('Unexpected error processing YooKassa webhook', error);
-    }
+    await this.webhookService.handleYookassaWebhook(payload, xForwardedFor || xRealIp || '');
   }
 
   @Post('payment/stripe')
@@ -98,7 +80,7 @@ export class WebhookController {
         process.env.STRIPE_WEBHOOK_SECRET || '',
       );
 
-      await this.webhookService.processStripeEvent(event);
+      await this.webhookService.handleStripeWebhook(event);
       res.status(200).send('OK');
     } catch (err) {
       return res.status(400).send(`Webhook Error: ${err}`);

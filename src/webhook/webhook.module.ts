@@ -2,15 +2,21 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from '@payments/payment.entity';
 import { PaymentsModule } from '@payments/payments.module';
-import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
+import { StripeModule } from '@payments/providers/stripe/stripe.module';
+import { YookassaModule } from '@payments/providers/yookassa/yookassa.module';
 import { RemnaModule } from '@remna/remna.module';
-import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
 import { WebhookController } from './webhook.controller';
 import { WebhookService } from './webhook.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Payment]), PaymentsModule, RemnaModule],
+  imports: [
+    TypeOrmModule.forFeature([Payment]),
+    PaymentsModule,
+    RemnaModule,
+    YookassaModule,
+    StripeModule,
+  ],
   controllers: [WebhookController],
-  providers: [WebhookService, StripeProvider, YooKassaProvider],
+  providers: [WebhookService],
 })
 export class WebhookModule {}
