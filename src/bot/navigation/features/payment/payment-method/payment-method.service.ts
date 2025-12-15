@@ -38,6 +38,7 @@ export class PaymentMethodMsgService extends Base {
         amount,
         currency,
         provider,
+        description: ctx.t('provider-description-text'),
       },
       metadata: {
         description: ctx.t('provider-description-text'),
