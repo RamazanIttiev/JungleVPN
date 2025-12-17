@@ -4,7 +4,9 @@ import { Payment } from '@payments/payment.entity';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-config();
+config({
+  path: ['.env.dev', '.env'],
+});
 
 export const dataSourceOptions: DataSourceOptions = {
   // @ts-expect-error

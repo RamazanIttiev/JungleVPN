@@ -4,12 +4,7 @@ import { BotContext } from '@bot/bot.types';
 import { LocalisationService } from '@bot/localisation/localisation.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import {
-  IPayment,
-  PaymentMetadata,
-  PaymentNotificationEvent,
-  StripeInvoicePayload,
-} from '@payments/payments.model';
+import { IPayment, PaymentMetadata, StripeInvoicePayload } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import {
   YookassaNotificationEvent,

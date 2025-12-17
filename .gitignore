@@ -1,7 +1,7 @@
 node_modules
 /dist
+.env.dev
 .env
-.env.production
 .idea
 err.log
 out.log
