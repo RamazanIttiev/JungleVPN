@@ -7,7 +7,7 @@ import { UserService } from '@user/user.service';
 import { mapDeviceLabel } from '@utils/utils';
 
 @Injectable()
-export class RevokeSubMsgService extends Base {
+export class RevokeSubMenuService extends Base {
   constructor(
     readonly userService: UserService,
     readonly remnaService: RemnaService,
@@ -21,7 +21,7 @@ export class RevokeSubMsgService extends Base {
     const session = ctx.session;
     const user = await this.userService.init(ctx);
 
-    if (!user || !session.selectedDevice || !user.subscriptionUrl) {
+    if (!user || !session.selectedDevice) {
       await this.userService.init(ctx);
       await ctx.reply(ctx.t('error-generic-restart'));
       return;
@@ -31,11 +31,11 @@ export class RevokeSubMsgService extends Base {
     user.subscriptionUrl = subUrl;
     session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${subUrl}`;
 
-    const deviceLabel = mapDeviceLabel(session.selectedDevice!);
+    const deviceLabel = mapDeviceLabel(session.selectedDevice);
 
     const text = ctx.t('subscription-page', {
       deviceLabel,
-      subUrl: user.subscriptionUrl!,
+      subUrl: user.subscriptionUrl,
     });
 
     await this.render(ctx, text, this.subscriptionMenu.menu, true);

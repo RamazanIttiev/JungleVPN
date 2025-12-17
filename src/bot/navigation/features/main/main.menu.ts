@@ -4,6 +4,7 @@ import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
 import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { ProfileMenuService } from '@bot/navigation/features/profile/profile-menu.service';
+import { SupportMenu } from '@bot/navigation/features/support/support.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
@@ -19,6 +20,7 @@ export class MainMenu extends Base {
     @Inject(forwardRef(() => ProfileMenu))
     readonly profileMenu: ProfileMenu,
     readonly profileMenuService: ProfileMenuService,
+    readonly supportMenu: SupportMenu,
   ) {
     super();
 
@@ -46,9 +48,11 @@ export class MainMenu extends Base {
         process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/in_the_jungle',
       )
       .row()
-      .url(
+      .text(
         (ctx) => ctx.t('support-button-label'),
-        process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support',
+        async (ctx) => {
+          await this.render(ctx, ctx.t('support-text'), this.supportMenu.menu);
+        },
       );
   }
 }

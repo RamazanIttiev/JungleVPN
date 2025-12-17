@@ -16,12 +16,12 @@ import { LocalisationService } from '@bot/localisation/localisation.service';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
-import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
+import { RevokeSubMenuService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { MenuModule } from '@bot/navigation/menu.module';
 import { Module } from '@nestjs/common';
-import { CurrencyService } from '@payments/currency-service/currency.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CurrencyService } from '@payments/currency-service/currency.service';
 import { PaymentsModule } from '@payments/payments.module';
 import { RemnaModule } from '@remna/remna.module';
 import { RemnaService } from '@remna/remna.service';
@@ -44,7 +44,7 @@ import { BotService } from './bot.service';
     MainMsgService,
     PaymentMsgService,
     SubscriptionMsgService,
-    RevokeSubMsgService,
+    RevokeSubMenuService,
     MainMenu,
     LocalisationService,
     CurrencyService,

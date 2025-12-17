@@ -3,7 +3,8 @@ provider-description-text = Рад видеть тебя в JUNGLE 🌴
 
 connect-button-label = Подключиться 📶
 extend-button-label = Продлить ➕
-support-button-label = Нужна помощь?
+support-button-label = VPN не работает 🚨
+support-chanel-button-label = Поддержка
 back-button-label = ⤴ Назад
 payment-period-button-label-1 = 1 месяц ({ $amount }{ $currency })
 payment-period-button-label-2 = 3 месяца ({ $amount }{ $currency })
@@ -178,3 +179,14 @@ invoice-payment-failed-text =
     Пожалуйста, проверьте карту или обновите данные.
 
     Управлять подпиской можно в меню Профиль.
+
+
+
+support-text =
+    Раз ты тут, то VPN не работает 😭
+
+    1️⃣Для начала просто обнови подписку в приложении, нажав на иконку 🔄 рядом с названием <b><code>🌴JungleVPN</code></b>
+
+    2️⃣Если не помогло, то удали старую подписку в приложении и сгенерируй новую ссылку (кнопка ниже).
+
+    3️⃣Когда уже ничего не помогает, то пиши в поддержку. Возможно просто временные сбои 🥲

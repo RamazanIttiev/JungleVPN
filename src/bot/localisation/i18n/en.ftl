@@ -3,7 +3,8 @@ provider-description-text = Happy to see you in the JUNGLE 🌴
 
 connect-button-label = Connect 📶
 extend-button-label = Extend ➕
-support-button-label = Need help?
+support-button-label = VPN is not working 🚨
+support-chanel-button-label = Support
 home-button-label = Home 🏠
 profile-button-label = Profile 👤
 invoice-button-label = Invoice 📄
@@ -183,3 +184,15 @@ no-active-subscription-text =
     Currently, autopayments are supported only for non-Russian payment methods.
 
     Purchase a subscription via international payment method to enable autopayments.
+
+
+
+
+support-text =
+    So I guess it doesn't work 😭
+
+    1️⃣First of all, just try to update the subscription in the app, by pressing 🔄icon near to service name <b><code>🌴JungleVPN</code></b>
+
+    2️⃣If that didn't help, then delete old sub link and generate a new one (button below). Then import in as before
+
+    3️⃣In case non of above helped, contact the support team. It might be a temporary issue 🥲

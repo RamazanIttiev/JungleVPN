@@ -30,10 +30,6 @@ export class SubscriptionMenu extends Base {
           return link || 'https://example.com';
         },
       )
-      // .row()
-      // .text((ctx) => ctx.t('new-link-button-label'), async (ctx) => {
-      //   await this.revokeSubMsgService.init(ctx);
-      // })
       .row()
       .text(
         (ctx) => ctx.t('home-button-label'),

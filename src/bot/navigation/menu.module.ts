@@ -6,9 +6,10 @@ import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-meth
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
 import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { ProfileMenuService } from '@bot/navigation/features/profile/profile-menu.service';
-import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
+import { RevokeSubMenuService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
+import { SupportMenu } from '@bot/navigation/features/support/support.menu';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CurrencyService } from '@payments/currency-service/currency.service';
@@ -28,7 +29,7 @@ import { MenuTree } from './menu.tree';
     // MODELS
     MainMsgService,
     PaymentMsgService,
-    RevokeSubMsgService,
+    RevokeSubMenuService,
     SubscriptionMsgService,
     PaymentMethodMsgService,
     ProfileMenuService,
@@ -41,6 +42,7 @@ import { MenuTree } from './menu.tree';
     SubscriptionMenu,
     PaymentMethodMenu,
     ProfileMenu,
+    SupportMenu,
     // SERVICES
     RemnaService,
     PaymentsService,
@@ -52,7 +54,7 @@ import { MenuTree } from './menu.tree';
     // MODELS
     MainMsgService,
     PaymentMsgService,
-    RevokeSubMsgService,
+    RevokeSubMenuService,
     SubscriptionMsgService,
     PaymentMethodMsgService,
     ProfileMenuService,
@@ -65,6 +67,7 @@ import { MenuTree } from './menu.tree';
     SubscriptionMenu,
     PaymentMethodMenu,
     ProfileMenu,
+    SupportMenu,
   ],
   imports: [TypeOrmModule.forFeature([Payment]), YookassaModule, StripeModule],
 })
