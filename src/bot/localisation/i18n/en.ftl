@@ -191,8 +191,8 @@ no-active-subscription-text =
 support-text =
     So I guess it doesn't work 😭
 
-    1️⃣First of all, just try to update the subscription in the app, by pressing 🔄icon near to service name <b><code>🌴JungleVPN</code></b>
+    1️⃣ First of all, just try to update the subscription in the app, by pressing refresh 🔄icon near to service name <b><code>🌴JungleVPN</code></b>
 
-    2️⃣If that didn't help, then delete old sub link and generate a new one (button below). Then import in as before
+    2️⃣ If that didn't help, delete old subscription and generate a new one (button below). Then import it as before
 
-    3️⃣In case non of above helped, contact the support team. It might be a temporary issue 🥲
+    3️⃣ In case non of above helped, contact the support team. It might be a temporary issue 🥲

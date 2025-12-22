@@ -111,10 +111,10 @@ describe('Utils', () => {
       // Ensure defaults are used by stubbing with empty/undefined if needed,
       // but unstubAllEnvs clears mocks. If actual env has values, they persist.
       // We should force them to be undefined for this test.
-      vi.stubEnv('IPHONE_APP_DOWNLOAD_LINK', '');
-      vi.stubEnv('MACOS_APP_DOWNLOAD_LINK', '');
-      vi.stubEnv('ANDROID_APP_DOWNLOAD_LINK', '');
-      vi.stubEnv('WINDOWS_APP_DOWNLOAD_LINK', '');
+      vi.stubEnv('IPHONE_CLIENT_APP_LINK', '');
+      vi.stubEnv('MACOS_CLIENT_APP_LINK', '');
+      vi.stubEnv('ANDROID_CLIENT_APP_LINK', '');
+      vi.stubEnv('WINDOWS_CLIENT_APP_LINK', '');
 
       expect(getAppLink('ios')).toContain('apps.apple.com');
       expect(getAppLink('macOS')).toContain('apps.apple.com');
@@ -124,7 +124,7 @@ describe('Utils', () => {
     });
 
     it('should return env var link if set', () => {
-      vi.stubEnv('IPHONE_APP_DOWNLOAD_LINK', 'custom-ios-link');
+      vi.stubEnv('IPHONE_CLIENT_APP_LINK', 'custom-ios-link');
       expect(getAppLink('ios')).toBe('custom-ios-link');
     });
   });

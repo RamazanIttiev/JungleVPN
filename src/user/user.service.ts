@@ -32,7 +32,7 @@ export class UserService {
         description: locale,
       });
 
-      session.redirectUrl = `${process.env.CLIENT_APP_URL}/${newUser.subscriptionUrl}`;
+      session.redirectUrl = `${process.env.V2RAYTUN_REDIRECT_URL}/${newUser.subscriptionUrl}`;
       return newUser;
     } else {
       if (user.description !== locale) {
@@ -41,7 +41,7 @@ export class UserService {
           description: locale,
         });
       }
-      session.redirectUrl = `${process.env.CLIENT_APP_URL}/${user.subscriptionUrl}`;
+      session.redirectUrl = `${process.env.V2RAYTUN_REDIRECT_URL}/${user.subscriptionUrl}`;
       return user;
     }
   }

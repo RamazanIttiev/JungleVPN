@@ -124,26 +124,26 @@ export const getAppLink = (device: UserDevice | undefined): string => {
   switch (device) {
     case 'ios':
       return (
-        process.env.IPHONE_APP_DOWNLOAD_LINK ||
+        process.env.IPHONE_CLIENT_APP_LINK ||
         'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
       );
     case 'macOS':
       return (
-        process.env.MACOS_APP_DOWNLOAD_LINK ||
+        process.env.MACOS_CLIENT_APP_LINK ||
         'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
       );
     case 'android':
       return (
-        process.env.ANDROID_APP_DOWNLOAD_LINK ||
+        process.env.ANDROID_CLIENT_APP_LINK ||
         'https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ruB'
       );
     case 'windows':
       return (
-        process.env.WINDOWS_APP_DOWNLOAD_LINK || 'https://storage.v2raytun.com/v2RayTun_Setup.exe'
+        process.env.WINDOWS_CLIENT_APP_LINK || 'https://storage.v2raytun.com/v2RayTun_Setup.exe'
       );
     default:
       return (
-        process.env.IPHONE_APP_DOWNLOAD_LINK ||
+        process.env.IPHONE_CLIENT_APP_LINK ||
         'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
       );
   }
