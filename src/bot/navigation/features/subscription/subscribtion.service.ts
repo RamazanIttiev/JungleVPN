@@ -3,7 +3,7 @@ import { Menu } from '@bot/navigation';
 import { Base } from '@bot/navigation/menu.base';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '@user/user.service';
-import { getRedirectUrl, mapDeviceLabel, mapToClientAppName } from '@utils/utils';
+import { mapDeviceLabel, mapToClientAppName } from '@utils/utils';
 
 @Injectable()
 export class SubscriptionMsgService extends Base {
@@ -14,10 +14,14 @@ export class SubscriptionMsgService extends Base {
   async init(ctx: BotContext, menu: Menu) {
     const session = ctx.session;
     const user = await this.userService.init(ctx);
-    session.redirectUrl = getRedirectUrl(session.selectedDevice, user.subscriptionUrl);
 
-    const deviceLabel = mapDeviceLabel(session.selectedDevice!);
-    const clientAppLabel = mapToClientAppName(session.selectedDevice!);
+    if (!session.selectedDevice) {
+      await ctx.reply(ctx.t('error-generic-restart'));
+      return;
+    }
+
+    const deviceLabel = mapDeviceLabel(session.selectedDevice);
+    const clientAppLabel = mapToClientAppName(session.selectedDevice);
 
     const text = ctx.t('subscription-text', {
       deviceLabel,

@@ -4,6 +4,7 @@ import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
+import { getRedirectUrl } from '@utils/utils';
 
 @Injectable()
 export class RevokeSubMenuService extends Base {
@@ -27,6 +28,6 @@ export class RevokeSubMenuService extends Base {
     }
 
     const subUrl = await this.remnaService.revokeSub(user.uuid);
-    session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${subUrl}`;
+    session.redirectUrl = getRedirectUrl(session.selectedDevice, subUrl);
   }
 }
