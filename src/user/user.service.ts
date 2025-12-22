@@ -1,5 +1,4 @@
-import * as process from 'node:process';
-import { BotContext, initialSession } from '@bot/bot.types';
+import { BotContext, ClientApp, initialSession, SessionData } from '@bot/bot.types';
 import { User as GrammyUser } from '@grammyjs/types/manage';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
@@ -18,7 +17,6 @@ export class UserService {
   }
 
   async init(ctx: BotContext): Promise<UserDto> {
-    const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
     const locale = tgUser.language_code;
 
@@ -26,14 +24,11 @@ export class UserService {
     const user = await this.remnaService.getUserByTgId(tgUser.id);
 
     if (!user) {
-      const newUser = await this.remnaService.createUser({
+      return await this.remnaService.createUser({
         telegramId: tgUser.id,
         username: tgUser.id.toString(),
         description: locale,
       });
-
-      session.redirectUrl = `${process.env.V2RAYTUN_REDIRECT_URL}/${newUser.subscriptionUrl}`;
-      return newUser;
     } else {
       if (user.description !== locale) {
         await this.remnaService.updateUser({
@@ -41,8 +36,32 @@ export class UserService {
           description: locale,
         });
       }
-      session.redirectUrl = `${process.env.V2RAYTUN_REDIRECT_URL}/${user.subscriptionUrl}`;
       return user;
     }
+  }
+
+  setClientApp(session: SessionData, subUrl: string | undefined) {
+    if (!subUrl) {
+      return;
+    }
+
+    session.clientApp = [];
+
+    const v2raytunClientApp: ClientApp = {
+      name: 'v2raytun',
+      url: `${process.env.V2RAYTUN_CLIENT_APP_URL}/${subUrl}`,
+      appUrl: process.env.V2RAYTUN_APP_URL || '',
+      platforms: ['android', 'ios', 'macOS', 'windows'],
+    };
+
+    const happClientApp: ClientApp = {
+      name: 'happ',
+      url: `${process.env.HAPP_CLIENT_APP_URL}/${subUrl}`,
+      appUrl: process.env.HAPP_APP_URL || '',
+      platforms: ['windows'],
+    };
+
+    session.clientApp?.push(v2raytunClientApp);
+    session.clientApp?.push(happClientApp);
   }
 }

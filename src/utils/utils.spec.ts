@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  getAppLink,
   isValidUsername,
   mapDeviceLabel,
   mapEURAmountToMonthsNumber,
   mapPeriodLabelToPriceLabel,
   mapPeriodToMonthsNumber,
+  mapToClientAppName,
   mapToCorrectAmount,
   toDateString,
 } from './utils';
@@ -38,6 +38,20 @@ describe('Utils', () => {
     it('should return passed value for unknown devices', () => {
       // @ts-expect-error
       expect(mapDeviceLabel('linux')).toBe('linux');
+    });
+  });
+
+  describe('mapToClientAppName', () => {
+    it('should return mapped label for known devices', () => {
+      expect(mapToClientAppName('ios')).toBe('v2RayTun');
+      expect(mapToClientAppName('android')).toBe('v2RayTun');
+      expect(mapToClientAppName('macOS')).toBe('v2RayTun');
+      expect(mapToClientAppName('windows')).toBe('Happ');
+    });
+
+    it('should return passed value for unknown devices', () => {
+      // @ts-expect-error
+      expect(mapToClientAppName('linux')).toBe('v2RayTun');
     });
   });
 
@@ -99,33 +113,6 @@ describe('Utils', () => {
       expect(mapPeriodLabelToPriceLabel('month_1')).toBe('payment-period-button-label-1');
       expect(mapPeriodLabelToPriceLabel('month_3')).toBe('payment-period-button-label-2');
       expect(mapPeriodLabelToPriceLabel('month_6')).toBe('payment-period-button-label-3');
-    });
-  });
-
-  describe('getAppLink', () => {
-    afterEach(() => {
-      vi.unstubAllEnvs();
-    });
-
-    it('should return default links when env vars are missing', () => {
-      // Ensure defaults are used by stubbing with empty/undefined if needed,
-      // but unstubAllEnvs clears mocks. If actual env has values, they persist.
-      // We should force them to be undefined for this test.
-      vi.stubEnv('IPHONE_CLIENT_APP_LINK', '');
-      vi.stubEnv('MACOS_CLIENT_APP_LINK', '');
-      vi.stubEnv('ANDROID_CLIENT_APP_LINK', '');
-      vi.stubEnv('WINDOWS_CLIENT_APP_LINK', '');
-
-      expect(getAppLink('ios')).toContain('apps.apple.com');
-      expect(getAppLink('macOS')).toContain('apps.apple.com');
-      expect(getAppLink('android')).toContain('play.google.com');
-      expect(getAppLink('windows')).toContain('v2RayTun_Setup.exe');
-      expect(getAppLink(undefined)).toContain('apps.apple.com');
-    });
-
-    it('should return env var link if set', () => {
-      vi.stubEnv('IPHONE_CLIENT_APP_LINK', 'custom-ios-link');
-      expect(getAppLink('ios')).toBe('custom-ios-link');
     });
   });
 });

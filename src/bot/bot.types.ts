@@ -5,9 +5,17 @@ import { Context, SessionFlavor as GrammySessionFlavor } from 'grammy';
 
 export type BotContext = Context & SessionFlavor & I18nFlavor;
 
+export interface ClientApp {
+  name: 'v2raytun' | 'happ';
+  url: string;
+  appUrl: string;
+  platforms?: UserDevice[];
+}
+
 export interface SessionData {
   paymentUrl: string | undefined;
   paymentId: string | undefined;
+  clientApp: Array<ClientApp> | undefined;
   redirectUrl?: string;
   selectedDevice?: UserDevice;
   selectedProvider?: PaymentProvider;
@@ -28,7 +36,7 @@ export const initialSession = (): SessionData => {
     paymentId: undefined,
     selectedDevice: undefined,
     selectedPeriod: undefined,
-    redirectUrl: undefined,
+    clientApp: [],
     metadata: {
       messageId: undefined,
     },

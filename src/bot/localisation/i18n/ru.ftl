@@ -18,7 +18,8 @@ pay-button-label = Оплатить подписку 💳
 home-button-label = Главное меню 🏠
 chanel-button-label = Телеграм канал 🌟
 download-button-label = Скачать 🔽
-add-profile-button-label = Добавить профиль 🔗
+add-v2raytun-profile-button-label = Добавить в v2raytun 🔗
+add-happ-profile-button-label = Добавить в Happ 🔗
 new-link-button-label = Новая ссылка 🔄
 broadcast-sent-success = ✅ Сообщение отправлено всем пользователям!
 error-menu-outdated = Что-то изменилось, попробуй заново /start
@@ -92,7 +93,7 @@ subscription-text =
     📖Подключение VPN на { $deviceLabel }:
 
 
-    1️⃣ Установи приложение «v2RayTun».
+    1️⃣ Установи приложение «{ $clientAppLabel }».
     <i>кнопка «Скачать»</i>
 
     2️⃣ Нажми «Добавить профиль».
