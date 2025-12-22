@@ -22,7 +22,6 @@ export class UserService {
 
     ctx.session.user = initialSession().user;
     const user = await this.remnaService.getUserByTgId(tgUser.id);
-    this.setClientApp(ctx.session, user?.subscriptionUrl);
 
     if (!user) {
       return await this.remnaService.createUser({

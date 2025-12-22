@@ -133,17 +133,28 @@ export async function safeEditMessage(
   }
 }
 
-export const getAppLink = (device: UserDevice | undefined): string | undefined => {
+export const getAppUrl = (device: UserDevice | undefined): string | undefined => {
   switch (device) {
     case 'ios':
-      return process.env.IOS_APP_DOWNLOAD_URL;
+      return process.env.V2RAYTUN_IOS_APP_URL;
     case 'macOS':
-      return process.env.MACOS_APP_DOWNLOAD_URL;
+      return process.env.V2RAYTUN_MACOS_APP_URL;
     case 'android':
-      return process.env.ANDROID_APP_DOWNLOAD_URL;
+      return process.env.V2RAYTUN_ANDROID_APP_URL;
     case 'windows':
-      return process.env.WINDOWS_APP_DOWNLOAD_URL;
+      return process.env.HAPP_WINDOWS_APP_URL;
     default:
       return process.env.IOS_APP_DOWNLOAD_URL;
+  }
+};
+
+export const getRedirectUrl = (device: UserDevice | undefined, subUrl: string) => {
+  switch (device) {
+    case 'ios':
+    case 'macOS':
+    case 'android':
+      return `${process.env.V2RAYTUN_REDIRECT_URL}/${subUrl}` || 'https://example.com/ios';
+    case 'windows':
+      return `${process.env.HAPP_REDIRECT_URL}/${subUrl}` || 'https://example.com/windows';
   }
 };

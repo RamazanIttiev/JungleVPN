@@ -16,6 +16,7 @@ export interface SessionData {
   paymentUrl: string | undefined;
   paymentId: string | undefined;
   clientApp: Array<ClientApp> | undefined;
+  redirectUrl?: string;
   selectedDevice?: UserDevice;
   selectedProvider?: PaymentProvider;
   selectedPeriod?: PaymentPeriod;
