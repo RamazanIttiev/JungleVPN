@@ -4,7 +4,7 @@ import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
-import { mapDeviceLabel } from '@utils/utils';
+import { mapDeviceLabel, mapToClientAppName } from '@utils/utils';
 
 @Injectable()
 export class RevokeSubMenuService extends Base {
@@ -28,14 +28,16 @@ export class RevokeSubMenuService extends Base {
     }
 
     const subUrl = await this.remnaService.revokeSub(user.uuid);
-    user.subscriptionUrl = subUrl;
-    session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${subUrl}`;
+
+    // this.userService.setClientApp(session, subUrl);
 
     const deviceLabel = mapDeviceLabel(session.selectedDevice);
+    const clientAppLabel = mapToClientAppName(session.selectedDevice);
 
-    const text = ctx.t('subscription-page', {
+    const text = ctx.t('subscription-text', {
       deviceLabel,
-      subUrl: user.subscriptionUrl,
+      subUrl,
+      clientAppLabel,
     });
 
     await this.render(ctx, text, this.subscriptionMenu.menu, true);

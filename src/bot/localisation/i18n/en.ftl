@@ -17,7 +17,8 @@ payment-period-button-label-1 =  1  month ({ $amount }{ $currency })
 payment-period-button-label-2 =  3  months ({ $amount }{ $currency })
 payment-period-button-label-3 =  6  months ({ $amount }{ $currency })
 pay-button-label = Pay 💳
-add-profile-button-label = Add profile 🔗
+add-v2raytun-profile-button-label = Add to v2raytun 🔗
+add-happ-profile-button-label = Add to Happ 🔗
 new-link-button-label = New link 🔄
 chanel-button-label = Telegram chanel 🌟
 broadcast-sent-success = ✅ Message sent to all users!
@@ -86,7 +87,7 @@ payment-text =
 subscription-text =
     📖 Setting up VPN on { $deviceLabel }:
 
-    1️⃣ Install the «v2RayTun» app.
+    1️⃣ Install the «{ $clientAppLabel }» app.
     <i>Tap the «Download» button</i>
 
     2️⃣ Tap «Add profile».

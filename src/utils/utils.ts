@@ -26,6 +26,19 @@ export const mapDeviceLabel = (device: UserDevice) => {
   }
 };
 
+export const mapToClientAppName = (device: UserDevice) => {
+  switch (device) {
+    case 'ios':
+    case 'android':
+    case 'macOS':
+      return 'v2RayTun';
+    case 'windows':
+      return 'Happ';
+    default:
+      return 'v2RayTun';
+  }
+};
+
 export const toDateString = (value: string) => {
   return new Date(value).toLocaleDateString('ru-EU', {
     year: 'numeric',
@@ -120,31 +133,17 @@ export async function safeEditMessage(
   }
 }
 
-export const getAppLink = (device: UserDevice | undefined): string => {
+export const getAppLink = (device: UserDevice | undefined): string | undefined => {
   switch (device) {
     case 'ios':
-      return (
-        process.env.IPHONE_APP_DOWNLOAD_LINK ||
-        'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
-      );
+      return process.env.IOS_APP_DOWNLOAD_URL;
     case 'macOS':
-      return (
-        process.env.MACOS_APP_DOWNLOAD_LINK ||
-        'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
-      );
+      return process.env.MACOS_APP_DOWNLOAD_URL;
     case 'android':
-      return (
-        process.env.ANDROID_APP_DOWNLOAD_LINK ||
-        'https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ruB'
-      );
+      return process.env.ANDROID_APP_DOWNLOAD_URL;
     case 'windows':
-      return (
-        process.env.WINDOWS_APP_DOWNLOAD_LINK || 'https://storage.v2raytun.com/v2RayTun_Setup.exe'
-      );
+      return process.env.WINDOWS_APP_DOWNLOAD_URL;
     default:
-      return (
-        process.env.IPHONE_APP_DOWNLOAD_LINK ||
-        'https://apps.apple.com/pt/app/v2raytun/id6476628951?l=en-GB'
-      );
+      return process.env.IOS_APP_DOWNLOAD_URL;
   }
 };
