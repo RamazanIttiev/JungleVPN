@@ -22,8 +22,9 @@ export class MainMsgService extends Base {
 
     const content = ctx.t('main-text', {
       username: username!,
-      expireAt: toDateString(user.expireAt!),
+      expireAt: toDateString(user.expireAt),
       isExpired: isExpired ? 'true' : 'false',
+      trial_period: Number(process.env.TRIAL_PERIOD_IN_DAYS),
     });
 
     await this.render(ctx, content, menu, deleteOldMsg);

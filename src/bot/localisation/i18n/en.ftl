@@ -44,7 +44,7 @@ main-text =
 
 
     ⚡️ Unlimited traffic
-    🆓 First 2 months free
+    🆓 First { $trial_period } days are free
 
 
     🌍 Available countries:
