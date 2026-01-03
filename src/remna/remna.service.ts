@@ -80,13 +80,13 @@ export class RemnaService {
 
   async createUser(payload: Pick<CreateUserRequestDto, 'username' | 'telegramId' | 'description'>) {
     const expiryTime = new Date();
-    expiryTime.setDate(expiryTime.getDate() + (Number(process.env.TRIAL_PERIOD_IN_DAYS) || 60));
+    expiryTime.setDate(expiryTime.getDate() + Number(process.env.TRIAL_PERIOD_IN_DAYS));
 
     const body: CreateUserRequestDto = {
       username: payload.username,
       telegramId: payload.telegramId,
       expireAt: expiryTime.toISOString(),
-      activeInternalSquads: [process.env.REMNA_INTERNAL_SQUAD || ''],
+      activeInternalSquads: JSON.parse(process.env.REMNA_INTERNAL_SQUADS || ''),
       trafficLimitStrategy: 'MONTH',
       status: 'ACTIVE',
       description: payload.description,
