@@ -30,10 +30,10 @@ export class UserService {
         username: tgUser.id.toString(),
       });
 
-      session.redirectUrl = `${process.env.CLIENT_APP_URL}/${newUser.subscriptionUrl}`;
+      session.redirectUrl = `${process.env.V2RAYTUN_REDIRECT_URL}/${newUser.subscriptionUrl}`;
       return newUser;
     } else {
-      session.redirectUrl = `${process.env.CLIENT_APP_URL}/${user.subscriptionUrl}`;
+      session.redirectUrl = `${process.env.V2RAYTUN_REDIRECT_URL}/${user.subscriptionUrl}`;
       return user;
     }
   }
