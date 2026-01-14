@@ -3,7 +3,7 @@ services:
     image: postgres:17.6
     env_file: .env
     ports:
-      - "$POSTGRES_HOST_PORT:5432"
+      - "127.0.0.1:$POSTGRES_HOST_PORT:5432"
     volumes:
       - db:/var/lib/postgresql/data
     restart: always
