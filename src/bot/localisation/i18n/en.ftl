@@ -17,6 +17,7 @@ payment-period-button-label-1 =  1  month ({ $amount }{ $currency })
 payment-period-button-label-2 =  3  months ({ $amount }{ $currency })
 payment-period-button-label-3 =  6  months ({ $amount }{ $currency })
 pay-button-label = Pay 💳
+add-link-button-label = Add link 🔗
 add-v2raytun-profile-button-label = Add to v2raytun 🔗
 add-happ-profile-button-label = Add to Happ 🔗
 new-link-button-label = New link 🔄
@@ -48,10 +49,10 @@ main-text =
 
 
     🌍 Available countries:
-    ├ 🇳🇱 Netherlands
-    ├ 🇩🇪 Germany
-    ├ 🇷🇺 Russia
-    └ More coming…
+    ╠ 🇳🇱 Netherlands
+    ╠ 🇩🇪 Germany
+    ╠ 🇷🇺 Russia
+    ╚ More coming…
 
 
     { $isExpired ->
@@ -95,7 +96,7 @@ subscription-text =
     <i>Choose the desired location and tap the connect button</i>
 
 
-    <blockquote><code>{ $subUrl }</code></blockquote>
+    <b><i>{ $subUrl }</i></b>
 
     <b>Here’s the link if you already have the app</b>
 

@@ -3,6 +3,7 @@ import { User as GrammyUser } from '@grammyjs/types/manage';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
+import { getRedirectUrl } from '@utils/utils';
 
 @Injectable()
 export class UserService {
@@ -17,18 +18,22 @@ export class UserService {
   }
 
   async init(ctx: BotContext): Promise<UserDto> {
+    const session = ctx.session;
     const tgUser = this.validateUser(ctx.from);
     const locale = tgUser.language_code;
 
-    ctx.session.user = initialSession().user;
+    session.user = initialSession().user;
     const user = await this.remnaService.getUserByTgId(tgUser.id);
 
     if (!user) {
-      return await this.remnaService.createUser({
+      const newUser = await this.remnaService.createUser({
         telegramId: tgUser.id,
         username: tgUser.id.toString(),
         description: locale,
       });
+
+      session.redirectUrl = getRedirectUrl(session.selectedDevice, newUser.subscriptionUrl);
+      return newUser;
     } else {
       if (user.description !== locale) {
         await this.remnaService.updateUser({
@@ -36,6 +41,8 @@ export class UserService {
           description: locale,
         });
       }
+
+      session.redirectUrl = getRedirectUrl(session.selectedDevice, user.subscriptionUrl);
       return user;
     }
   }

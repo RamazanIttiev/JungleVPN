@@ -122,7 +122,7 @@ export class StripeProvider implements AbstractPaymentProvider {
     return lastPayment?.stripeCustomerId || null;
   }
 
-  private async hasActiveSubscription(customerId: string): Promise<boolean> {
+  async hasActiveSubscription(customerId: string): Promise<boolean> {
     try {
       const subscriptions = await this.stripe.subscriptions.list({
         customer: customerId,

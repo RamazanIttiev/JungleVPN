@@ -2,8 +2,8 @@ import * as process from 'node:process';
 import { BotContext, initialSession } from '@bot/bot.types';
 import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callback';
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
+import { NavigatePaymentPeriodsCallback } from '@bot/callbacks/navigate-payment-periods.callback';
 import { NavigateProfileCallback } from '@bot/callbacks/navigate-profile.callback';
-import { PaymentMethodsCallback } from '@bot/callbacks/payment-methods.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast/broadcast.command';
@@ -26,8 +26,8 @@ export class BotService implements OnModuleInit {
     private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
     private readonly paymentPeriodsCallback: PaymentPeriodsCallback,
-    private readonly paymentMethodsCallback: PaymentMethodsCallback,
     private readonly navigateProfileCallback: NavigateProfileCallback,
+    private readonly navigatePaymentPeriodsCallback: NavigatePaymentPeriodsCallback,
     private readonly localService: LocalisationService,
   ) {
     if (!this.token) {
@@ -53,8 +53,8 @@ export class BotService implements OnModuleInit {
     this.navigateDevicesCallback.register(this.bot);
     this.paymentSuccessCallback.register(this.bot);
     this.paymentPeriodsCallback.register(this.bot);
-    this.paymentMethodsCallback.register(this.bot);
     this.navigateProfileCallback.register(this.bot);
+    this.navigatePaymentPeriodsCallback.register(this.bot);
 
     this.bot.catch((err) => {
       const e = err.error;

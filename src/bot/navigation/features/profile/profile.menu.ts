@@ -35,7 +35,10 @@ export class ProfileMenu extends Base {
               await this.render(
                 ctx,
                 ctx.t('no-active-subscription-text'),
-                keyboard.text(ctx.t('home-button-label'), 'navigate_main'),
+                keyboard
+                  .text(ctx.t('extend-button-label'), 'navigate_payment_periods')
+                  .row()
+                  .text(ctx.t('home-button-label'), 'navigate_main'),
                 true,
               );
             },

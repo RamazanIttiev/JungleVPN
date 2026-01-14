@@ -24,10 +24,13 @@ export class SubscriptionMenu extends Base {
           return link || 'https://example.com/fallback';
         },
       )
-      .url('🔗 Добавить профиль', (ctx) => {
-        const link = ctx.session.redirectUrl;
-        return link || 'https://example.com';
-      })
+      .url(
+        (ctx) => ctx.t('add-link-button-label'),
+        (ctx) => {
+          const link = ctx.session.redirectUrl;
+          return link || 'https://example.com';
+        },
+      )
       .row()
       .text(
         (ctx) => ctx.t('home-button-label'),

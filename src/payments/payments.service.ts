@@ -22,23 +22,36 @@ export class PaymentsService {
     const provider = this.factory.getProvider(dto.payment.provider);
     const session = await provider.createPayment(dto);
 
-    const payment = this.paymentRepository.create({
-      id: session.id,
-      url: session.url,
-      stripeCustomerId: session.customer,
-      status: 'pending',
-      amount: dto.payment.amount,
-      currency: dto.payment.currency,
-      userId: dto.userId,
-      provider: provider.id,
-      paidAt: null,
-      stripeSubscriptionId: null,
-      invoiceUrl: null,
-    });
+    const existingPayment = await this.findOneByStripeCustomerId(session.customer);
 
-    await this.paymentRepository.save(payment);
+    if (!existingPayment) {
+      const payment = this.paymentRepository.create({
+        id: session.id,
+        url: session.url,
+        stripeCustomerId: session.customer,
+        status: 'pending',
+        amount: dto.payment.amount,
+        currency: dto.payment.currency,
+        userId: dto.userId,
+        provider: provider.id,
+        paidAt: null,
+        stripeSubscriptionId: null,
+        invoiceUrl: null,
+      });
 
-    return { id: payment.id, url: payment.url || '', customer: payment.stripeCustomerId };
+      await this.paymentRepository.save(payment);
+
+      return { id: payment.id, url: payment.url || '', customer: payment.stripeCustomerId };
+    } else {
+      existingPayment.stripeCustomerId &&
+        (await this.updatePayment(existingPayment.stripeCustomerId, { ...existingPayment }));
+
+      return {
+        id: existingPayment.id,
+        url: existingPayment.url || '',
+        customer: existingPayment.stripeCustomerId,
+      };
+    }
   }
 
   async updatePayment(id: string, partial: Partial<IPayment>) {
@@ -53,7 +66,9 @@ export class PaymentsService {
     await this.paymentRepository.delete({ id });
   }
 
-  async findOneByStripeCustomerId(stripeCustomerId: string | null): Promise<IPayment | null> {
+  async findOneByStripeCustomerId(
+    stripeCustomerId: string | null | undefined,
+  ): Promise<IPayment | null> {
     if (!stripeCustomerId) return null;
     return this.paymentRepository.findOne({
       where: { stripeCustomerId },
