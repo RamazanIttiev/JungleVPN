@@ -1,15 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
-import {
-  CreatePaymentDto,
-  PaymentProvider,
-  PaymentSession,
-  PaymentWebhookPayload,
-} from '@payments/payments.model';
+import { CreatePaymentDto, IPayment, PaymentSession } from '@payments/payments.model';
 
 import { Repository } from 'typeorm';
-import { Payment } from './payment.entity';
 
 @Injectable()
 export class PaymentsService {
@@ -18,87 +13,62 @@ export class PaymentsService {
     private readonly factory: PaymentProviderFactory,
   ) {}
 
-  async findValidPayment(id: string) {
-    const payment = await this.paymentRepository.findOneBy({ id, status: 'pending' });
+  async createPayment(dto: Omit<IPayment, 'metadata'>) {
+    const payment = this.paymentRepository.create(dto);
 
-    if (!payment || !payment.createdAt) return null;
+    return await this.paymentRepository.save(payment);
+  }
+  async createPaymentFromProvider(dto: CreatePaymentDto): Promise<PaymentSession> {
+    const provider = this.factory.getProvider(dto.payment.provider);
+    const session = await provider.createPayment(dto);
 
-    const expiresAt = payment.createdAt.getTime() + 10 * 60 * 1000;
-    if (Date.now() < expiresAt) {
-      return payment;
+    const existingPayment = await this.findOneByStripeCustomerId(session.customer);
+
+    if (!existingPayment) {
+      const payment = this.paymentRepository.create({
+        id: session.id,
+        url: session.url,
+        stripeCustomerId: session.customer,
+        status: 'pending',
+        amount: dto.payment.amount,
+        currency: dto.payment.currency,
+        userId: dto.userId,
+        provider: provider.id,
+        paidAt: null,
+        stripeSubscriptionId: null,
+        invoiceUrl: null,
+      });
+
+      await this.paymentRepository.save(payment);
+
+      return { id: payment.id, url: payment.url || '', customer: payment.stripeCustomerId };
     } else {
-      return null;
-    }
-  }
-
-  async createPayment(
-    dto: CreatePaymentDto,
-    providerName: PaymentProvider,
-  ): Promise<PaymentSession> {
-    const provider = this.factory.getProvider(providerName);
-    const session = await provider.createPayment(dto, providerName);
-
-    const payment = this.paymentRepository.create({
-      id: session.id,
-      userId: dto.userId.toString(),
-      provider: providerName,
-      amount: dto.amount,
-      currency: dto.currency,
-      createdAt: new Date(),
-      status: 'pending',
-      url: session.url,
-    });
-
-    await this.paymentRepository.save(payment);
-
-    return { id: session.id, url: session.url };
-  }
-
-  async updatePayment(id: string, partial: Partial<Payment>) {
-    const payment = await this.paymentRepository.findOneBy({ id });
-    if (!payment) throw new Error(`Payment ${id} not found`);
-
-    Object.assign(payment, partial);
-    await this.paymentRepository.save(payment);
-  }
-
-  async handleWebhook(
-    payload: PaymentWebhookPayload,
-    providerName: PaymentProvider,
-  ): Promise<{
-    shouldProcess: boolean;
-    reason?: string;
-    paymentId?: string;
-    event?: string;
-  }> {
-    const provider = this.factory.getProvider(providerName);
-
-    if (!provider.isValidWebhookPayload(payload)) {
       return {
-        shouldProcess: false,
-        reason: 'Invalid webhook payload structure',
+        id: existingPayment.id,
+        url: existingPayment.url || '',
+        customer: existingPayment.stripeCustomerId,
       };
     }
+  }
 
-    const { paymentId, status: webhookStatus, event } = provider.parseWebhook(payload);
+  async updatePayment(id: string, partial: Partial<IPayment>) {
+    return await this.paymentRepository.update(id, partial);
+  }
 
-    try {
-      const status = await provider.checkPaymentStatus(paymentId);
-      if (status !== webhookStatus) {
-        return {
-          shouldProcess: false,
-          reason: `Payment ${paymentId} status mismatch! Webhook: ${webhookStatus}, API: ${status}. Possible fake webhook.`,
-          paymentId,
-        };
-      }
-    } catch (apiError) {
-      console.error(`API verification failed for payment ${paymentId}`, apiError);
-    }
+  async findOneByStripeCustomerId(
+    stripeCustomerId: string | null | undefined,
+  ): Promise<IPayment | null> {
+    if (!stripeCustomerId) return null;
+    return this.paymentRepository.findOne({
+      where: { stripeCustomerId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 
-    return {
-      shouldProcess: true,
-      paymentId,
-      event,
-    };
+  async findOneByTelegramId(telegramId: number): Promise<IPayment | null> {
+    return this.paymentRepository.findOne({
+      where: { userId: telegramId.toString() },
+      order: { createdAt: 'DESC' },
+    });
   }
 }

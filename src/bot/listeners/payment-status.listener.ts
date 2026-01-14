@@ -1,9 +1,10 @@
 import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
+import { LocalisationService } from '@bot/localisation/localisation.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { PaymentMetadata } from '@payments/payments.model';
+import { IPayment, PaymentMetadata, StripeInvoicePayload } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import {
   YookassaNotificationEvent,
@@ -11,9 +12,10 @@ import {
 } from '@payments/providers/yookassa/yookassa.model';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
-import { safeSendMessage } from '@utils/utils';
+import { safeSendMessage, toDateString } from '@utils/utils';
 import { add } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
+import { ReferralService } from '../../referral/referral.service';
 
 @Injectable()
 export class PaymentStatusListener {
@@ -24,8 +26,59 @@ export class PaymentStatusListener {
     private readonly botService: BotService,
     private readonly paymentsService: PaymentsService,
     private readonly remnaService: RemnaService,
+    private readonly localService: LocalisationService,
+    private readonly referralService: ReferralService,
   ) {
     this.bot = this.botService.bot;
+  }
+
+  @OnEvent('invoice.payment_succeeded')
+  async handleInvoicePaymentSucceeded(payload: {
+    type: 'notification';
+    event: 'invoice.payment_succeeded';
+    object: IPayment;
+  }) {
+    const { metadata, ...data } = payload.object;
+    const telegramId = Number(data.userId);
+
+    if (!telegramId) {
+      this.logger.warn('No telegramId found in payment metadata or via fallback');
+      return;
+    }
+
+    const user = await this.loadUser(telegramId);
+    if (!user || !user.telegramId) {
+      this.logger.warn('No user found');
+      return;
+    }
+
+    data.stripeCustomerId &&
+      (await this.paymentsService.updatePayment(data.stripeCustomerId, { ...data }));
+
+    const updatedUser = await this.updateUserExpiryDate(user, metadata?.selectedPeriod);
+    await this.cleanUpTelegramMessage(telegramId, metadata?.telegramMessageId);
+    await this.sendSuccessStripePaymentMessage(updatedUser, data);
+  }
+
+  @OnEvent('invoice.payment_failed')
+  async handleInvoicePaymentFailed(payload: {
+    type: 'notification';
+    event: 'invoice.payment_failed';
+    object: StripeInvoicePayload;
+  }) {
+    const { metadata, ...data } = payload.object;
+    const telegramId = Number(metadata.telegramId);
+
+    if (!telegramId) return;
+
+    const user = await this.loadUser(telegramId);
+    if (!user || !user.telegramId) return;
+
+    await this.paymentsService.createPayment({ ...data });
+
+    const locale = user.description || process.env.DEFAULT_LOCALE || 'en';
+
+    await this.sendFailureStripePaymentMessage(user.telegramId, locale);
   }
 
   @OnEvent('payment.succeeded')
@@ -55,13 +108,16 @@ export class PaymentStatusListener {
 
     const { status } = payment;
 
-    if (status !== 'succeeded') {
-      return this.notifyPendingPayment(user.telegramId);
-    }
+    await this.paymentsService.updatePayment(payment.id, {
+      status: status,
+      paidAt: new Date(),
+    });
 
-    await this.processSuccessfulPayment(payment.id, metadata, user);
+    const locale = user.description || process.env.DEFAULT_LOCALE || 'en';
+
+    await this.updateUserExpiryDate(user, metadata.selectedPeriod);
     await this.cleanUpTelegramMessage(user.telegramId, metadata.telegramMessageId);
-    await this.sendSuccessMessage(user.telegramId);
+    await this.sendSuccessMessage(user.telegramId, locale);
   }
 
   private async loadUser(telegramId: number) {
@@ -69,32 +125,34 @@ export class PaymentStatusListener {
     return user?.telegramId ? user : null;
   }
 
-  private async processSuccessfulPayment(
-    paymentId: string,
-    metadata: PaymentMetadata,
+  private async updateUserExpiryDate(
     user: UserDto,
-  ) {
-    const { uuid, expireAt } = user;
+    selectedPeriod: number | string,
+  ): Promise<UserDto> {
+    const { uuid, expireAt, telegramId } = user;
 
     const newExpireAt = add(expireAt, {
-      months: metadata.selectedPeriod,
+      months: Number(selectedPeriod),
     }).toISOString();
 
-    await this.paymentsService.updatePayment(paymentId, {
-      status: 'succeeded',
-      paidAt: new Date(),
-    });
+    if (telegramId) {
+      const invitedUser = await this.referralService.getReferralRecord(telegramId);
 
-    await this.remnaService.updateUser({
+      if (invitedUser?.status !== 'COMPLETED') {
+        await this.referralService.handleInviterRewardAfterPayment(telegramId);
+      }
+    }
+
+    return await this.remnaService.updateUser({
       uuid,
       expireAt: newExpireAt,
     });
   }
 
-  private async cleanUpTelegramMessage(telegramId: number, messageId?: number) {
+  private async cleanUpTelegramMessage(telegramId: number, messageId?: number | string) {
     if (messageId) {
       try {
-        await this.bot.api.deleteMessage(telegramId, messageId);
+        await this.bot.api.deleteMessage(telegramId, +messageId);
       } catch (err) {
         console.log('Failed to delete Telegram message:', err);
       }
@@ -103,13 +161,15 @@ export class PaymentStatusListener {
     }
   }
 
-  private async sendSuccessMessage(telegramId: number) {
+  private async sendSuccessMessage(telegramId: number, locale: string) {
+    const i18n = this.localService.i18n;
+
     const stickerId = process.env.SUCCESS_STICKER;
 
     const successMenu = new InlineKeyboard()
-      .text('Подключиться 📶', 'paymentSuccess')
+      .text(i18n.t(locale, 'connect-button-label'), 'paymentSuccess')
       .row()
-      .text('Главное меню 🏠', 'navigate_main');
+      .text(i18n.t(locale, 'home-button-label'), 'navigate_main');
 
     if (stickerId) {
       return this.bot.api.sendSticker(telegramId, stickerId, {
@@ -117,12 +177,48 @@ export class PaymentStatusListener {
       });
     }
 
-    await safeSendMessage(this.bot, telegramId, '✅ Оплата прошла успешно!', {
+    await safeSendMessage(this.bot, telegramId, i18n.t(locale, 'payment-success'), {
       reply_markup: successMenu,
     });
   }
 
-  private async notifyPendingPayment(telegramId: number) {
-    await safeSendMessage(this.bot, telegramId, 'Оплата еще не прошла!');
+  private async sendSuccessStripePaymentMessage(user: UserDto, data: IPayment) {
+    const locale = user.description || process.env.DEFAULT_LOCALE || 'en';
+    const i18n = this.localService.i18n;
+
+    if (!user.telegramId) return;
+
+    const expireAt = toDateString(user.expireAt);
+
+    const text = this.localService.i18n.t(locale, 'invoice-payment-success-text', {
+      expireAt,
+    });
+
+    const successMenu = new InlineKeyboard()
+      .text(i18n.t(locale, 'profile-button-label'), 'navigate_profile')
+      .url(i18n.t(locale, 'invoice-button-label'), data.invoiceUrl || user.subscriptionUrl)
+      .row()
+      .text(i18n.t(locale, 'home-button-label'), 'navigate_main');
+
+    await safeSendMessage(this.bot, user.telegramId, text, {
+      reply_markup: successMenu,
+      parse_mode: 'HTML',
+    });
+  }
+
+  private async sendFailureStripePaymentMessage(telegramId: number, locale: string) {
+    const i18n = this.localService.i18n;
+
+    const text = i18n.t(locale, 'invoice-payment-failed-text');
+
+    const menu = new InlineKeyboard().text(
+      i18n.t(locale, 'profile-button-label'),
+      'navigate_profile',
+    );
+
+    await safeSendMessage(this.bot, telegramId, text, {
+      reply_markup: menu,
+      parse_mode: 'HTML',
+    });
   }
 }

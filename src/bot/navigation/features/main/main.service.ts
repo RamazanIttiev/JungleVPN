@@ -1,10 +1,9 @@
 import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { Base } from '@bot/navigation/menu.base';
-import { getMainPageContent } from '@bot/utils/templates';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '@user/user.service';
-import { toDateString } from '@utils/utils';
+import { isValidUsername, toDateString } from '@utils/utils';
 
 @Injectable()
 export class MainMsgService extends Base {
@@ -17,10 +16,15 @@ export class MainMsgService extends Base {
 
     const isExpired = this.isExpired(user.expireAt);
 
-    const content = getMainPageContent({
-      username: ctx.from?.username || ctx.from?.first_name || 'Дорогой друг',
-      isExpired,
-      validUntil: toDateString(user.expireAt),
+    const username = isValidUsername(ctx.from?.username)
+      ? ctx.from?.username
+      : ctx.t('dear-friend');
+
+    const content = ctx.t('main-text', {
+      username: username!,
+      expireAt: toDateString(user.expireAt),
+      isExpired: isExpired ? 'true' : 'false',
+      trial_period: Number(process.env.TRIAL_PERIOD_IN_DAYS),
     });
 
     await this.render(ctx, content, menu, deleteOldMsg);

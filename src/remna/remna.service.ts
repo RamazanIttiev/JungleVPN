@@ -89,6 +89,7 @@ export class RemnaService {
       activeInternalSquads: JSON.parse(process.env.REMNA_INTERNAL_SQUADS || ''),
       trafficLimitStrategy: 'MONTH',
       status: 'ACTIVE',
+      description: payload.description,
     };
 
     return this.fetch<CreateUserResponseDto>({ url: '/users', body });

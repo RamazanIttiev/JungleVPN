@@ -1,20 +1,24 @@
 import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { getUserNotConnected24Content } from '@bot/utils/templates';
+import { LocalisationService } from '@bot/localisation/localisation.service';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
-import { UserDto } from '@user/user.model';
+import { UserDto, UserLocale } from '@user/user.model';
 import { safeSendMessage } from '@utils/utils';
 import { AxiosError } from 'axios';
+import { differenceInHours } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
 
 @Injectable()
 export class UserNotConnectedListener {
   bot: Bot<BotContext>;
 
-  constructor(readonly botService: BotService) {
+  constructor(
+    readonly botService: BotService,
+    readonly localService: LocalisationService,
+  ) {
     this.bot = this.botService.bot;
   }
 
@@ -24,21 +28,45 @@ export class UserNotConnectedListener {
     data: UserDto;
     timestamp: string;
   }) {
+    const locale = (payload.data.description || process.env.DEFAULT_LOCALE || 'ru') as UserLocale;
+    const createdAt = new Date(payload.data.createdAt);
+    const timestamp = new Date(payload.timestamp);
+    const diffHours = differenceInHours(timestamp, createdAt);
+
     const keyboard = new InlineKeyboard()
-      .text('Подключиться 📶', 'navigate_devices')
-      .text('Главное меню 🏠', 'navigate_main')
-      .url('Нужна помощь?', process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support');
+      .text(this.localService.i18n.t(locale, 'connect-button-label'), 'navigate_devices')
+      .text(this.localService.i18n.t(locale, 'home-button-label'), 'navigate_main')
+      .row()
+      .url(
+        this.localService.i18n.t(locale, 'support-button-label'),
+        process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support',
+      );
 
     if (!payload.data.telegramId) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
     }
 
-    await this.handleInitial(payload.data.telegramId, keyboard);
+    if (diffHours >= Number(process.env.TREE_DAYS_IN_HOURS)) {
+      await this.handleThreeDays(payload.data.telegramId, locale, keyboard);
+      return;
+    }
+
+    await this.handleInitial(payload.data.telegramId, locale, keyboard);
   }
 
-  // Set by NOT_CONNECTED_USERS_NOTIFICATIONS_AFTER_HOURS array in panel env file
-  async handleInitial(telegramId: number, keyboard: InlineKeyboard) {
-    await safeSendMessage(this.bot, telegramId, getUserNotConnected24Content(), {
+  async handleThreeDays(telegramId: number, locale: UserLocale, keyboard: InlineKeyboard) {
+    const text = this.localService.i18n.t(locale, 'user-not-connected-72');
+
+    await safeSendMessage(this.bot, telegramId, text, {
+      parse_mode: 'HTML',
+      reply_markup: keyboard,
+    });
+  }
+
+  async handleInitial(telegramId: number, locale: UserLocale, keyboard: InlineKeyboard) {
+    const text = this.localService.i18n.t(locale, 'user-not-connected-24');
+
+    await safeSendMessage(this.bot, telegramId, text, {
       parse_mode: 'HTML',
       reply_markup: keyboard,
     });

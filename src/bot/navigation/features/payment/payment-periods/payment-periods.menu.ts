@@ -1,10 +1,13 @@
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
-import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
-import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
+import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
 import { Base } from '@bot/navigation/menu.base';
+import { paymentPeriods } from '@bot/utils/constants';
 import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PaymentPeriod } from '@payments/payments.model';
+import { UserLocale } from '@user/user.model';
 import { mapPeriodLabelToPriceLabel } from '@utils/utils';
 
 @Injectable()
@@ -12,35 +15,41 @@ export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
   readonly menu = new Menu('paymentPeriods-menu');
 
   constructor(
+    readonly config: ConfigService,
     readonly mainMsgService: MainMsgService,
-    @Inject(forwardRef(() => PaymentPeriodsMsgService))
-    readonly paymentPeriodsMsgService: PaymentPeriodsMsgService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
-    @Inject(forwardRef(() => PaymentMenu))
-    readonly paymentMenu: PaymentMenu,
+    readonly paymentMethodMenu: PaymentMethodMenu,
   ) {
     super();
   }
 
   onModuleInit() {
-    if (
-      this.paymentPeriodsMsgService.periods.length !== this.paymentPeriodsMsgService.amounts.length
-    ) {
-      throw new Error('PAYMENT_PERIODS and PAYMENT_AMOUNTS lengths must match');
-    }
+    this.menu.dynamic((ctx, range) => {
+      const locale = ctx.from?.language_code as UserLocale;
 
-    this.menu.dynamic((_, range) => {
-      this.paymentPeriodsMsgService.periods.forEach((period) => {
+      paymentPeriods.forEach((item) => {
+        const period = item.toUpperCase() as PaymentPeriod;
         range.text(
-          mapPeriodLabelToPriceLabel(period),
-          async (ctx) => await this.paymentPeriodsMsgService.handlePaymentPeriod(ctx, period),
+          (ctx) =>
+            ctx.t(mapPeriodLabelToPriceLabel(item), {
+              amount:
+                this.config.get<number>(
+                  locale === 'ru' ? `PRICE_RUB_${period}` : `PRICE_EUR_${period}`,
+                ) || 0,
+              currency: locale === 'ru' ? '₽' : '€',
+            }),
+
+          async (ctx) => {
+            ctx.session.selectedPeriod = item;
+            await this.render(ctx, ctx.t('payment-methods-text'), this.paymentMethodMenu.menu);
+          },
         );
         range.row();
       });
 
       range.row();
-      range.text({ text: '⤴ Назад' }, async (ctx) => {
+      range.text({ text: (ctx) => ctx.t('back-button-label') }, async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
     });

@@ -14,7 +14,7 @@ import { mapDeviceLabel } from '@utils/utils';
 export class DevicesMenu extends Base {
   readonly menu = new Menu('devices-menu');
   private devices: UserDevice[] = JSON.parse(
-    process.env.USER_DEVICES || '["ios","android","macOS","windows"]',
+    process.env.CLIENT_DEVICES || '["ios","android","macOS","windows"]',
   );
 
   constructor(
@@ -34,7 +34,7 @@ export class DevicesMenu extends Base {
       });
 
       range.row();
-      range.text({ text: '⤴ Назад' }, async (ctx) => {
+      range.text({ text: (ctx) => ctx.t('back-button-label') }, async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
     });

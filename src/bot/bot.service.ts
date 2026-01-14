@@ -2,10 +2,14 @@ import * as process from 'node:process';
 import { BotContext, initialSession } from '@bot/bot.types';
 import { NavigateDevicesCallback } from '@bot/callbacks/navigate-devices.callback';
 import { NavigateMainCallback } from '@bot/callbacks/navigate-main.callback';
+import { NavigatePaymentPeriodsCallback } from '@bot/callbacks/navigate-payment-periods.callback';
+import { NavigateProfileCallback } from '@bot/callbacks/navigate-profile.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
 import { BroadcastCommand } from '@bot/commands/broadcast/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
+import { LocalisationService } from '@bot/localisation/localisation.service';
+import { InlineQueryListener } from '@bot/listeners/inline-query.listener';
 import { MenuTree } from '@bot/navigation/menu.tree';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
@@ -23,6 +27,10 @@ export class BotService implements OnModuleInit {
     private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
     private readonly paymentPeriodsCallback: PaymentPeriodsCallback,
+    private readonly navigateProfileCallback: NavigateProfileCallback,
+    private readonly navigatePaymentPeriodsCallback: NavigatePaymentPeriodsCallback,
+    private readonly localService: LocalisationService,
+    private readonly inlineQueryListener: InlineQueryListener,
   ) {
     if (!this.token) {
       throw new Error('TELEGRAM_BOT_TOKEN missing');
@@ -34,15 +42,11 @@ export class BotService implements OnModuleInit {
   async onModuleInit() {
     this.bot.use(session({ initial: initialSession }));
 
+    this.bot.use(this.localService.i18n);
+
     const menuTree = this.menuTree.init();
 
     this.bot.use(menuTree);
-
-    this.bot.on('pre_checkout_query', (ctx) => ctx.answerPreCheckoutQuery(true));
-
-    this.bot.on(':successful_payment', async (ctx) => {
-      await ctx.reply('✅ Оплата прошла успешно! Спасибо за вашу поддержку.');
-    });
 
     this.startCommand.register(this.bot);
     this.broadcastCommand.register(this.bot);
@@ -51,6 +55,9 @@ export class BotService implements OnModuleInit {
     this.navigateDevicesCallback.register(this.bot);
     this.paymentSuccessCallback.register(this.bot);
     this.paymentPeriodsCallback.register(this.bot);
+    this.navigateProfileCallback.register(this.bot);
+    this.navigatePaymentPeriodsCallback.register(this.bot);
+    this.inlineQueryListener.register(this.bot);
 
     this.bot.catch((err) => {
       const e = err.error;

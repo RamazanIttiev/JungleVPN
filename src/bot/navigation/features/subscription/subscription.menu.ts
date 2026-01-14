@@ -2,9 +2,10 @@ import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { Base } from '@bot/navigation/menu.base';
-import { getAppLink } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { getAppUrl } from '@utils/utils';
 
+// TODO add happ client app link
 @Injectable()
 export class SubscriptionMenu extends Base {
   menu = new Menu('subscription-menu');
@@ -16,21 +17,26 @@ export class SubscriptionMenu extends Base {
     super();
 
     this.menu
-      .url('🔽 Скачать', (ctx) => {
-        const link = getAppLink(ctx.session.selectedDevice);
-        return link || 'https://example.com/fallback';
-      })
-      .url('🔗 Добавить профиль', (ctx) => {
-        const link = ctx.session.redirectUrl;
-        return link || 'https://example.com';
-      })
-      // .row()
-      // .text('🔄 Новая ссылка', async (ctx) => {
-      //   await this.revokeSubMsgService.init(ctx);
-      // })
+      .url(
+        (ctx) => ctx.t('download-button-label'),
+        (ctx) => {
+          const link = getAppUrl(ctx.session.selectedDevice);
+          return link || 'https://example.com/fallback';
+        },
+      )
+      .url(
+        (ctx) => ctx.t('add-link-button-label'),
+        (ctx) => {
+          const link = ctx.session.redirectUrl;
+          return link || 'https://example.com';
+        },
+      )
       .row()
-      .text('Главное меню 🏠', async (ctx) => {
-        await this.mainMsgService.init(ctx, this.mainMenu.menu);
-      });
+      .text(
+        (ctx) => ctx.t('home-button-label'),
+        async (ctx) => {
+          await this.mainMsgService.init(ctx, this.mainMenu.menu);
+        },
+      );
   }
 }

@@ -1,18 +1,15 @@
+import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
-import { PaymentAmount, PaymentPeriod } from '@payments/payments.model';
+import { PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
 import { Api, Bot, GrammyError, RawApi } from 'grammy';
 import { Other } from 'grammy/out/core/api';
-import { z } from 'zod';
 
 export const isValidUsername = (username: string | undefined | null): boolean => {
   if (!username) return false;
   const regex = /^[A-Za-z0-9_-]+$/;
   return regex.test(username);
 };
-
-export const escapeHtml = (s: string): string =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export const mapDeviceLabel = (device: UserDevice) => {
   switch (device) {
@@ -29,10 +26,23 @@ export const mapDeviceLabel = (device: UserDevice) => {
   }
 };
 
+export const mapToClientAppName = (device: UserDevice) => {
+  switch (device) {
+    case 'ios':
+    case 'android':
+    case 'macOS':
+      return 'v2RayTun';
+    case 'windows':
+      return 'Happ';
+    default:
+      return 'v2RayTun';
+  }
+};
+
 export const toDateString = (value: string) => {
   return new Date(value).toLocaleDateString('ru-EU', {
     year: 'numeric',
-    month: 'long',
+    month: 'numeric',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
@@ -40,54 +50,44 @@ export const toDateString = (value: string) => {
   });
 };
 
-export const mapAmountLabel = (amount: PaymentAmount) => {
-  return parseInt(amount, 10);
-};
-
-export const mapPeriodLabel = (period: PaymentPeriod) => {
+export const mapPeriodToMonthsNumber = (period: PaymentPeriod | undefined) => {
   switch (period) {
-    case '1mo':
-      return '1 месяц';
-    case '3mo':
-      return '3 месяца';
-    case '6mo':
-      return '6 месяцев';
-  }
-};
-
-export const mapPeriodToDate = (period: PaymentPeriod | undefined) => {
-  switch (period) {
-    case '1mo':
+    case 'month_1':
       return 1;
-    case '3mo':
+    case 'month_3':
       return 3;
-    case '6mo':
+    case 'month_6':
       return 6;
     default:
       return 1;
   }
 };
 
-export const mapDaysLeftLabel = (daysLeft: number | undefined) => {
-  switch (daysLeft) {
-    case 1:
-      return '1 день';
-    case 2:
-    case 3:
-      return `${daysLeft} дня`;
+export const mapEURAmountToMonthsNumber = (amount: string | undefined) => {
+  switch (amount) {
+    case `${process.env.PRICE_EUR_MONTH_1}00`:
+      return 1;
+    case `${process.env.PRICE_EUR_MONTH_3}00`:
+      return 3;
+    case `${process.env.PRICE_EUR_MONTH_6}00`:
+      return 6;
     default:
-      return `${daysLeft} дней`;
+      return 1;
   }
+};
+
+export const mapToCorrectAmount = (amount: number) => {
+  return +amount.toString().slice(0, amount.toString().length - 2);
 };
 
 export const mapPeriodLabelToPriceLabel = (period: PaymentPeriod) => {
   switch (period) {
-    case '1mo':
-      return '1️⃣ месяц (99 ₽)';
-    case '3mo':
-      return '3️⃣ месяца (159 ₽)';
-    case '6mo':
-      return '6️⃣ месяцев (499 ₽)';
+    case 'month_1':
+      return 'payment-period-button-label-1';
+    case 'month_3':
+      return 'payment-period-button-label-2';
+    case 'month_6':
+      return 'payment-period-button-label-3';
   }
 };
 
@@ -133,15 +133,28 @@ export async function safeEditMessage(
   }
 }
 
-export const isValidValue = <T extends z.ZodTypeAny>(
-  schema: T,
-  value: unknown,
-): value is z.infer<T> => {
-  return schema.safeParse(value).success;
+export const getAppUrl = (device: UserDevice | undefined): string | undefined => {
+  switch (device) {
+    case 'ios':
+      return process.env.V2RAYTUN_IOS_APP_URL;
+    case 'macOS':
+      return process.env.V2RAYTUN_MACOS_APP_URL;
+    case 'android':
+      return process.env.V2RAYTUN_ANDROID_APP_URL;
+    case 'windows':
+      return process.env.HAPP_WINDOWS_APP_URL;
+    default:
+      return process.env.IOS_APP_DOWNLOAD_URL;
+  }
 };
 
-export const getRandomNumber = (): number => {
-  const array = new Uint32Array(1);
-  crypto.getRandomValues(array);
-  return (array[0] % 90000000) + 100000;
+export const getRedirectUrl = (device: UserDevice | undefined, subUrl: string) => {
+  switch (device) {
+    case 'ios':
+    case 'macOS':
+    case 'android':
+      return `${process.env.V2RAYTUN_REDIRECT_URL}/${subUrl}` || 'https://example.com/ios';
+    case 'windows':
+      return `${process.env.HAPP_REDIRECT_URL}/${subUrl}` || 'https://example.com/windows';
+  }
 };
