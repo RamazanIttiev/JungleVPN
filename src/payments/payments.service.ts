@@ -43,9 +43,6 @@ export class PaymentsService {
 
       return { id: payment.id, url: payment.url || '', customer: payment.stripeCustomerId };
     } else {
-      existingPayment.stripeCustomerId &&
-        (await this.updatePayment(existingPayment.stripeCustomerId, { ...existingPayment }));
-
       return {
         id: existingPayment.id,
         url: existingPayment.url || '',
@@ -55,15 +52,7 @@ export class PaymentsService {
   }
 
   async updatePayment(id: string, partial: Partial<IPayment>) {
-    const payment = await this.paymentRepository.findOneBy({ id });
-    if (!payment) throw new Error(`Payment ${id} not found`);
-
-    Object.assign(payment, partial);
-    await this.paymentRepository.save(payment);
-  }
-
-  async deletePayment(id: string) {
-    await this.paymentRepository.delete({ id });
+    return await this.paymentRepository.update(id, partial);
   }
 
   async findOneByStripeCustomerId(

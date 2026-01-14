@@ -52,15 +52,11 @@ export class PaymentStatusListener {
       return;
     }
 
-    const payment = await this.paymentsService.findOneByStripeCustomerId(data.stripeCustomerId);
-
-    await this.paymentsService.createPayment(data);
-    if (payment) {
-      await this.paymentsService.deletePayment(payment.id);
-    }
+    data.stripeCustomerId &&
+      (await this.paymentsService.updatePayment(data.stripeCustomerId, { ...data }));
 
     const updatedUser = await this.updateUserExpiryDate(user, metadata?.selectedPeriod);
-    await this.cleanUpTelegramMessage(user.telegramId, metadata?.telegramMessageId);
+    await this.cleanUpTelegramMessage(telegramId, metadata?.telegramMessageId);
     await this.sendSuccessStripePaymentMessage(updatedUser, data);
   }
 
