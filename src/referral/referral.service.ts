@@ -35,10 +35,10 @@ export class ReferralService {
   }
 
   async handleNewUser(ctx: BotContext, inviterId: number, invitedTelegramId: number) {
+    const locale = ctx.from?.language_code;
+
     if (inviterId === invitedTelegramId) {
-      await ctx.reply(
-        'Ты перешел по своей же реверальной ссылке. Ты не можешь пргласить самого себя 🥲. Нажми /start',
-      );
+      await ctx.reply(ctx.t('referral-own-user-link-text'));
       this.logger.warn(`User ${invitedTelegramId} tried to refer themselves.`);
       return null;
     }
@@ -47,6 +47,7 @@ export class ReferralService {
 
     if (existingUser) {
       this.logger.warn(`Invited user ${invitedTelegramId} is not new.`);
+      await ctx.reply(ctx.t('referral-existing-user-text'));
       return;
     }
 
@@ -55,7 +56,7 @@ export class ReferralService {
       this.logger.warn(`Inviter ${inviterId} not found.`);
       return;
     }
-    const invited = await this.userService.createUser(invitedTelegramId);
+    const invited = await this.userService.createUser(invitedTelegramId, locale);
     if (!invited?.telegramId) {
       this.logger.warn(`Invited ${invitedTelegramId} not found.`);
       return;

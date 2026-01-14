@@ -21,6 +21,9 @@ add-link-button-label = Add link 🔗
 add-v2raytun-profile-button-label = Add to v2raytun 🔗
 add-happ-profile-button-label = Add to Happ 🔗
 new-link-button-label = New link 🔄
+invite-button-label = Invite 🖖
+invite-inline-title = Invite a friend to JUNGLE 🌴
+invite-inline-description = Send this card to a friend and get extra subscription days 🙃
 chanel-button-label = Telegram chanel 🌟
 broadcast-sent-success = ✅ Message sent to all users!
 payment-success = ✅ Payment successful! Thank you for your support.
@@ -198,3 +201,58 @@ support-text =
     2️⃣ If that didn't help, delete old subscription and generate a new one (button below). Then import it as before
 
     3️⃣ In case non of above helped, contact the support team. It might be a temporary issue 🥲
+
+
+
+
+invitation-text =
+    You have been invited to the <b>Jungle</b> by <b>{ $username }</b> 🌴
+
+    Jungle is a VPN service. Connect easily and use the internet securely ❤️
+
+    ⚡️Unlimited traffic
+    🆓First { $trial_period } days — free
+
+
+    🌍Available locations:
+    ╠ 🇳🇱 Netherlands
+    ╠ 🇩🇪 Germany
+    ╠ 🇷🇺 Russia
+    ╚ More coming soon...
+
+
+
+user-rewarded-text =
+    { $isNewUser ->
+    [true] Thanks for inviting friends to <code>JUNGLE</code> 🌴
+
+    I’ve added { $inviterStartBonusInDays } day to your subscription ♥️
+
+    <b>Your subscription will now expire on <blockquote>{ $formattedDate }</blockquote></b>
+
+    *[false] Thanks to you, <code>JUNGLE</code> now has even more active members 🦍
+
+    I’ve added { $inviterPaidBonusInDays } days to your subscription ♥️
+
+    <b>Your subscription will now expire on <blockquote>{ $formattedDate }</blockquote></b>
+    }
+
+
+referral-page-text =
+    Invite your friends to <code>JUNGLE</code> and get extra subscription days 😃
+
+    For every invited user, you get <blockquote>+{ $inviterStartBonusInDays } day</blockquote>
+
+    And if your friend makes a payment, you’ll get <blockquote>+{ $inviterPaidBonusInDays } days</blockquote>
+
+    Sounds good, right? 🫠
+
+
+referral-existing-user-text =
+    You followed a referral link, but you’re already registered in the system 🖖
+
+    By the way, if you pay for a subscription, the person who invited you will get extra days ♥️
+
+
+referral-own-user-link-text =
+    You followed your own referral link. You can’t invite yourself 🥲. Tap /start

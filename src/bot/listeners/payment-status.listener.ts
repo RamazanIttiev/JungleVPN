@@ -139,11 +139,6 @@ export class PaymentStatusListener {
       months: Number(selectedPeriod),
     }).toISOString();
 
-    return await this.remnaService.updateUser({
-      uuid,
-      expireAt: newExpireAt,
-    });
-
     if (telegramId) {
       const invitedUser = await this.referralService.getReferralRecord(telegramId);
 
@@ -151,6 +146,11 @@ export class PaymentStatusListener {
         await this.referralService.handleInviterRewardAfterPayment(telegramId);
       }
     }
+
+    return await this.remnaService.updateUser({
+      uuid,
+      expireAt: newExpireAt,
+    });
   }
 
   private async cleanUpTelegramMessage(telegramId: number, messageId?: number | string) {

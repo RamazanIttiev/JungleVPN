@@ -1,3 +1,4 @@
+import { LocalisationService } from '@bot/localisation/localisation.service';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
@@ -6,9 +7,9 @@ import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-meth
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
 import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { ProfileMenuService } from '@bot/navigation/features/profile/profile-menu.service';
-import { RevokeSubMenuService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { ReferralMenu } from '@bot/navigation/features/referral/referral.menu';
 import { ReferralMsgService } from '@bot/navigation/features/referral/referral.service';
+import { RevokeSubMenuService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { SupportMenu } from '@bot/navigation/features/support/support.menu';
@@ -56,6 +57,7 @@ import { MenuTree } from './menu.tree';
     UserService,
     CurrencyService,
     ReferralService,
+    LocalisationService,
   ],
   exports: [
     // MODELS

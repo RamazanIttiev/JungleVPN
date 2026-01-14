@@ -2,19 +2,35 @@ import { BotContext, ClientApp, initialSession, SessionData } from '@bot/bot.typ
 import { User as GrammyUser } from '@grammyjs/types/manage';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
-import { UserDto } from '@user/user.model';
+import { UpdateUserRequestDto, UserDto } from '@user/user.model';
 import { getRedirectUrl } from '@utils/utils';
 
 @Injectable()
 export class UserService {
   constructor(private remnaService: RemnaService) {}
 
-  private validateUser(user: GrammyUser | undefined) {
+  validateUser(user: GrammyUser | undefined) {
     if (!user) {
       throw new Error('User is not found');
     }
 
     return user;
+  }
+
+  async getUserByTgId(id: number): Promise<UserDto | null> {
+    return await this.remnaService.getUserByTgId(id);
+  }
+
+  async createUser(telegramId: number, locale?: string | undefined): Promise<UserDto> {
+    return await this.remnaService.createUser({
+      telegramId,
+      username: telegramId.toString(),
+      description: locale,
+    });
+  }
+
+  async updateUser(body: UpdateUserRequestDto) {
+    await this.remnaService.updateUser(body);
   }
 
   async init(ctx: BotContext): Promise<UserDto> {
@@ -26,11 +42,7 @@ export class UserService {
     const user = await this.remnaService.getUserByTgId(tgUser.id);
 
     if (!user) {
-      const newUser = await this.remnaService.createUser({
-        telegramId: tgUser.id,
-        username: tgUser.id.toString(),
-        description: locale,
-      });
+      const newUser = await this.createUser(tgUser.id, locale);
 
       session.redirectUrl = getRedirectUrl(session.selectedDevice, newUser.subscriptionUrl);
       return newUser;

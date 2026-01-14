@@ -22,6 +22,9 @@ add-link-button-label = Добавить ссылку 🔗
 add-v2raytun-profile-button-label = Добавить в v2raytun 🔗
 add-happ-profile-button-label = Добавить в Happ 🔗
 new-link-button-label = Новая ссылка 🔄
+invite-button-label = Пригласить 🖖
+invite-inline-title = Пригласи друга в JUNGLE 🌴,
+invite-inline-description = Отправь эту карточку другу и получи доп дни в подписку 🙃,
 broadcast-sent-success = ✅ Сообщение отправлено всем пользователям!
 error-menu-outdated = Что-то изменилось, попробуй заново /start
 payment-success = ✅ Оплата прошла успешно! Спасибо за вашу поддержку.
@@ -192,3 +195,58 @@ support-text =
     2️⃣Если не помогло, то удали старую подписку в приложении и сгенерируй новую ссылку (кнопка ниже).
 
     3️⃣Когда уже ничего не помогает, то пиши в поддержку. Возможно просто временные сбои 🥲
+
+
+
+invitation-text =
+    Тебя пригласил в <b>Jungle</b>, <b>{ $username }</b> 🌴
+
+    Jungle — это VPN сервис. Подключайся и пользуйся интернет безопасно ❤️
+
+    ⚡️Неограниченное количество трафика
+    🆓Первые { $trial_period } дней - бесплатно
+
+
+    🌍Доступные страны:
+    ╠ 🇳🇱 Нидерланды
+    ╠ 🇩🇪 Германия
+    ╠ 🇷🇺 Россия
+    ╚ Дальше будет больше...
+
+
+
+user-rewarded-text =
+    { $isNewUser ->
+    [true] Спасибо, что зовешь друзей в <code>JUNGLE</code> 🌴
+
+    Добавил тебе { $inviterStartBonusInDays } день в подписку ♥️
+
+    <b>Теперь твоя подписка закончится <blockquote>{ $formattedDate }</blockquote></b>
+
+    *[false] Активных участников <code>JUNGLE</code> теперь больше благодаря тебе 🦍
+
+    Добавил { $inviterPaidBonusInDays } дней в подписку ♥️
+
+    <b>Теперь твоя подписка закончится <blockquote>{ $formattedDate }</blockquote></b>
+    }
+
+
+referral-page-text =
+    Зови своих друзей в <code>JUNGLE</code> и получай доп дни в подписку 😃
+
+    За каждого приглашенного пользователя получаешь <blockquote>+{ $inviterStartBonusInDays } день</blockquote>
+
+    А если твой друг оплатит, то получишь целых <blockquote>+{ $inviterPaidBonusInDays } дней</blockquote>
+
+    Хорошо звучит, даже? 🫠
+
+
+
+referral-existing-user-text =
+    Ты перешел по реферальной ссылке, но ты уже зарегистрирован в системе 🖖
+
+    Кстати, если ты оплатишь подписку, то твой пригласивший друг получит бонусные дни в подписку ♥️
+
+
+referral-own-user-link-text =
+    Ты перешел по своей же реверальной ссылке. Ты не можешь пргласить самого себя 🥲. Нажми /start

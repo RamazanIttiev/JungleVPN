@@ -15,8 +15,14 @@ export class ReferralMenu extends Base {
   ) {
     super();
 
-    this.menu.switchInline('Пригласить').text('Главное меню 🏠', async (cxt) => {
-      await this.mainMsgService.init(cxt, this.mainMenu.menu);
-    });
+    this.menu
+      .switchInline((ctx) => ctx.t('invite-button-label'))
+      .row()
+      .text(
+        (ctx) => ctx.t('home-button-label'),
+        async (cxt) => {
+          await this.mainMsgService.init(cxt, this.mainMenu.menu);
+        },
+      );
   }
 }
