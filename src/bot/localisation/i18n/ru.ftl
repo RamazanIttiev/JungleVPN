@@ -22,6 +22,7 @@ add-link-button-label = Добавить ссылку 🔗
 add-v2raytun-profile-button-label = Добавить в v2raytun 🔗
 add-happ-profile-button-label = Добавить в Happ 🔗
 new-link-button-label = Новая ссылка 🔄
+referra-button-label = Партнерка 🤝
 invite-button-label = Пригласить 🖖
 invite-inline-title = Пригласи друга в JUNGLE 🌴,
 invite-inline-description = Отправь эту карточку другу и получи доп дни в подписку 🙃,

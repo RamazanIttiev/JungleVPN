@@ -21,6 +21,7 @@ add-link-button-label = Add link 🔗
 add-v2raytun-profile-button-label = Add to v2raytun 🔗
 add-happ-profile-button-label = Add to Happ 🔗
 new-link-button-label = New link 🔄
+referra-button-label = Referral 🤝
 invite-button-label = Invite 🖖
 invite-inline-title = Invite a friend to JUNGLE 🌴
 invite-inline-description = Send this card to a friend and get extra subscription days 🙃
