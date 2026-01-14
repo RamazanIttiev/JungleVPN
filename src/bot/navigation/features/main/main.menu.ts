@@ -5,6 +5,8 @@ import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-pe
 import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { ProfileMenuService } from '@bot/navigation/features/profile/profile-menu.service';
 import { SupportMenu } from '@bot/navigation/features/support/support.menu';
+import { ReferralMenu } from '@bot/navigation/features/referral/referral.menu';
+import { ReferralMsgService } from '@bot/navigation/features/referral/referral.service';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
@@ -21,6 +23,9 @@ export class MainMenu extends Base {
     readonly profileMenu: ProfileMenu,
     readonly profileMenuService: ProfileMenuService,
     readonly supportMenu: SupportMenu,
+    @Inject(forwardRef(() => ReferralMenu))
+    readonly referralMenu: ReferralMenu,
+    readonly referralMsgService: ReferralMsgService,
   ) {
     super();
 
@@ -38,6 +43,9 @@ export class MainMenu extends Base {
         },
       )
       .row()
+      .text('Партнерка 🤝', async (ctx) => {
+        await this.referralMsgService.init(ctx, this.referralMenu.menu);
+      })
       .text(
         (ctx) => ctx.t('profile-button-label'),
         async (ctx) => await this.profileMenuService.init(ctx),

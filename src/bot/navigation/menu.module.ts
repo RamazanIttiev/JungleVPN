@@ -7,6 +7,8 @@ import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-pe
 import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { ProfileMenuService } from '@bot/navigation/features/profile/profile-menu.service';
 import { RevokeSubMenuService } from '@bot/navigation/features/subscription/revokeSub.service';
+import { ReferralMenu } from '@bot/navigation/features/referral/referral.menu';
+import { ReferralMsgService } from '@bot/navigation/features/referral/referral.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { SupportMenu } from '@bot/navigation/features/support/support.menu';
@@ -20,6 +22,8 @@ import { StripeModule } from '@payments/providers/stripe/stripe.module';
 import { YookassaModule } from '@payments/providers/yookassa/yookassa.module';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
+import { Referral } from '../../referral/referral.entity';
+import { ReferralService } from '../../referral/referral.service';
 import { DevicesMenu } from './features/devices/devices.menu';
 import { PaymentMethodMsgService } from './features/payment/payment-method/payment-method.service';
 import { MenuTree } from './menu.tree';
@@ -33,6 +37,7 @@ import { MenuTree } from './menu.tree';
     SubscriptionMsgService,
     PaymentMethodMsgService,
     ProfileMenuService,
+    ReferralMsgService,
     // MENUS
     MenuTree,
     MainMenu,
@@ -43,12 +48,14 @@ import { MenuTree } from './menu.tree';
     PaymentMethodMenu,
     ProfileMenu,
     SupportMenu,
+    ReferralMenu,
     // SERVICES
     RemnaService,
     PaymentsService,
     PaymentProviderFactory,
     UserService,
     CurrencyService,
+    ReferralService,
   ],
   exports: [
     // MODELS
@@ -58,6 +65,7 @@ import { MenuTree } from './menu.tree';
     SubscriptionMsgService,
     PaymentMethodMsgService,
     ProfileMenuService,
+    ReferralMsgService,
     // MENUS
     MenuTree,
     MainMenu,
@@ -68,7 +76,8 @@ import { MenuTree } from './menu.tree';
     PaymentMethodMenu,
     ProfileMenu,
     SupportMenu,
+    ReferralMenu,
   ],
-  imports: [TypeOrmModule.forFeature([Payment]), YookassaModule, StripeModule],
+  imports: [TypeOrmModule.forFeature([Payment, Referral]), YookassaModule, StripeModule],
 })
 export class MenuModule {}

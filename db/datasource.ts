@@ -3,6 +3,7 @@ import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-mes
 import { Payment } from '@payments/payment.entity';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { Referral } from '../src/referral/referral.entity';
 
 config({
   path: ['.env.dev', '.env'],
@@ -16,7 +17,7 @@ export const dataSourceOptions: DataSourceOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  entities: [Payment, Broadcast, BroadcastMessage],
+  entities: [Payment, Broadcast, BroadcastMessage, Referral],
   migrations: ['dist/db/migrations/**/*.js'],
   migrationsRun: true,
   synchronize: process.env.NODE_ENV === 'development',

@@ -9,6 +9,7 @@ import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback'
 import { BroadcastCommand } from '@bot/commands/broadcast/broadcast.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { LocalisationService } from '@bot/localisation/localisation.service';
+import { InlineQueryListener } from '@bot/listeners/inline-query.listener';
 import { MenuTree } from '@bot/navigation/menu.tree';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Bot, GrammyError, HttpError, session } from 'grammy';
@@ -29,6 +30,7 @@ export class BotService implements OnModuleInit {
     private readonly navigateProfileCallback: NavigateProfileCallback,
     private readonly navigatePaymentPeriodsCallback: NavigatePaymentPeriodsCallback,
     private readonly localService: LocalisationService,
+    private readonly inlineQueryListener: InlineQueryListener,
   ) {
     if (!this.token) {
       throw new Error('TELEGRAM_BOT_TOKEN missing');
@@ -55,6 +57,7 @@ export class BotService implements OnModuleInit {
     this.paymentPeriodsCallback.register(this.bot);
     this.navigateProfileCallback.register(this.bot);
     this.navigatePaymentPeriodsCallback.register(this.bot);
+    this.inlineQueryListener.register(this.bot);
 
     this.bot.catch((err) => {
       const e = err.error;

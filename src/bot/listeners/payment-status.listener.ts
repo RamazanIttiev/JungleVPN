@@ -15,6 +15,7 @@ import { UserDto } from '@user/user.model';
 import { safeSendMessage, toDateString } from '@utils/utils';
 import { add } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
+import { ReferralService } from '../../referral/referral.service';
 
 @Injectable()
 export class PaymentStatusListener {
@@ -26,6 +27,7 @@ export class PaymentStatusListener {
     private readonly paymentsService: PaymentsService,
     private readonly remnaService: RemnaService,
     private readonly localService: LocalisationService,
+    private readonly referralService: ReferralService,
   ) {
     this.bot = this.botService.bot;
   }
@@ -131,7 +133,7 @@ export class PaymentStatusListener {
     user: UserDto,
     selectedPeriod: number | string,
   ): Promise<UserDto> {
-    const { uuid, expireAt } = user;
+    const { uuid, expireAt, telegramId } = user;
 
     const newExpireAt = add(expireAt, {
       months: Number(selectedPeriod),
@@ -141,6 +143,14 @@ export class PaymentStatusListener {
       uuid,
       expireAt: newExpireAt,
     });
+
+    if (telegramId) {
+      const invitedUser = await this.referralService.getReferralRecord(telegramId);
+
+      if (invitedUser?.status !== 'COMPLETED') {
+        await this.referralService.handleInviterRewardAfterPayment(telegramId);
+      }
+    }
   }
 
   private async cleanUpTelegramMessage(telegramId: number, messageId?: number | string) {
