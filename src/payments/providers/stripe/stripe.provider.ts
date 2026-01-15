@@ -113,7 +113,7 @@ export class StripeProvider implements AbstractPaymentProvider {
     return newCustomer.id;
   }
 
-  private async getCustomerId(userId: string): Promise<string | null> {
+  async getCustomerId(userId: string): Promise<string | null> {
     const lastPayment = await this.paymentRepository.findOne({
       where: { userId, provider: 'stripe' },
       order: { createdAt: 'DESC' },

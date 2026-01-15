@@ -2,7 +2,6 @@ import { BotContext } from '@bot/bot.types';
 import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { PaymentsService } from '@payments/payments.service';
 import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
 
 @Injectable()
@@ -10,7 +9,6 @@ export class ProfileMenuService extends Base {
   constructor(
     @Inject(forwardRef(() => ProfileMenu))
     readonly profileMenu: ProfileMenu,
-    readonly paymentService: PaymentsService,
     readonly stripeProvider: StripeProvider,
   ) {
     super();
@@ -21,13 +19,13 @@ export class ProfileMenuService extends Base {
     const tgUser = ctx.from;
     if (!tgUser?.id) return;
 
-    const payment = await this.paymentService.findOneByTelegramId(tgUser?.id);
-    const hasActiveSubscription = payment?.stripeCustomerId
-      ? await this.stripeProvider.hasActiveSubscription(payment?.stripeCustomerId)
+    const customerId = await this.stripeProvider.getCustomerId(tgUser.id.toString());
+    const hasActiveSubscription = customerId
+      ? await this.stripeProvider.hasActiveSubscription(customerId)
       : false;
 
-    if (hasActiveSubscription && payment?.stripeCustomerId) {
-      const { url } = await this.stripeProvider.createPortalSession(payment.stripeCustomerId);
+    if (hasActiveSubscription && customerId) {
+      const { url } = await this.stripeProvider.createPortalSession(customerId);
       session.billingPortalUrl = url;
       session.hasActiveSubscription = true;
     }

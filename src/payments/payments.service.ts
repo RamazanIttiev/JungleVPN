@@ -64,11 +64,4 @@ export class PaymentsService {
       order: { createdAt: 'DESC' },
     });
   }
-
-  async findOneByTelegramId(telegramId: number): Promise<IPayment | null> {
-    return this.paymentRepository.findOne({
-      where: { userId: telegramId.toString() },
-      order: { createdAt: 'DESC' },
-    });
-  }
 }
