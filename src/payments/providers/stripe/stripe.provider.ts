@@ -136,16 +136,16 @@ export class StripeProvider implements AbstractPaymentProvider {
     }
   }
 
-  private getPriceId(amount: number): string {
+  private getPriceId(amount: number | string): string {
     let priceId = '';
     switch (amount) {
-      case Number(process.env.PRICE_EUR_MONTH_1):
+      case `${process.env.PRICE_EUR_MONTH_1}`:
         priceId = process.env.STRIPE_PRICE_ID_MONTH_1 || '';
         break;
-      case Number(process.env.PRICE_EUR_MONTH_3):
+      case `${process.env.PRICE_EUR_MONTH_3}`:
         priceId = process.env.STRIPE_PRICE_ID_MONTH_3 || '';
         break;
-      case Number(process.env.PRICE_EUR_MONTH_6):
+      case `${process.env.PRICE_EUR_MONTH_6}`:
         priceId = process.env.STRIPE_PRICE_ID_MONTH_6 || '';
         break;
       default:

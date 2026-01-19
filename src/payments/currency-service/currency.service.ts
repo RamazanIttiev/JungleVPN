@@ -10,7 +10,7 @@ export class CurrencyService {
     period: PaymentPeriod,
     provider: PaymentProvider,
   ): {
-    amount: number;
+    amount: number | string;
     currency: PaymentCurrency;
   } {
     const rub = this.config.get<number>(`PRICE_RUB_${period.toUpperCase()}`);
@@ -22,10 +22,10 @@ export class CurrencyService {
 
     switch (provider) {
       case 'yookassa': {
-        return { amount: Number(rub), currency: 'RUB' };
+        return { amount: rub, currency: 'RUB' };
       }
       default: {
-        return { amount: Number(eur), currency: 'EUR' };
+        return { amount: eur, currency: 'EUR' };
       }
     }
   }

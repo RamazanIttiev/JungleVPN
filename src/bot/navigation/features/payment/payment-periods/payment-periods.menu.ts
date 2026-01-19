@@ -6,8 +6,6 @@ import { Base } from '@bot/navigation/menu.base';
 import { paymentPeriods } from '@bot/utils/constants';
 import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PaymentPeriod } from '@payments/payments.model';
-import { UserLocale } from '@user/user.model';
 import { mapPeriodLabelToPriceLabel } from '@utils/utils';
 
 @Injectable()
@@ -25,19 +23,12 @@ export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
   }
 
   onModuleInit() {
-    this.menu.dynamic((ctx, range) => {
-      const locale = ctx.from?.language_code as UserLocale;
-
+    this.menu.dynamic((_, range) => {
       paymentPeriods.forEach((item) => {
-        const period = item.toUpperCase() as PaymentPeriod;
         range.text(
           (ctx) =>
             ctx.t(mapPeriodLabelToPriceLabel(item), {
-              amount:
-                this.config.get<number>(
-                  locale === 'ru' ? `PRICE_RUB_${period}` : `PRICE_EUR_${period}`,
-                ) || 0,
-              currency: locale === 'ru' ? '₽' : '€',
+              discount: item === 'month_3' ? '-15%' : '-25%',
             }),
 
           async (ctx) => {

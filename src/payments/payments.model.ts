@@ -36,7 +36,7 @@ export interface CreatePaymentDto {
   readonly userId: string;
   readonly payment: {
     readonly provider: PaymentProvider;
-    readonly amount: number;
+    readonly amount: number | string;
     readonly currency: PaymentCurrency;
     readonly description?: string;
   };

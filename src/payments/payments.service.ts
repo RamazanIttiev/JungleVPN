@@ -30,7 +30,7 @@ export class PaymentsService {
         url: session.url,
         stripeCustomerId: session.customer,
         status: 'pending',
-        amount: dto.payment.amount,
+        amount: +dto.payment.amount,
         currency: dto.payment.currency,
         userId: dto.userId,
         provider: provider.id,
