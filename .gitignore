@@ -6,3 +6,4 @@ err.log
 out.log
 pgdata
 postgres-data
+DOCS.md
