@@ -53,8 +53,8 @@ main-text =
 
 
     🌍 Available countries:
-    ╠ 🇳🇱 Netherlands
     ╠ 🇩🇪 Germany
+    ╠ 🇫🇮 Finland
     ╠ 🇷🇺 Russia
     ╚ More coming…
 
@@ -216,8 +216,8 @@ invitation-text =
 
 
     🌍Available locations:
-    ╠ 🇳🇱 Netherlands
     ╠ 🇩🇪 Germany
+    ╠ 🇫🇮 Finland
     ╠ 🇷🇺 Russia
     ╚ More coming soon...
 
