@@ -115,7 +115,7 @@ export class BroadcastCommand {
 
   register(bot: Bot<BotContext>) {
     bot.command('message', async (ctx) => {
-      if (!(await this.isAdmin(ctx.from?.id))) return;
+      if (!this.isAdmin(ctx.from?.id)) return;
 
       const textToSend = this.parseMessageText(ctx.message?.text);
       if (!textToSend) return;
@@ -281,10 +281,8 @@ Success: ${this.successCount}
 Failed: ${this.failureCount}
 
 ✏️To edit: 
-<blockquote>
 <code>/editmsg ${broadcast.id}
 ${broadcast.messageText}</code>
-</blockquote>
 
 🗑️ To delete:
 <blockquote>
@@ -313,6 +311,7 @@ ${errorMessages ? `<b>Errors:</b>\n${errorMessages}` : 'No errors.'}
   }
 
   private parseMessageText(message: string | undefined): string | null {
+    console.log(message);
     if (!message || message.startsWith('/start')) return null;
     const textToSend = message.split('\n').slice(1).join('\n');
     if (!textToSend || textToSend.startsWith('/start')) return null;
