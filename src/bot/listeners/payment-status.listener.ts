@@ -138,7 +138,7 @@ export class PaymentStatusListener {
     if (telegramId) {
       const invitedUser = await this.referralService.getReferralRecord(telegramId);
 
-      if (invitedUser?.status !== 'COMPLETED') {
+      if (invitedUser && invitedUser?.status !== 'COMPLETED') {
         await this.referralService.handleInviterRewardAfterPayment(telegramId);
       }
     }
