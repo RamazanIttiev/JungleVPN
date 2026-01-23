@@ -1,9 +1,10 @@
 import * as process from 'node:process';
-import { BotContext } from '@bot/bot.types';
+import { BotContext, ErrorMessage } from '@bot/bot.types';
 import { PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
 import { Api, Bot, GrammyError, RawApi } from 'grammy';
 import { Other } from 'grammy/out/core/api';
+import { Message } from 'grammy/types';
 
 export const isValidUsername = (username: string | undefined | null): boolean => {
   if (!username) return false;
@@ -96,8 +97,7 @@ export async function safeSendMessage(
   userId: number,
   content: string,
   options?: Other<RawApi, 'sendMessage', 'chat_id' | 'text'> | undefined,
-  onBlocked?: (error: GrammyError) => Promise<void>,
-) {
+): Promise<Message.TextMessage | ErrorMessage> {
   try {
     return await bot.api.sendMessage(userId, content, {
       parse_mode: 'HTML',
@@ -105,12 +105,22 @@ export async function safeSendMessage(
     });
   } catch (err) {
     const error = err as GrammyError;
-    if (error.error_code === 403 && error.description.includes('bot was blocked')) {
-      if (onBlocked) {
-        await onBlocked(error);
-      }
-    }
-    return error;
+    return error.description;
+  }
+}
+
+export async function safeReplyMessage(
+  ctx: BotContext,
+  text: string,
+): Promise<Message.TextMessage | ErrorMessage> {
+  try {
+    return await ctx.reply(text, {
+      parse_mode: 'HTML',
+    });
+  } catch (err) {
+    const error = err as GrammyError;
+    await ctx.reply(error.description);
+    return error.description;
   }
 }
 

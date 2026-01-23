@@ -2,11 +2,11 @@ import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { LocalisationService } from '@bot/localisation/localisation.service';
+import { toDateString } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { UserLocale } from '@user/user.model';
 import { UserService } from '@user/user.service';
-import { toDateString } from '@utils/utils';
 import { Bot } from 'grammy';
 
 @Injectable()

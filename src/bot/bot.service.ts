@@ -6,7 +6,9 @@ import { NavigatePaymentPeriodsCallback } from '@bot/callbacks/navigate-payment-
 import { NavigateProfileCallback } from '@bot/callbacks/navigate-profile.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
-import { BroadcastCommand } from '@bot/commands/broadcast/broadcast.command';
+import { BroadcastDeleteCommand } from '@bot/commands/broadcast/broadcast-delete.command';
+import { BroadcastEditCommand } from '@bot/commands/broadcast/broadcast-edit.command';
+import { BroadcastMessageCommand } from '@bot/commands/broadcast/broadcast-message.command';
 import { StartCommand } from '@bot/commands/start.command';
 import { LocalisationService } from '@bot/localisation/localisation.service';
 import { InlineQueryListener } from '@bot/listeners/inline-query.listener';
@@ -22,7 +24,9 @@ export class BotService implements OnModuleInit {
   constructor(
     private readonly menuTree: MenuTree,
     private readonly startCommand: StartCommand,
-    private readonly broadcastCommand: BroadcastCommand,
+    private readonly broadcastMessageCommand: BroadcastMessageCommand,
+    private readonly broadcastEditCommand: BroadcastEditCommand,
+    private readonly broadcastDeleteCommand: BroadcastDeleteCommand,
     private readonly navigateMainCallback: NavigateMainCallback,
     private readonly navigateDevicesCallback: NavigateDevicesCallback,
     private readonly paymentSuccessCallback: PaymentSuccessCallback,
@@ -49,7 +53,9 @@ export class BotService implements OnModuleInit {
     this.bot.use(menuTree);
 
     this.startCommand.register(this.bot);
-    this.broadcastCommand.register(this.bot);
+    this.broadcastMessageCommand.register(this.bot);
+    this.broadcastEditCommand.register(this.bot);
+    this.broadcastDeleteCommand.register(this.bot);
 
     this.navigateMainCallback.register(this.bot);
     this.navigateDevicesCallback.register(this.bot);

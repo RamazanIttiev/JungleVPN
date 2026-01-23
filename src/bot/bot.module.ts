@@ -4,7 +4,9 @@ import { NavigatePaymentPeriodsCallback } from '@bot/callbacks/navigate-payment-
 import { NavigateProfileCallback } from '@bot/callbacks/navigate-profile.callback';
 import { PaymentPeriodsCallback } from '@bot/callbacks/payment-periods.callback';
 import { PaymentSuccessCallback } from '@bot/callbacks/payment-success.callback';
-import { BroadcastCommand } from '@bot/commands/broadcast/broadcast.command';
+import { BroadcastDeleteCommand } from '@bot/commands/broadcast/broadcast-delete.command';
+import { BroadcastEditCommand } from '@bot/commands/broadcast/broadcast-edit.command';
+import { BroadcastMessageCommand } from '@bot/commands/broadcast/broadcast-message.command';
 import { Broadcast } from '@bot/commands/broadcast/entities/broadcast.entity';
 import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-message.entity';
 import { StartCommand } from '@bot/commands/start.command';
@@ -62,7 +64,9 @@ import { BotService } from './bot.service';
     InlineQueryListener,
     // COMMANDS
     StartCommand,
-    BroadcastCommand,
+    BroadcastMessageCommand,
+    BroadcastEditCommand,
+    BroadcastDeleteCommand,
     // CALLBACKS
     PaymentSuccessCallback,
     PaymentPeriodsCallback,

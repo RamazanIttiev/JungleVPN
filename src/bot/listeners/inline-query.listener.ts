@@ -2,10 +2,10 @@ import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { LocalisationService } from '@bot/localisation/localisation.service';
+import { isValidUsername } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserLocale } from '@user/user.model';
 import { UserService } from '@user/user.service';
-import { isValidUsername } from '@utils/utils';
 import { Bot, InlineKeyboard } from 'grammy';
 import { ReferralService } from '../../referral/referral.service';
 

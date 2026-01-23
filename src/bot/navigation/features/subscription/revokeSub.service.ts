@@ -1,10 +1,10 @@
 import { BotContext } from '@bot/bot.types';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Base } from '@bot/navigation/menu.base';
+import { getRedirectUrl } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { UserService } from '@user/user.service';
-import { getRedirectUrl } from '@utils/utils';
 
 @Injectable()
 export class RevokeSubMenuService extends Base {

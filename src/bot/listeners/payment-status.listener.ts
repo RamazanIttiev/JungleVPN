@@ -2,6 +2,7 @@ import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { LocalisationService } from '@bot/localisation/localisation.service';
+import { safeSendMessage, toDateString } from '@bot/utils/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { IPayment, PaymentMetadata, StripeInvoicePayload } from '@payments/payments.model';
@@ -12,7 +13,6 @@ import {
 } from '@payments/providers/yookassa/yookassa.model';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
-import { safeSendMessage, toDateString } from '@utils/utils';
 import { add } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
 import { ReferralService } from '../../referral/referral.service';

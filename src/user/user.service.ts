@@ -1,9 +1,9 @@
 import { BotContext, ClientApp, initialSession, SessionData } from '@bot/bot.types';
+import { getRedirectUrl } from '@bot/utils/utils';
 import { User as GrammyUser } from '@grammyjs/types/manage';
 import { Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { UpdateUserRequestDto, UserDto } from '@user/user.model';
-import { getRedirectUrl } from '@utils/utils';
 
 @Injectable()
 export class UserService {

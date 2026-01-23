@@ -1,12 +1,12 @@
 import { BotContext } from '@bot/bot.types';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
 import { Base } from '@bot/navigation/menu.base';
+import { mapPeriodToMonthsNumber } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { CurrencyService } from '@payments/currency-service/currency.service';
 import { PaymentProvider } from '@payments/payments.model';
 import { PaymentsService } from '@payments/payments.service';
 import { RemnaService } from '@remna/remna.service';
-import { mapPeriodToMonthsNumber } from '@utils/utils';
 
 @Injectable()
 export class PaymentMethodMsgService extends Base {

@@ -1,9 +1,9 @@
 import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { Base } from '@bot/navigation/menu.base';
+import { mapDeviceLabel, mapToClientAppName } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '@user/user.service';
-import { mapDeviceLabel, mapToClientAppName } from '@utils/utils';
 
 @Injectable()
 export class SubscriptionMsgService extends Base {

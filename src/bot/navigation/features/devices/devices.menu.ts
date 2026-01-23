@@ -6,9 +6,9 @@ import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Base } from '@bot/navigation/menu.base';
+import { mapDeviceLabel } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserDevice } from '@user/user.model';
-import { mapDeviceLabel } from '@utils/utils';
 
 @Injectable()
 export class DevicesMenu extends Base {

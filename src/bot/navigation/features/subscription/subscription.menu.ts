@@ -2,8 +2,8 @@ import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
 import { Base } from '@bot/navigation/menu.base';
+import { getAppUrl } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { getAppUrl } from '@utils/utils';
 
 // TODO add happ client app link
 @Injectable()

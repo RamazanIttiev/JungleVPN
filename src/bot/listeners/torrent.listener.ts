@@ -2,11 +2,11 @@ import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
 import { LocalisationService } from '@bot/localisation/localisation.service';
+import { safeSendMessage } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { RemnaService } from '@remna/remna.service';
 import { UserLocale } from '@user/user.model';
-import { safeSendMessage } from '@utils/utils';
 import { Bot } from 'grammy';
 
 @Injectable()
