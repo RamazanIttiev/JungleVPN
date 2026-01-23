@@ -21,14 +21,18 @@ export class WebhookService {
     signature: string,
     payload: { event: WebHookEvent; data: UserDto; timestamp: string },
   ) {
-    const secret = process.env.REMNA_WEBHOOK_SECRET || '';
-    const expected = crypto
-      .createHmac('sha256', secret)
-      .update(JSON.stringify(payload))
-      .digest('hex');
+    const isProd = process.env.NODE_ENV === 'production';
 
-    if (expected !== signature) {
-      throw new BadRequestException('Invalid signature');
+    if (isProd) {
+      const secret = process.env.REMNA_WEBHOOK_SECRET || '';
+      const expected = crypto
+        .createHmac('sha256', secret)
+        .update(JSON.stringify(payload))
+        .digest('hex');
+
+      if (expected !== signature) {
+        throw new BadRequestException('Invalid signature');
+      }
     }
 
     this.eventEmitter.emit(payload.event, payload);
