@@ -8,9 +8,6 @@ export class Broadcast {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: 'int', nullable: true })
-  adminId: number;
-
   @Column({ type: 'text', nullable: true })
   messageText: string;
 }
