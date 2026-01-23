@@ -26,6 +26,7 @@ export class BroadcastEditCommand extends BroadcastBase {
       if (!this.isAdmin(ctx.from?.id)) return;
 
       const message = ctx.message?.text;
+      const entities = ctx.message?.entities;
       if (!message) return;
 
       const parseResult = this.parseBroadcastId(message, 'editmsg');
@@ -34,8 +35,7 @@ export class BroadcastEditCommand extends BroadcastBase {
         return;
       }
 
-      const parts = message.split('\n');
-      const textToSend = parts.slice(1).join('\n');
+      const textToSend = this.parseMessageText(message, entities, '/editmsg');
 
       if (!textToSend || textToSend.startsWith('/start')) {
         await ctx.reply('❌ No message text provided.');
@@ -48,6 +48,10 @@ export class BroadcastEditCommand extends BroadcastBase {
       const { broadcast, messages } = result;
 
       await this.editBroadcastMessages(bot, messages, textToSend);
+
+      // Update the broadcast text in the database
+      broadcast.messageText = textToSend;
+      await this.broadcastRepo.save(broadcast);
 
       const errorMessagesText = this.mapErrorMessages(this.errorMessages);
       const reply = this.getBroadcastMessage(broadcast, errorMessagesText);
@@ -65,12 +69,7 @@ export class BroadcastEditCommand extends BroadcastBase {
       messages,
       async (msg) => {
         // Try editing as caption first (for photo messages)
-        let result = await safeEditMessageCaption(
-          bot,
-          msg.telegramId,
-          msg.messageId,
-          textToEdit,
-        );
+        let result = await safeEditMessageCaption(bot, msg.telegramId, msg.messageId, textToEdit);
 
         // If caption edit fails (likely text-only message), try editing as text
         if (result !== true && 'error_code' in result) {
@@ -95,9 +94,11 @@ Broadcast ID: ${broadcast.id}
 Success: ${this.successCount}
 Failed: ${this.failureCount}
 
-✏️To edit: 
+✏️To edit:
+<blockquote>
 <code>/editmsg ${broadcast.id}
 ${broadcast.messageText}</code>
+</blockquote>
 
 🗑️ To delete:
 <blockquote>

@@ -3,6 +3,7 @@ import { BotContext } from '@bot/bot.types';
 import { Broadcast } from '@bot/commands/broadcast/entities/broadcast.entity';
 import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-message.entity';
 import { PROD } from '@bot/utils/constants';
+import { convertEntitiesToHtml } from '@bot/utils/utils';
 import { Logger } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { mockBroadcastUserDto, UserDto } from '@user/user.model';
@@ -107,6 +108,37 @@ export abstract class BroadcastBase {
 
   protected mapErrorMessages(errorMessages?: string[]): string | null {
     return errorMessages && errorMessages.length > 0 ? errorMessages.join('\n') : null;
+  }
+
+  protected parseMessageText(
+    message: string | undefined,
+    entities?: any[],
+    commandPrefix?: string,
+  ): string | null {
+    if (!message || message.startsWith('/start')) return null;
+
+    // Check if message starts with expected command prefix
+    if (commandPrefix && !message.startsWith(commandPrefix)) return null;
+
+    const lines = message.split('\n');
+    const textLines = lines.slice(1);
+    const textToSend = textLines.join('\n');
+    if (!textToSend || textToSend.startsWith('/start')) return null;
+
+    // Convert entities to HTML, adjusting offset for removed first line
+    if (entities && entities.length > 0) {
+      const firstLineLength = lines[0].length + 1; // +1 for newline
+      const adjustedEntities = entities
+        .map((entity) => ({
+          ...entity,
+          offset: entity.offset - firstLineLength,
+        }))
+        .filter((entity) => entity.offset >= 0); // Only keep entities after first line
+
+      return convertEntitiesToHtml(textToSend, adjustedEntities);
+    }
+
+    return textToSend;
   }
 
   protected resetState() {

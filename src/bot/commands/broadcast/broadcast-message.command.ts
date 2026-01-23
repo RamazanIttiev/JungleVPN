@@ -35,9 +35,10 @@ export class BroadcastMessageCommand extends BroadcastBase {
     const imageFileId = photo ? photo[photo.length - 1].file_id : undefined;
 
     // Parse text from message or caption
-    const textToSend = this.parseMessageText(
-      imageFileId ? ctx.message?.caption : ctx.message?.text,
-    );
+    const rawText = imageFileId ? ctx.message?.caption : ctx.message?.text;
+    const entities = imageFileId ? ctx.message?.caption_entities : ctx.message?.entities;
+    const textToSend = this.parseMessageText(rawText, entities, '/message');
+
     if (!textToSend) return;
 
     const validUsers = await this.getValidUsers();
@@ -87,13 +88,6 @@ export class BroadcastMessageCommand extends BroadcastBase {
       },
       'broadcast',
     );
-  }
-
-  private parseMessageText(message: string | undefined): string | null {
-    if (!message || message.startsWith('/start') || !message.startsWith('/message')) return null;
-    const textToSend = message.split('\n').slice(1).join('\n');
-    if (!textToSend || textToSend.startsWith('/start')) return null;
-    return textToSend;
   }
 
   private getBroadcastMessage(broadcast: Broadcast, errorMessages?: string | null): string {

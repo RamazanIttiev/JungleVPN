@@ -4,7 +4,7 @@ import { PaymentPeriod } from '@payments/payments.model';
 import { UserDevice } from '@user/user.model';
 import { Api, Bot, GrammyError, RawApi } from 'grammy';
 import { Other } from 'grammy/out/core/api';
-import { Message } from 'grammy/types';
+import { Message, MessageEntity } from 'grammy/types';
 
 export const isValidUsername = (username: string | undefined | null): boolean => {
   if (!username) return false;
@@ -180,6 +180,74 @@ export async function safeEditMessageCaption(
   } catch (err) {
     return err as GrammyError;
   }
+}
+
+/**
+ * Converts Telegram message entities to HTML markup
+ * Supports: bold, italic, underline, strikethrough, code, pre, text_link, blockquote, expandable_blockquote
+ */
+export function convertEntitiesToHtml(text: string, entities?: MessageEntity[]): string {
+  if (!entities || entities.length === 0) return text;
+
+  // Sort entities by offset in reverse order to avoid offset shifts
+  const sortedEntities = [...entities].sort((a, b) => b.offset - a.offset);
+
+  let result = text;
+
+  for (const entity of sortedEntities) {
+    const start = entity.offset;
+    const end = entity.offset + entity.length;
+    const entityText = text.substring(start, end);
+
+    let replacement = entityText;
+
+    switch (entity.type) {
+      case 'bold':
+        replacement = `<b>${entityText}</b>`;
+        break;
+      case 'italic':
+        replacement = `<i>${entityText}</i>`;
+        break;
+      case 'underline':
+        replacement = `<u>${entityText}</u>`;
+        break;
+      case 'strikethrough':
+        replacement = `<s>${entityText}</s>`;
+        break;
+      case 'code':
+        replacement = `<code>${entityText}</code>`;
+        break;
+      case 'pre':
+        if ('language' in entity && entity.language) {
+          replacement = `<pre><code class="language-${entity.language}">${entityText}</code></pre>`;
+        } else {
+          replacement = `<pre>${entityText}</pre>`;
+        }
+        break;
+      case 'text_link':
+        if ('url' in entity) {
+          replacement = `<a href="${entity.url}">${entityText}</a>`;
+        }
+        break;
+      case 'blockquote':
+        replacement = `<blockquote>${entityText}</blockquote>`;
+        break;
+      case 'expandable_blockquote':
+        replacement = `<blockquote expandable>${entityText}</blockquote>`;
+        break;
+      case 'spoiler':
+        replacement = `<tg-spoiler>${entityText}</tg-spoiler>`;
+        break;
+      // Add more entity types as needed
+      default:
+        // Keep original text for unsupported types
+        replacement = entityText;
+    }
+
+    result = result.substring(0, start) + replacement + result.substring(end);
+  }
+
+  return result;
 }
 
 export const getAppUrl = (device: UserDevice | undefined): string | undefined => {
