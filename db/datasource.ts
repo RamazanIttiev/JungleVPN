@@ -1,5 +1,6 @@
 import { Broadcast } from '@bot/commands/broadcast/entities/broadcast.entity';
 import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-message.entity';
+import { DEV } from '@bot/utils/constants';
 import { Payment } from '@payments/payment.entity';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -20,8 +21,8 @@ export const dataSourceOptions: DataSourceOptions = {
   entities: [Payment, Broadcast, BroadcastMessage, Referral],
   migrations: ['dist/db/migrations/**/*.js'],
   migrationsRun: true,
-  synchronize: process.env.NODE_ENV === 'development',
-  logging: process.env.NODE_ENV === 'development',
+  synchronize: process.env.NODE_ENV === DEV,
+  logging: process.env.NODE_ENV === DEV,
   autoLoadEntities: true,
 };
 
