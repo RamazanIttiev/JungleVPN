@@ -143,6 +143,45 @@ export async function safeEditMessage(
   }
 }
 
+export async function safeSendPhoto(
+  bot: Bot<BotContext, Api<RawApi>>,
+  userId: number,
+  photo: string,
+  caption?: string,
+  options?: Other<RawApi, 'sendPhoto', 'chat_id' | 'photo'> | undefined,
+): Promise<Message.PhotoMessage | ErrorMessage> {
+  try {
+    return await bot.api.sendPhoto(userId, photo, {
+      caption,
+      parse_mode: 'HTML',
+      ...options,
+    });
+  } catch (err) {
+    const error = err as GrammyError;
+    return error.description;
+  }
+}
+
+export async function safeEditMessageCaption(
+  bot: Bot<BotContext, Api<RawApi>>,
+  userId: number | string,
+  messageId: number,
+  caption: string,
+  options?:
+    | Other<RawApi, 'editMessageCaption', 'chat_id' | 'message_id' | 'inline_message_id'>
+    | undefined,
+) {
+  try {
+    return await bot.api.editMessageCaption(Number(userId), messageId, {
+      caption,
+      parse_mode: 'HTML',
+      ...options,
+    });
+  } catch (err) {
+    return err as GrammyError;
+  }
+}
+
 export const getAppUrl = (device: UserDevice | undefined): string | undefined => {
   switch (device) {
     case 'ios':

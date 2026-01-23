@@ -2,7 +2,7 @@ import { BotContext } from '@bot/bot.types';
 import { BroadcastBase } from '@bot/commands/broadcast/broadcast.base';
 import { Broadcast } from '@bot/commands/broadcast/entities/broadcast.entity';
 import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-message.entity';
-import { safeReplyMessage, safeSendMessage } from '@bot/utils/utils';
+import { safeReplyMessage, safeSendMessage, safeSendPhoto } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RemnaService } from '@remna/remna.service';
@@ -23,40 +23,53 @@ export class BroadcastMessageCommand extends BroadcastBase {
   }
 
   register(bot: Bot<BotContext>) {
-    bot.command('message', async (ctx) => {
-      if (!this.isAdmin(ctx.from?.id)) return;
-
-      const textToSend = this.parseMessageText(ctx.message?.text);
-      if (!textToSend) return;
-
-      const validUsers = await this.getValidUsers();
-
-      const broadcast = this.broadcastRepo.create({
-        messageText: textToSend,
-      });
-      await this.broadcastRepo.save(broadcast);
-
-      await ctx.reply('🚀 Starting broadcast...');
-      await this.sendBroadcastToUsers(bot, validUsers, textToSend, broadcast);
-
-      const errorMessagesText = this.mapErrorMessages(this.errorMessages);
-      const resultMessage = this.getBroadcastMessage(broadcast, errorMessagesText);
-
-      await safeReplyMessage(ctx, resultMessage);
-      this.resetState();
-    });
+    bot.on('message:photo', (ctx) => this.proccessMessage(ctx, bot));
+    bot.command('message', (ctx) => this.proccessMessage(ctx, bot));
   }
+
+  private proccessMessage = async (ctx: BotContext, bot: Bot<BotContext>) => {
+    if (!this.isAdmin(ctx.from?.id)) return;
+
+    // Check if message has a photo
+    const photo = ctx.message?.photo;
+    const imageFileId = photo ? photo[photo.length - 1].file_id : undefined;
+
+    // Parse text from message or caption
+    const textToSend = this.parseMessageText(
+      imageFileId ? ctx.message?.caption : ctx.message?.text,
+    );
+    if (!textToSend) return;
+
+    const validUsers = await this.getValidUsers();
+
+    const broadcast = this.broadcastRepo.create({
+      messageText: textToSend,
+    });
+    await this.broadcastRepo.save(broadcast);
+
+    await ctx.reply('🚀 Starting broadcast...');
+    await this.sendBroadcastToUsers(bot, validUsers, textToSend, broadcast, imageFileId);
+
+    const errorMessagesText = this.mapErrorMessages(this.errorMessages);
+    const resultMessage = this.getBroadcastMessage(broadcast, errorMessagesText);
+
+    await safeReplyMessage(ctx, resultMessage);
+    this.resetState();
+  };
 
   private async sendBroadcastToUsers(
     bot: Bot<BotContext>,
     users: UserDto[],
     textToSend: string,
     broadcast: Broadcast,
+    imageFileId?: string,
   ) {
     await this.processBatch(
       users,
       async (user) => {
-        const result = await safeSendMessage(bot, user.telegramId || 0, textToSend);
+        const result = imageFileId
+          ? await safeSendPhoto(bot, user.telegramId || 0, imageFileId, textToSend)
+          : await safeSendMessage(bot, user.telegramId || 0, textToSend);
 
         const isError = typeof result === 'string';
 
@@ -77,7 +90,7 @@ export class BroadcastMessageCommand extends BroadcastBase {
   }
 
   private parseMessageText(message: string | undefined): string | null {
-    if (!message || message.startsWith('/start')) return null;
+    if (!message || message.startsWith('/start') || !message.startsWith('/message')) return null;
     const textToSend = message.split('\n').slice(1).join('\n');
     if (!textToSend || textToSend.startsWith('/start')) return null;
     return textToSend;
