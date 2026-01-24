@@ -125,20 +125,19 @@ user-not-connected-72 =
 
 expired-subscription-text =
     { $daysLeft ->
-    [1] <b>Your subscription expires <blockquote>{ $formattedDate }</blockquote></b>
+    [0] Your subscription has expired 🥲
 
-    This is already in <b>{ $daysLeftLabel }</b> 😨
+    To continue using the VPN please renew your subscription
 
-    To keep using the VPN, renew your subscription
-    *[other] Jungle reminds you:
+    With love, Jungle 🌴
 
-    <b>Your subscription expires <blockquote>{ $formattedDate }</blockquote></b>
+    *[other] Your subscription expires in <b>{ $daysLeftLabel }</b> 🥲
 
-    Only <b>{ $daysLeftLabel }</b> left
+    End date is
+    <blockquote>{ $formattedDate }</blockquote>
+
+    With love, Jungle 🌴
     }
-
-
-
 
 torrent-warning-text =
     Warning!

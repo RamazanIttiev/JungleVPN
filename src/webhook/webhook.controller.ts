@@ -1,10 +1,7 @@
 import * as process from 'node:process';
-import { Body, Controller, Headers, Logger, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PaymentsService } from '@payments/payments.service';
+import { Body, Controller, Headers, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
 import { StripeProvider } from '@payments/providers/stripe/stripe.provider';
 import { YookassaWebhookPayload } from '@payments/providers/yookassa/yookassa.model';
-import { YooKassaProvider } from '@payments/providers/yookassa/yookassa.provider';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
 import { Response } from 'express';
@@ -12,14 +9,9 @@ import { WebhookService } from './webhook.service';
 
 @Controller('webhook')
 export class WebhookController {
-  logger = new Logger('WebhookController');
-
   constructor(
-    private readonly eventEmitter: EventEmitter2,
     private readonly webhookService: WebhookService,
-    private readonly paymentsService: PaymentsService,
     private readonly stripeProvider: StripeProvider,
-    private readonly yooKassaProvider: YooKassaProvider,
   ) {}
 
   @Post('remna')

@@ -113,18 +113,21 @@ subscription-text =
 
 expired-subscription-text =
     { $daysLeft ->
-    [1] <b>Твоя подписка закончится <blockquote>{ $formattedDate }</blockquote></b>
-
-    Это уже через <b>{ $daysLeftLabel }</b> 😨
+    [0] <b>Твоя подписка закончилась 🥲</b>
 
     Чтобы продолжить пользоваться VPN, продли подписку
-    *[other] Jungle напоминает:
 
-    <b>Твоя подписка закончится <blockquote>{ $formattedDate }</blockquote></b>
+    С любовью, Jungle 🌴
 
-    Осталось всего <b>{ $daysLeftLabel }</b>
+    *[other] <b>Твоя подписка закончится через <b>{ $daysLeftLabel }</b> 🥲
+
+    Будет работать до
+    <blockquote>{ $formattedDate }</blockquote></b>
+
+    Чтобы продолжить пользоваться VPN продли подписку
+
+    С любовью, Jungle 🌴
     }
-
 
 
 user-not-connected-24 =
