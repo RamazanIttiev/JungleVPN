@@ -122,22 +122,31 @@ user-not-connected-72 =
     Let me help you, it will take less then a minute 🙂
 
 
-
-expired-subscription-text =
-    { $daysLeft ->
-    [0] Your subscription has expired 🥲
-
-    To continue using the VPN please renew your subscription
-
-    With love, Jungle 🌴
-
-    *[other] Your subscription expires in <b>{ $daysLeftLabel }</b> 🥲
+expires-in-24-hours-subscription-text =
+    Your subscription expires in <b>1 day</b> 🥲
 
     End date is
     <blockquote>{ $formattedDate }</blockquote>
 
+    Jungle 🌴
+
+
+expired-subscription-text =
+    Your subscription has expired 🥲
+
+    You can pay using both Russian and international payment methods 🌍
+
     With love, Jungle 🌴
-    }
+
+
+expired-24-hours-ago-subscription-text =
+    Your subscription expired 24 hours ago 🥲
+
+    If you had any issues with renewing, contact support, I'll help you 🙂
+
+    Your Jungle  🌴
+
+
 
 torrent-warning-text =
     Warning!

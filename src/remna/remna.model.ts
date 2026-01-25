@@ -5,7 +5,9 @@ export interface RemnaResponse<Data> {
 }
 
 export type WebHookEvent =
+  | 'user.expired'
   | 'user.expires_in_24_hours'
   | 'user.expires_in_48_hours'
   | 'user.expires_in_72_hours'
+  | 'user.expired_24_hours_ago'
   | YookassaNotificationEvent;

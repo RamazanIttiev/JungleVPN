@@ -9,7 +9,6 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
 import { UserDto } from '@user/user.model';
 import { AxiosError } from 'axios';
-import { differenceInCalendarDays } from 'date-fns';
 import { Bot, InlineKeyboard } from 'grammy';
 
 @Injectable()
@@ -23,25 +22,34 @@ export class UserExpireListener {
     this.bot = this.botService.bot;
   }
 
-  @OnEvent('user.expired')
-  async listenToUserExpiresEvent(payload: {
-    event: WebHookEvent;
-    data: UserDto;
-    timestamp: string;
-  }) {
-    await this.handleUserExpiresEvent(payload);
-  }
-
   @OnEvent('user.expires_in_24_hours')
   async listenToUser24ExpiresEvent(payload: {
     event: WebHookEvent;
     data: UserDto;
     timestamp: string;
   }) {
-    await this.handleUserExpiresEvent(payload);
+    await this.handleUserExpireEvent(payload);
   }
 
-  async handleUserExpiresEvent(payload: { event: WebHookEvent; data: UserDto; timestamp: string }) {
+  @OnEvent('user.expired')
+  async listenToUserExpiresEvent(payload: {
+    event: WebHookEvent;
+    data: UserDto;
+    timestamp: string;
+  }) {
+    await this.handleUserExpireEvent(payload);
+  }
+
+  @OnEvent('user.expired_24_hours_ago')
+  async listenToUserExpires24Event(payload: {
+    event: WebHookEvent;
+    data: UserDto;
+    timestamp: string;
+  }) {
+    await this.handleUserExpireEvent(payload);
+  }
+
+  async handleUserExpireEvent(payload: { event: WebHookEvent; data: UserDto; timestamp: string }) {
     const telegramId = payload.data.telegramId;
     if (!telegramId) {
       throw new AxiosError('UserNotConnectedListener: telegramId is null');
@@ -60,22 +68,31 @@ export class UserExpireListener {
       );
       keyboard.row();
     });
-
     keyboard.text(this.localService.i18n.t(locale, 'home-button-label'), 'navigate_main');
 
     const formattedDate = toDateString(payload.data.expireAt);
-    const daysLeft = differenceInCalendarDays(new Date(payload.data.expireAt), Date.now());
-    const daysLeftLabel = this.localService.i18n.t(locale, 'days-left-label', { daysLeft });
+    const translationKey = this.getTranslationKey(payload.event);
 
-    const text = this.localService.i18n.t(locale, 'expired-subscription-text', {
-      daysLeft,
+    const text = this.localService.i18n.t(locale, translationKey, {
       formattedDate,
-      daysLeftLabel,
     });
 
     await safeSendMessage(this.bot, telegramId, text, {
       parse_mode: 'HTML',
       reply_markup: keyboard,
     });
+  }
+
+  getTranslationKey(event: WebHookEvent) {
+    switch (event) {
+      case 'user.expired':
+        return 'expired-subscription-text';
+      case 'user.expires_in_24_hours':
+        return 'expires-in-24-hours-subscription-text';
+      case 'user.expired_24_hours_ago':
+        return 'expired-24-hours-ago-subscription-text';
+      default:
+        return 'expired-subscription-text';
+    }
   }
 }

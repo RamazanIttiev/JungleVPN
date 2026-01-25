@@ -36,13 +36,6 @@ period-month_1 = 1 месяц
 period-month_3 = 3 месяца
 period-month_6 = 6 месяцев
 
-days-left-label = { $daysLeft ->
-    [one] { $daysLeft } день
-    [few] { $daysLeft } дня
-    *[many] { $daysLeft } дней
-  }
-
-
 main-text =
     🌴 Добро пожаловать в <b>Jungle</b>, <b>{ $username }</b>!
 
@@ -111,23 +104,31 @@ subscription-text =
     <b>Вот ссылка, если у тебя уже есть приложение</b>
 
 
-expired-subscription-text =
-    { $daysLeft ->
-    [0] <b>Твоя подписка закончилась 🥲</b>
-
-    Чтобы продолжить пользоваться VPN, продли подписку
-
-    С любовью, Jungle 🌴
-
-    *[other] <b>Твоя подписка закончится через <b>{ $daysLeftLabel }</b> 🥲
+expires-in-24-hours-subscription-text =
+    <b>Твоя подписка закончится через <b>1 день</b> 🥲
 
     Будет работать до
     <blockquote>{ $formattedDate }</blockquote></b>
 
     Чтобы продолжить пользоваться VPN продли подписку
 
+    Jungle 🌴
+
+
+expired-subscription-text =
+    <b>Ну вот, твоя подписка закончилась 🥲</b>
+
+    Оплатить можно как российскими, так и международными способами 🌍
+
     С любовью, Jungle 🌴
-    }
+
+
+expired-24-hours-ago-subscription-text =
+    <b>Твоя подписка закончилась 24 часа назад 🥲</b>
+
+    Если возникли проблемы с продлением, напиши в поддержку, я помогу 🙂
+
+    Твой Jungle  🌴
 
 
 user-not-connected-24 =
