@@ -7,7 +7,7 @@ export class Referral {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'bigint', unique: true })
+  @Column({ type: 'bigint', unique: false })
   inviterId: number;
 
   @Column({ type: 'bigint', unique: true })
