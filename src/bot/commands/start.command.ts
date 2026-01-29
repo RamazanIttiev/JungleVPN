@@ -23,16 +23,6 @@ export class StartCommand {
 
       const payload = ctx.match;
 
-      if (payload?.startsWith('ad_')) {
-        const channel = payload.slice(3);
-
-        await this.analyticsService.addData({
-          channel,
-          userId: ctx.from?.id,
-          dateAndTime: toDateString(new Date().toISOString(), true),
-        });
-      }
-
       if (payload?.startsWith('ref_')) {
         const code = payload.replace('ref_', '');
         const inviterId = decodeReferralCode(code);
@@ -45,6 +35,16 @@ export class StartCommand {
 
       ctx.session.user = initialSession().user;
       await this.mainMsgService.init(ctx, this.mainMenu.menu);
+
+      if (payload?.startsWith('ad_')) {
+        const channel = payload.slice(3);
+
+        await this.analyticsService.addData({
+          channel,
+          userId: ctx.from?.id,
+          dateAndTime: toDateString(new Date().toISOString(), true),
+        });
+      }
     });
   }
 }

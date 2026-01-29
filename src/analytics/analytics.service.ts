@@ -1,17 +1,16 @@
-import * as fs from 'node:fs';
 import * as process from 'node:process';
 import { Injectable } from '@nestjs/common';
 import { google } from 'googleapis';
 import { Advertisement } from './analytics.model';
 
 const scopes = ['https://www.googleapis.com/auth/spreadsheets'];
-const credentials = JSON.parse(fs.readFileSync('credentials.json', 'utf8'));
 
 @Injectable()
 export class AnalyticsService {
   async addData(data: Advertisement) {
-    const auth = new google.auth.GoogleAuth({
-      credentials,
+    const auth = new google.auth.JWT({
+      key: process.env.GOOGLE_API_KEY,
+      email: process.env.GOOGLE_EMAIL,
       scopes,
     });
 
