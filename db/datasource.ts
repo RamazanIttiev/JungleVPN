@@ -1,8 +1,14 @@
+import { Broadcast } from '@bot/commands/broadcast/entities/broadcast.entity';
+import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-message.entity';
+import { DEV } from '@bot/utils/constants';
 import { Payment } from '@payments/payment.entity';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { Referral } from '../src/referral/referral.entity';
 
-config();
+config({
+  path: ['.env.dev', '.env'],
+});
 
 export const dataSourceOptions: DataSourceOptions = {
   // @ts-expect-error
@@ -12,11 +18,11 @@ export const dataSourceOptions: DataSourceOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  entities: [Payment],
+  entities: [Payment, Broadcast, BroadcastMessage, Referral],
   migrations: ['dist/db/migrations/**/*.js'],
-  migrationsRun: process.env.NODE_ENV === 'production',
-  synchronize: process.env.NODE_ENV === 'development',
-  logging: process.env.ENV === 'development',
+  migrationsRun: true,
+  synchronize: process.env.NODE_ENV === DEV,
+  logging: process.env.NODE_ENV === DEV,
   autoLoadEntities: true,
 };
 

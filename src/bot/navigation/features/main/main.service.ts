@@ -1,8 +1,7 @@
 import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { Base } from '@bot/navigation/menu.base';
-import { getMainPageContent } from '@bot/utils/templates';
-import { toDateString } from '@bot/utils/utils';
+import { isValidUsername, toDateString } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '@user/user.service';
 
@@ -12,21 +11,22 @@ export class MainMsgService extends Base {
     super();
   }
 
-  async init(ctx: BotContext, menu: Menu) {
-    const session = ctx.session;
+  async init(ctx: BotContext, menu: Menu, deleteOldMsg?: boolean) {
+    const user = await this.userService.init(ctx);
 
-    if (!session.user.uuid) {
-      await this.userService.init(ctx);
-    }
+    const isExpired = this.isExpired(user.expireAt);
 
-    const isExpired = this.isExpired(session.user.expireAt);
+    const username = isValidUsername(ctx.from?.username)
+      ? ctx.from?.username
+      : ctx.t('dear-friend');
 
-    const content = getMainPageContent({
-      username: session.user.username!,
-      isExpired,
-      validUntil: toDateString(session.user.expireAt!),
+    const content = ctx.t('main-text', {
+      username: username!,
+      expireAt: toDateString(user.expireAt),
+      isExpired: isExpired ? 'true' : 'false',
+      trial_period: Number(process.env.TRIAL_PERIOD_IN_DAYS),
     });
 
-    await this.render(ctx, content, menu);
+    await this.render(ctx, content, menu, deleteOldMsg);
   }
 }

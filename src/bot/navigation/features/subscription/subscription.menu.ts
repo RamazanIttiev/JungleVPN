@@ -1,39 +1,42 @@
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
-import { RevokeSubMsgService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { Base } from '@bot/navigation/menu.base';
-import { getAppLink } from '@bot/utils/templates';
+import { getAppUrl } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
+// TODO add happ client app link
 @Injectable()
 export class SubscriptionMenu extends Base {
   menu = new Menu('subscription-menu');
   constructor(
     readonly mainMsgService: MainMsgService,
-    @Inject(forwardRef(() => RevokeSubMsgService))
-    readonly revokeSubMsgService: RevokeSubMsgService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
   ) {
     super();
 
     this.menu
-      .url('🔽 Скачать', (ctx) => {
-        const link = getAppLink(ctx.session.selectedDevice);
-        return link || 'https://example.com/fallback';
-      })
-      .url('🔗 Добавить профиль', (ctx) => {
-        const link = ctx.session.redirectUrl;
-        return link || 'https://example.com';
-      })
+      .url(
+        (ctx) => ctx.t('download-button-label'),
+        (ctx) => {
+          const link = getAppUrl(ctx.session.selectedDevice);
+          return link || 'https://example.com/fallback';
+        },
+      )
+      .url(
+        (ctx) => ctx.t('add-link-button-label'),
+        (ctx) => {
+          const link = ctx.session.redirectUrl;
+          return link || 'https://example.com';
+        },
+      )
       .row()
-      .text('🔄 Новая ссылка', async (ctx) => {
-        await this.revokeSubMsgService.init(ctx);
-      })
-      .row()
-      .text('Главное меню', async (ctx) => {
-        await this.mainMsgService.init(ctx, this.mainMenu.menu);
-      });
+      .text(
+        (ctx) => ctx.t('home-button-label'),
+        async (ctx) => {
+          await this.mainMsgService.init(ctx, this.mainMenu.menu);
+        },
+      );
   }
 }

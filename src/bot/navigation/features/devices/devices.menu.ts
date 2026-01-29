@@ -1,4 +1,5 @@
-import { BotContext, UserDevice } from '@bot/bot.types';
+import * as process from 'node:process';
+import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
@@ -7,12 +8,13 @@ import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscrip
 import { Base } from '@bot/navigation/menu.base';
 import { mapDeviceLabel } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { UserDevice } from '@user/user.model';
 
 @Injectable()
 export class DevicesMenu extends Base {
   readonly menu = new Menu('devices-menu');
   private devices: UserDevice[] = JSON.parse(
-    process.env.USER_DEVICES || '["ios","android","macOS","windows"]',
+    process.env.CLIENT_DEVICES || '["ios","android","macOS","windows"]',
   );
 
   constructor(
@@ -32,7 +34,7 @@ export class DevicesMenu extends Base {
       });
 
       range.row();
-      range.text({ text: '⤴ Назад' }, async (ctx) => {
+      range.text({ text: (ctx) => ctx.t('back-button-label') }, async (ctx) => {
         await this.mainMsgService.init(ctx, this.mainMenu.menu);
       });
     });

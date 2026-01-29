@@ -1,7 +1,5 @@
 import { Menu } from '@bot/navigation';
-import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
-import { PaymentStatusMsgService } from '@bot/navigation/features/payment/paymentStatus.service';
+import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 
@@ -10,28 +8,25 @@ export class PaymentMenu extends Base implements OnModuleInit {
   menu = new Menu('payment-menu');
 
   constructor(
-    readonly paymentStatusMsgService: PaymentStatusMsgService,
-    readonly mainMsgService: MainMsgService,
-    @Inject(forwardRef(() => MainMenu))
-    readonly mainMenu: MainMenu,
+    @Inject(forwardRef(() => PaymentMethodMenu))
+    readonly paymentMethodMenu: PaymentMethodMenu,
   ) {
     super();
   }
 
   onModuleInit() {
     this.menu
-      .dynamic(async (ctx, range) => {
-        const paymentUrl = ctx.session.paymentUrl;
-        if (paymentUrl) {
-          range.url('💳 Оплатить подписку', paymentUrl);
-        }
-      })
-      .text('Я оплатил ✅', async (ctx) => {
-        await this.paymentStatusMsgService.init(ctx);
-      })
+      .url(
+        (ctx) => ctx.t('pay-button-label'),
+        (ctx) => {
+          return ctx.session.paymentUrl || 'https://example.com';
+        },
+      )
       .row()
-      .text('Главное меню', async (ctx) => {
-        await this.mainMsgService.init(ctx, this.mainMenu.menu);
-      });
+      .text(
+        (ctx) => ctx.t('back-button-label'),
+        async (ctx) =>
+          await this.render(ctx, ctx.t('payment-methods-text'), this.paymentMethodMenu.menu),
+      );
   }
 }

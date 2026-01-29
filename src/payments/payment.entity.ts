@@ -1,45 +1,44 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
-export type PaymentProvider = 'yookassa';
-export type PaymentStatus = 'pending' | 'succeeded';
+import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { PaymentCurrency, PaymentProvider, PaymentStatus } from './payments.model';
 
 @Entity('payments')
 export class Payment {
   @PrimaryColumn()
   id: string;
 
-  @Column({ nullable: true })
-  userId: string;
+  @Column({ nullable: true, type: 'varchar' })
+  userId: string | null;
+
+  @Column({ nullable: true, type: 'varchar' })
+  stripeCustomerId: string | null;
+
+  @Column({ nullable: true, type: 'varchar' })
+  stripeSubscriptionId: string | null;
 
   @Column({ type: 'varchar' })
   provider: PaymentProvider;
 
-  @Column()
-  amount: string;
+  @Column({ type: 'int', nullable: true })
+  amount: number | null;
 
-  @Column()
-  currency: string;
+  @Column({ type: 'varchar', nullable: true })
+  currency: PaymentCurrency | null;
 
-  @Column({ default: 'pending', type: 'varchar' })
+  @Column({ type: 'varchar', default: 'pending' })
   status: PaymentStatus;
 
-  @CreateDateColumn()
+  @Column({ type: 'varchar', nullable: true })
+  url: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  invoiceUrl: string | null;
+
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @CreateDateColumn()
-  paidAt: Date;
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
 
-  @Column({ nullable: true })
-  url: string;
+  @Column({ type: 'timestamptz', nullable: true })
+  paidAt: Date | null;
 }
-
-// export class Invoice {
-//   @Column() chatId: number;
-//   @Column() title: string;
-//   @Column() description: string;
-//   @Column() payload: string;
-//   @Column() provider_token: string;
-//   @Column({ length: 3, default: 'RUB' }) currency: string;
-//   @Column() prices: string;
-//   @Column() need_email: boolean;
-//   @CreateDateColumn() createdAt: Date;
-// }

@@ -1,15 +1,20 @@
+import * as process from 'node:process';
 import { Injectable } from '@nestjs/common';
-import { Payment } from '@payments/payment.entity';
 import {
   CreatePaymentDto,
-  IPaymentProvider,
+  PaymentProvider,
   PaymentSession,
   PaymentStatus,
 } from '@payments/payments.model';
+import { AbstractPaymentProvider } from '@payments/providers/abstract.provider';
+import { YookassaWebhookPayload } from '@payments/providers/yookassa/yookassa.model';
+import { YookassaWebhookService } from '@payments/providers/yookassa/yookassa-webhook.service';
 import axios, { AxiosInstance } from 'axios';
 
 @Injectable()
-export class YooKassaProvider implements IPaymentProvider {
+export class YooKassaProvider implements AbstractPaymentProvider {
+  readonly id: PaymentProvider = 'yookassa';
+
   private yookassaApi: AxiosInstance = axios.create({
     baseURL: process.env.YOOKASSA_URL,
     withCredentials: true,
@@ -23,21 +28,24 @@ export class YooKassaProvider implements IPaymentProvider {
     },
   });
 
+  constructor(readonly yookassaWebhookService: YookassaWebhookService) {}
+
   async createPayment(dto: CreatePaymentDto): Promise<PaymentSession> {
     try {
       const { data } = await this.yookassaApi.post(
         '/',
         {
           amount: {
-            value: dto.amount,
+            value: dto.payment.amount,
             currency: 'RUB',
           },
           capture: true,
           confirmation: {
             type: 'redirect',
-            return_url: process.env.YOOKASSA_RETURN_URL,
+            return_url: process.env.RETURN_URL,
           },
-          description: '',
+          description: dto.payment.description,
+          metadata: dto.metadata,
         },
         {
           headers: {
@@ -56,6 +64,10 @@ export class YooKassaProvider implements IPaymentProvider {
     }
   }
 
+  async handleWebhook(payload: YookassaWebhookPayload, ip: string): Promise<void> {
+    await this.yookassaWebhookService.handleWebhook(payload, ip);
+  }
+
   async checkPaymentStatus(paymentId: string): Promise<PaymentStatus> {
     try {
       const { data } = await this.yookassaApi.get(`/${paymentId}`);
@@ -64,10 +76,5 @@ export class YooKassaProvider implements IPaymentProvider {
       console.error('Error fetching payment status:', error);
       throw error;
     }
-  }
-
-  updatePayment: (id: string, partial: Partial<Payment>) => Promise<void>;
-  async handleWebhook(data: any): Promise<void> {
-    // Optionally process webhook callbacks
   }
 }

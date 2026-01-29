@@ -1,8 +1,13 @@
+import * as process from 'node:process';
 import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
+import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
+import { ProfileMenuService } from '@bot/navigation/features/profile/profile-menu.service';
+import { ReferralMenu } from '@bot/navigation/features/referral/referral.menu';
+import { ReferralMsgService } from '@bot/navigation/features/referral/referral.service';
+import { SupportMenu } from '@bot/navigation/features/support/support.menu';
 import { Base } from '@bot/navigation/menu.base';
-import { getDevicesPageContent, getPaymentPeriodsPage } from '@bot/utils/templates';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -14,25 +19,51 @@ export class MainMenu extends Base {
     readonly devicesMenu: DevicesMenu,
     @Inject(forwardRef(() => PaymentsPeriodsMenu))
     readonly paymentsPeriodsMenu: PaymentsPeriodsMenu,
+    @Inject(forwardRef(() => ProfileMenu))
+    readonly profileMenu: ProfileMenu,
+    readonly profileMenuService: ProfileMenuService,
+    readonly supportMenu: SupportMenu,
+    @Inject(forwardRef(() => ReferralMenu))
+    readonly referralMenu: ReferralMenu,
+    readonly referralMsgService: ReferralMsgService,
   ) {
     super();
 
     this.menu
-      .text('Подключиться 📶', async (ctx) => {
-        await ctx.editMessageText(getDevicesPageContent(), {
-          parse_mode: 'HTML',
-          link_preview_options: { is_disabled: true },
-          reply_markup: this.devicesMenu.menu,
-        });
-      })
-      .text('Продлить ➕', async (ctx) => {
-        await ctx.editMessageText(getPaymentPeriodsPage(), {
-          parse_mode: 'HTML',
-          link_preview_options: { is_disabled: true },
-          reply_markup: this.paymentsPeriodsMenu.menu,
-        });
-      })
+      .text(
+        (ctx) => ctx.t('connect-button-label'),
+        async (ctx) => {
+          await this.render(ctx, ctx.t('devices-text'), this.devicesMenu.menu);
+        },
+      )
+      .text(
+        (ctx) => ctx.t('extend-button-label'),
+        async (ctx) => {
+          await this.render(ctx, ctx.t('payment-periods-text'), this.paymentsPeriodsMenu.menu);
+        },
+      )
       .row()
-      .url('Нужна помощь?', process.env.SUPPORT_URL || 'https://t.me/JungleVPN_support');
+      .text(
+        (ctx) => ctx.t('referra-button-label'),
+        async (ctx) => {
+          await this.referralMsgService.init(ctx, this.referralMenu.menu);
+        },
+      )
+      .text(
+        (ctx) => ctx.t('profile-button-label'),
+        async (ctx) => await this.profileMenuService.init(ctx),
+      )
+      .row()
+      .url(
+        (ctx) => ctx.t('chanel-button-label'),
+        process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/in_the_jungle',
+      )
+      .row()
+      .text(
+        (ctx) => ctx.t('support-button-label'),
+        async (ctx) => {
+          await this.render(ctx, ctx.t('support-text'), this.supportMenu.menu);
+        },
+      );
   }
 }

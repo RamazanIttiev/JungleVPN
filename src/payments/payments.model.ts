@@ -1,44 +1,54 @@
-import { Payment } from '@payments/payment.entity';
+import { YookassaPaymentStatus } from '@payments/providers/yookassa/yookassa.model';
+import Stripe from 'stripe';
 
-export type PaymentPeriod = '1mo' | '3mo' | '6mo';
-export type PaymentAmount = '99.00' | '149.00' | '499.00';
-export type PaymentStatus = 'pending' | 'succeeded';
-export type PaymentProvider = 'yookassa';
-export type PaymentCurrency = 'RUB';
+export type PaymentProvider = 'yookassa' | 'stripe';
+export type PaymentStatus = YookassaPaymentStatus | Stripe.Invoice.Status;
 
-export interface IPaymentProvider {
-  /**
-   * Creates a payment link or invoice for the user.
-   * @param dto - Required info like amount, currency, description, user ID, etc.
-   * @returns A payment session object with provider-specific data (link, id, etc.)
-   */
-  createPayment: (dto: CreatePaymentDto, providerName: PaymentProvider) => Promise<PaymentSession>;
+export type PaymentPeriod = 'month_1' | 'month_3' | 'month_6';
+export type PaymentCurrency = 'RUB' | 'EUR';
+export type PaymentNotificationEvent =
+  | 'payment.succeeded'
+  | 'payment.canceled'
+  | 'payment.waiting_for_capture';
 
-  /**
-   * Verifies the payment status (usually called after redirect or webhook).
-   * @param paymentId - The provider-specific payment ID.
-   * @returns PaymentStatus (e.g., 'pending', 'succeeded', 'failed').
-   */
-  checkPaymentStatus: (paymentId: string, providerName: PaymentProvider) => Promise<PaymentStatus>;
-
-  updatePayment: (id: string, partial: Partial<Payment>) => Promise<void>;
-
-  /**
-   * Optional: Handles provider webhook callback.
-   * Useful for asynchronous confirmation.
-   */
-  handleWebhook?: (data: any) => Promise<void>;
+export interface IPayment {
+  id: string;
+  userId: string | null;
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  provider: PaymentProvider;
+  amount: number | null;
+  currency: PaymentCurrency | null;
+  status: PaymentStatus;
+  url: string | null;
+  invoiceUrl: string | null;
+  paidAt: Date | null;
+  metadata?: Record<string, any>;
 }
 
-export class CreatePaymentDto {
-  readonly userId: number;
-  readonly amount: string;
-  readonly currency: PaymentCurrency;
-  readonly description?: string;
+export interface PaymentMetadata {
+  selectedPeriod: number;
+  telegramId: number;
+  telegramMessageId: number | string | undefined;
+}
+
+export interface CreatePaymentDto {
+  readonly userId: string;
+  readonly payment: {
+    readonly provider: PaymentProvider;
+    readonly amount: number | string;
+    readonly currency: PaymentCurrency;
+    readonly description?: string;
+  };
   readonly metadata?: Record<string, any>;
 }
 
 export type PaymentSession = {
   id: string;
   url: string;
+  customer?: string | null;
 };
+
+export interface StripeInvoicePayload extends IPayment {
+  metadata: Stripe.Metadata;
+}

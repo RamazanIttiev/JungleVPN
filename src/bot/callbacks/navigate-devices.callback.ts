@@ -1,6 +1,5 @@
 import { BotContext } from '@bot/bot.types';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
-import { getDevicesPageContent } from '@bot/utils/templates';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '@user/user.service';
 import { Bot } from 'grammy';
@@ -15,7 +14,7 @@ export class NavigateDevicesCallback {
   register(bot: Bot<BotContext>) {
     bot.callbackQuery('navigate_devices', async (ctx) => {
       await this.userService.init(ctx);
-      await ctx.editMessageText(getDevicesPageContent(), {
+      await ctx.editMessageText(ctx.t('devices-text'), {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
         reply_markup: this.devicesMenu.menu,

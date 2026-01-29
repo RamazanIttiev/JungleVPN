@@ -1,14 +1,15 @@
 import { BotContext } from '@bot/bot.types';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Base } from '@bot/navigation/menu.base';
-import { getSubscriptionPageContent } from '@bot/utils/templates';
-import { escapeHtml } from '@bot/utils/utils';
+import { getRedirectUrl } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
+import { UserService } from '@user/user.service';
 
 @Injectable()
-export class RevokeSubMsgService extends Base {
+export class RevokeSubMenuService extends Base {
   constructor(
+    readonly userService: UserService,
     readonly remnaService: RemnaService,
     @Inject(forwardRef(() => SubscriptionMenu))
     readonly subscriptionMenu: SubscriptionMenu,
@@ -18,22 +19,15 @@ export class RevokeSubMsgService extends Base {
 
   async init(ctx: BotContext) {
     const session = ctx.session;
-    const { user } = session;
+    const user = await this.userService.init(ctx);
 
-    if (!user?.uuid) {
-      await ctx.reply('Что-то пошло не так, попробуй заново /start');
+    if (!user) {
+      await this.userService.init(ctx);
+      await ctx.reply(ctx.t('error-generic-restart'));
       return;
     }
 
     const subUrl = await this.remnaService.revokeSub(user.uuid);
-    session.user.subscriptionUrl = subUrl;
-    session.redirectUrl = `https://in.thejungle.pro/redirect?link=v2raytun://import/${subUrl}`;
-
-    const content = getSubscriptionPageContent({
-      device: session.selectedDevice!,
-      subUrl: escapeHtml(session.user.subscriptionUrl!),
-    });
-
-    await this.render(ctx, content, this.subscriptionMenu.menu);
+    session.redirectUrl = getRedirectUrl(session.selectedDevice, subUrl);
   }
 }

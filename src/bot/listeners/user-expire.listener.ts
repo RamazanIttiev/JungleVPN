@@ -1,12 +1,14 @@
+import * as process from 'node:process';
 import { BotService } from '@bot/bot.service';
 import { BotContext } from '@bot/bot.types';
-import { PaymentPeriodsMsgService } from '@bot/navigation/features/payment/payment-periods/payment-periods.service';
-import { getExpiredSubscriptionContent } from '@bot/utils/templates';
-import { mapPeriodLabelToPriceLabel } from '@bot/utils/utils';
+import { LocalisationService } from '@bot/localisation/localisation.service';
+import { paymentPeriods } from '@bot/utils/constants';
+import { mapPeriodLabelToPriceLabel, safeSendMessage, toDateString } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebHookEvent } from '@remna/remna.model';
-import { User } from '@user/user.model';
+import { UserDto } from '@user/user.model';
+import { AxiosError } from 'axios';
 import { Bot, InlineKeyboard } from 'grammy';
 
 @Injectable()
@@ -15,7 +17,7 @@ export class UserExpireListener {
 
   constructor(
     private readonly botService: BotService,
-    private readonly paymentPeriodsMsgService: PaymentPeriodsMsgService,
+    private readonly localService: LocalisationService,
   ) {
     this.bot = this.botService.bot;
   }
@@ -23,38 +25,74 @@ export class UserExpireListener {
   @OnEvent('user.expires_in_24_hours')
   async listenToUser24ExpiresEvent(payload: {
     event: WebHookEvent;
-    data: User;
+    data: UserDto;
     timestamp: string;
   }) {
-    await this.handleUserExpiresEvent(payload);
+    await this.handleUserExpireEvent(payload);
   }
 
-  @OnEvent('user.expires_in_72_hours')
-  async listenToUser72ExpiresEvent(payload: {
+  @OnEvent('user.expired')
+  async listenToUserExpiresEvent(payload: {
     event: WebHookEvent;
-    data: User;
+    data: UserDto;
     timestamp: string;
   }) {
-    await this.handleUserExpiresEvent(payload);
+    await this.handleUserExpireEvent(payload);
   }
 
-  async handleUserExpiresEvent(payload: { event: WebHookEvent; data: User; timestamp: string }) {
+  @OnEvent('user.expired_24_hours_ago')
+  async listenToUserExpires24Event(payload: {
+    event: WebHookEvent;
+    data: UserDto;
+    timestamp: string;
+  }) {
+    await this.handleUserExpireEvent(payload);
+  }
+
+  async handleUserExpireEvent(payload: { event: WebHookEvent; data: UserDto; timestamp: string }) {
+    const telegramId = payload.data.telegramId;
+    if (!telegramId) {
+      throw new AxiosError('UserNotConnectedListener: telegramId is null');
+    }
+
+    const locale = payload.data.description || process.env.DEFAULT_LOCALE || 'ru';
+
     const keyboard = new InlineKeyboard();
 
-    this.paymentPeriodsMsgService.periods.forEach((period) => {
-      keyboard.text(mapPeriodLabelToPriceLabel(period), `payment_for_${period}`);
+    paymentPeriods.forEach((period) => {
+      keyboard.text(
+        this.localService.i18n.t(locale, mapPeriodLabelToPriceLabel(period), {
+          discount: period === 'month_3' ? '-15%' : '-25%',
+        }),
+        `payment_for_${period}`,
+      );
       keyboard.row();
     });
+    keyboard.text(this.localService.i18n.t(locale, 'home-button-label'), 'navigate_main');
 
-    keyboard.text('Главное меню', 'navigate_main');
+    const formattedDate = toDateString(payload.data.expireAt);
+    const translationKey = this.getTranslationKey(payload.event);
 
-    await this.bot.api.sendMessage(
-      payload.data.telegramId,
-      getExpiredSubscriptionContent(payload.data.expireAt),
-      {
-        parse_mode: 'HTML',
-        reply_markup: keyboard,
-      },
-    );
+    const text = this.localService.i18n.t(locale, translationKey, {
+      formattedDate,
+    });
+
+    await safeSendMessage(this.bot, telegramId, text, {
+      parse_mode: 'HTML',
+      reply_markup: keyboard,
+    });
+  }
+
+  getTranslationKey(event: WebHookEvent) {
+    switch (event) {
+      case 'user.expired':
+        return 'expired-subscription-text';
+      case 'user.expires_in_24_hours':
+        return 'expires-in-24-hours-subscription-text';
+      case 'user.expired_24_hours_ago':
+        return 'expired-24-hours-ago-subscription-text';
+      default:
+        return 'expired-subscription-text';
+    }
   }
 }

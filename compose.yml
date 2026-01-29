@@ -1,24 +1,41 @@
 services:
   db:
-    image: postgres:14
-    container_name: jungle_postgres
-    env_file:
-      - .env.production
+    image: postgres:17.6
+    env_file: .env
     ports:
-      - "5434:5432"
+      - "127.0.0.1:$POSTGRES_HOST_PORT:5432"
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  server:
+  migration:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: jungle_bot
+    command: npm run migration:run:prod
+    env_file: .env
     depends_on:
-      - db
-    env_file:
-      - .env.production
+      db:
+        condition: service_healthy
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    env_file: .env
     ports:
-      - "5000:5000"
+      - "$PORT:$PORT"
     restart: always
+
+volumes:
+  db:

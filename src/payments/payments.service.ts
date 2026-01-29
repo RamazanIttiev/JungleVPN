@@ -1,126 +1,67 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Payment } from '@payments/payment.entity';
 import { PaymentProviderFactory } from '@payments/payments.factory';
-import {
-  CreatePaymentDto,
-  IPaymentProvider,
-  PaymentProvider,
-  PaymentSession,
-} from '@payments/payments.model';
+import { CreatePaymentDto, IPayment, PaymentSession } from '@payments/payments.model';
+
 import { Repository } from 'typeorm';
-import { Payment } from './payment.entity';
 
 @Injectable()
-export class PaymentsService implements IPaymentProvider {
+export class PaymentsService {
   constructor(
     @InjectRepository(Payment) private paymentRepository: Repository<Payment>,
     private readonly factory: PaymentProviderFactory,
   ) {}
 
-  async findValidPayment(id: string) {
-    const payment = await this.paymentRepository.findOneBy({ id, status: 'pending' });
+  async createPayment(dto: Omit<IPayment, 'metadata'>) {
+    const payment = this.paymentRepository.create(dto);
 
-    if (!payment || !payment.createdAt) return null;
+    return await this.paymentRepository.save(payment);
+  }
+  async createPaymentFromProvider(dto: CreatePaymentDto): Promise<PaymentSession> {
+    const provider = this.factory.getProvider(dto.payment.provider);
+    const session = await provider.createPayment(dto);
 
-    const expiresAt = payment.createdAt.getTime() + 10 * 60 * 1000;
-    if (Date.now() < expiresAt) {
-      return payment;
+    const existingPayment = await this.findOneByStripeCustomerId(session.customer);
+
+    if (!existingPayment) {
+      const payment = this.paymentRepository.create({
+        id: session.id,
+        url: session.url,
+        stripeCustomerId: session.customer,
+        status: 'pending',
+        amount: +dto.payment.amount,
+        currency: dto.payment.currency,
+        userId: dto.userId,
+        provider: provider.id,
+        paidAt: null,
+        stripeSubscriptionId: null,
+        invoiceUrl: null,
+      });
+
+      await this.paymentRepository.save(payment);
+
+      return { id: payment.id, url: payment.url || '', customer: payment.stripeCustomerId };
     } else {
-      return null;
+      return {
+        id: existingPayment.id,
+        url: existingPayment.url || '',
+        customer: existingPayment.stripeCustomerId,
+      };
     }
   }
 
-  async createPayment(
-    dto: CreatePaymentDto,
-    providerName: PaymentProvider,
-  ): Promise<PaymentSession> {
-    const provider = this.factory.getProvider(providerName);
-    const session = await provider.createPayment(dto, providerName);
+  async updatePayment(id: string, partial: Partial<IPayment>) {
+    return await this.paymentRepository.update(id, partial);
+  }
 
-    const payment = this.paymentRepository.create({
-      id: session.id,
-      userId: dto.userId.toString(),
-      provider: providerName,
-      amount: dto.amount,
-      currency: dto.currency,
-      createdAt: new Date(),
-      status: 'pending',
-      url: session.url,
+  async findOneByStripeCustomerId(
+    stripeCustomerId: string | null | undefined,
+  ): Promise<IPayment | null> {
+    if (!stripeCustomerId) return null;
+    return this.paymentRepository.findOne({
+      where: { stripeCustomerId },
+      order: { createdAt: 'DESC' },
     });
-
-    await this.paymentRepository.save(payment);
-
-    return { id: session.id, url: session.url };
   }
-
-  async checkPaymentStatus(paymentId: string) {
-    const payment = await this.paymentRepository.findOneBy({ id: paymentId });
-    const providerName = payment?.provider;
-
-    if (!providerName) {
-      throw new NotFoundException('providerName is required, checkPaymentStatus');
-    }
-    const provider = this.factory.getProvider(providerName);
-    return await provider.checkPaymentStatus(paymentId, providerName);
-  }
-
-  async updatePayment(id: string, partial: Partial<Payment>) {
-    const payment = await this.paymentRepository.findOneBy({ id });
-    if (!payment) throw new Error(`Payment ${id} not found`);
-
-    Object.assign(payment, partial);
-    await this.paymentRepository.save(payment);
-  }
-  handleWebhook?: ((data: any) => Promise<void>) | undefined;
 }
-
-// TELEGRAM YOOKASSA PAYMENT EXAMPLE
-
-// await paymentsService.createPayment();
-// const invoice = {
-//   chatId,
-//   title: 'Subscription',
-//   description: 'Subscription to the service',
-//   payload: `invoice-${telegramId}-${Date.now()}`,
-//   provider_token: process.env.PAYMENT_TOKEN || '',
-//   currency: 'RUB',
-//   prices: [{ label: 'Subscription', amount: 50000 }],
-//   need_email: false,
-//   createdAt: new Date(),
-// };
-//
-// const provider_data = {
-//   receipt: {
-//     items: [
-//       {
-//         description: invoice.description,
-//         quantity: 1,
-//         amount: {
-//           value: '500.00',
-//           currency: invoice.currency,
-//         },
-//         vat_code: 1,
-//       },
-//     ],
-//   },
-// };
-//
-// try {
-//   const response = await ctx.api.sendInvoice(
-//     chatId,
-//     invoice.title,
-//     invoice.description,
-//     invoice.payload,
-//     invoice.currency,
-//     invoice.prices,
-//     {
-//       provider_token: invoice.provider_token,
-//       provider_data: JSON.stringify(provider_data),
-//     },
-//   );
-
-//   console.log(response);
-// } catch (error) {
-//   console.error('Error sending invoice:', error);
-//   await ctx.reply('Ошибка при создании счета. Пожалуйста, попробуйте позже.');
-// }
