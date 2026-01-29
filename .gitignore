@@ -7,3 +7,4 @@ out.log
 pgdata
 postgres-data
 DOCS.md
+credentials.json

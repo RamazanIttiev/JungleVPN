@@ -1,8 +1,10 @@
 import { BotContext, initialSession } from '@bot/bot.types';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { toDateString } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { Bot } from 'grammy';
+import { AnalyticsService } from '../../analytics/analytics.service';
 import { ReferralService } from '../../referral/referral.service';
 import { decodeReferralCode } from '../../referral/referral.utils';
 
@@ -12,6 +14,7 @@ export class StartCommand {
     readonly mainMenu: MainMenu,
     readonly mainMsgService: MainMsgService,
     readonly referralService: ReferralService,
+    readonly analyticsService: AnalyticsService,
   ) {}
 
   register(bot: Bot<BotContext>) {
@@ -19,6 +22,17 @@ export class StartCommand {
       await ctx.react('🍌');
 
       const payload = ctx.match;
+
+      if (payload?.startsWith('ad_')) {
+        const channel = payload.slice(3);
+
+        await this.analyticsService.addData({
+          channel,
+          userId: ctx.from?.id,
+          dateAndTime: toDateString(new Date().toISOString(), true),
+        });
+      }
+
       if (payload?.startsWith('ref_')) {
         const code = payload.replace('ref_', '');
         const inviterId = decodeReferralCode(code);

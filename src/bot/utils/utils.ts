@@ -40,14 +40,14 @@ export const mapToClientAppName = (device: UserDevice) => {
   }
 };
 
-export const toDateString = (value: string) => {
+export const toDateString = (value: string, utc?: boolean) => {
   return new Date(value).toLocaleDateString('ru-EU', {
     year: 'numeric',
     month: 'numeric',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    timeZone: 'Europe/Moscow',
+    timeZone: utc ? undefined : 'Europe/Moscow',
   });
 };
 

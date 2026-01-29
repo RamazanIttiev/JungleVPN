@@ -45,9 +45,9 @@
     "@types/cidr-matcher": "^2.1.2",
     "@types/express": "^5.0.3",
     "@types/node": "^20.12.12",
+    "googleapis": "^165.0.0",
     "typescript": "^5.4.5",
     "vite-tsconfig-paths": "^5.1.4",
-    "googleapis": "^165.0.0",
     "vitest": "^3.2.4"
   },
   "engines": {
