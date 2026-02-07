@@ -8,6 +8,7 @@ import {
   UserDto,
 } from '@user/user.model';
 import axios, { AxiosInstance } from 'axios';
+import { addDays } from 'date-fns';
 import { RemnaResponse } from './remna.model';
 
 @Injectable()
@@ -79,8 +80,7 @@ export class RemnaService {
   }
 
   async createUser(payload: Pick<CreateUserRequestDto, 'username' | 'telegramId' | 'description'>) {
-    const expiryTime = new Date();
-    expiryTime.setDate(expiryTime.getDate() + Number(process.env.TRIAL_PERIOD_IN_DAYS));
+    const expiryTime = addDays(new Date(), Number(process.env.TRIAL_PERIOD_IN_DAYS));
 
     const body: CreateUserRequestDto = {
       username: payload.username,
