@@ -1,4 +1,4 @@
-import { BotContext, ClientApp, initialSession, SessionData } from '@bot/bot.types';
+import { BotContext, initialSession } from '@bot/bot.types';
 import { getRedirectUrl } from '@bot/utils/utils';
 import { User as GrammyUser } from '@grammyjs/types/manage';
 import { Injectable } from '@nestjs/common';
@@ -45,6 +45,7 @@ export class UserService {
       const newUser = await this.createUser(tgUser.id, locale);
 
       session.redirectUrl = getRedirectUrl(session.selectedDevice, newUser.subscriptionUrl);
+      session.subscriptionUrl = newUser.subscriptionUrl;
       return newUser;
     } else {
       if (user.description !== locale) {
@@ -55,32 +56,8 @@ export class UserService {
       }
 
       session.redirectUrl = getRedirectUrl(session.selectedDevice, user.subscriptionUrl);
+      session.subscriptionUrl = user.subscriptionUrl;
       return user;
     }
-  }
-
-  setClientApp(session: SessionData, subUrl: string | undefined) {
-    if (!subUrl) {
-      return;
-    }
-
-    session.clientApp = [];
-
-    const v2raytunClientApp: ClientApp = {
-      name: 'v2raytun',
-      url: `${process.env.V2RAYTUN_CLIENT_APP_URL}/${subUrl}`,
-      appUrl: process.env.V2RAYTUN_APP_URL || '',
-      platforms: ['android', 'ios', 'macOS', 'windows'],
-    };
-
-    const happClientApp: ClientApp = {
-      name: 'happ',
-      url: `${process.env.HAPP_CLIENT_APP_URL}/${subUrl}`,
-      appUrl: process.env.HAPP_APP_URL || '',
-      platforms: ['windows'],
-    };
-
-    session.clientApp?.push(v2raytunClientApp);
-    session.clientApp?.push(happClientApp);
   }
 }

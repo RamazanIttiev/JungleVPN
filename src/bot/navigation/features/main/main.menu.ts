@@ -8,6 +8,7 @@ import { ReferralMenu } from '@bot/navigation/features/referral/referral.menu';
 import { SupportMenu } from '@bot/navigation/features/support/support.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { UserService } from '@user/user.service';
 
 @Injectable()
 export class MainMenu extends Base {
@@ -24,6 +25,7 @@ export class MainMenu extends Base {
     @Inject(forwardRef(() => ReferralMenu))
     readonly referralMenu: ReferralMenu,
     readonly donateMenu: DonateMenu,
+    readonly userService: UserService,
   ) {
     super();
 
@@ -38,6 +40,7 @@ export class MainMenu extends Base {
       .text(
         (ctx) => ctx.t('connect-button-label'),
         async (ctx) => {
+          await this.userService.init(ctx);
           await this.render(ctx, ctx.t('devices-text'), this.devicesMenu.menu);
         },
       )
@@ -62,11 +65,19 @@ export class MainMenu extends Base {
         (ctx) => ctx.t('chanel-button-label'),
         process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/in_the_jungle',
       )
-      .text(
-        (ctx) => ctx.t('support-button-label'),
-        async (ctx) => {
-          await this.render(ctx, ctx.t('support-text'), this.supportMenu.menu);
-        },
-      );
+      .dynamic(async (ctx, range) => {
+        const tgUser = this.validateUser(ctx.from);
+
+        const user = await this.userService.getUserByTgId(tgUser.id);
+
+        if (user) {
+          range.text(
+            (ctx) => ctx.t('support-button-label'),
+            async (ctx) => {
+              await this.render(ctx, ctx.t('support-text'), this.supportMenu.menu);
+            },
+          );
+        }
+      });
   }
 }

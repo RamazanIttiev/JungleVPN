@@ -18,6 +18,7 @@ export interface SessionData {
   paymentId: string | undefined;
   clientApp: Array<ClientApp> | undefined;
   redirectUrl?: string;
+  subscriptionUrl?: string;
   selectedDevice?: UserDevice;
   selectedProvider?: PaymentProvider;
   selectedPeriod?: PaymentPeriod;
@@ -37,6 +38,7 @@ export const initialSession = (): SessionData => {
     paymentId: undefined,
     selectedDevice: undefined,
     selectedPeriod: undefined,
+    subscriptionUrl: undefined,
     clientApp: [],
     metadata: {
       messageId: undefined,

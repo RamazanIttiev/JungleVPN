@@ -29,5 +29,6 @@ export class RevokeSubMenuService extends Base {
 
     const subUrl = await this.remnaService.revokeSub(user.uuid);
     session.redirectUrl = getRedirectUrl(session.selectedDevice, subUrl);
+    session.subscriptionUrl = subUrl;
   }
 }

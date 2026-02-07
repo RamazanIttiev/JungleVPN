@@ -13,9 +13,8 @@ export class SubscriptionMsgService extends Base {
 
   async init(ctx: BotContext, menu: Menu) {
     const session = ctx.session;
-    const user = await this.userService.init(ctx);
 
-    if (!session.selectedDevice) {
+    if (!session.selectedDevice || !session.subscriptionUrl) {
       await ctx.reply(ctx.t('error-generic-restart'));
       return;
     }
@@ -25,7 +24,7 @@ export class SubscriptionMsgService extends Base {
 
     const text = ctx.t('subscription-text', {
       deviceLabel,
-      subUrl: user.subscriptionUrl,
+      subUrl: session.subscriptionUrl,
       clientAppLabel,
     });
     await this.render(ctx, text, menu);
