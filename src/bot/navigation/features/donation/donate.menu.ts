@@ -2,8 +2,6 @@ import * as process from 'node:process';
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMenuService } from '@bot/navigation/features/main/main.service';
-import { ReferralMenu } from '@bot/navigation/features/referral/referral.menu';
-import { ReferralMenuService } from '@bot/navigation/features/referral/referral.service';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 
@@ -14,9 +12,7 @@ export class DonateMenu extends Base implements OnModuleInit {
   constructor(
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
-    readonly referralMenu: ReferralMenu,
     readonly mainMenuService: MainMenuService,
-    readonly referralMenuService: ReferralMenuService,
   ) {
     super();
   }
@@ -27,6 +23,7 @@ export class DonateMenu extends Base implements OnModuleInit {
         (ctx) => ctx.t('donate-button-label'),
         process.env.YOOKASSA_DONATE_LINK || 'https://yookassa.ru/',
       )
+      .row()
       .switchInline((ctx) => ctx.t('invite-button-label'))
       .row()
       .url(

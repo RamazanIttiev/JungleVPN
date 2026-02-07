@@ -3,7 +3,8 @@ provider-description-text = Рад видеть тебя в JUNGLE 🌴
 
 connect-button-label = Подключиться 📶
 extend-button-label = Продлить ➕
-donate-button-label = Поддеражать ➕
+donate-button-label = Поддержать 💶
+available-countries-button-label = Страны 🌍
 support-button-label = VPN не работает 🚨
 support-chanel-button-label = Поддержка
 back-button-label = ⤴ Назад
@@ -38,51 +39,52 @@ period-month_3 = 3 месяца
 period-month_6 = 6 месяцев
 
 main-text =
-    🌴 Добро пожаловать в <b>Jungle</b>, <b>{ $username }</b>!
+    Привет, <b>{ $username }</b>! 👋
 
-    В <code>JUNGLE</code> скорость и безопасность — на первом месте ❤️
+    Я @Ramazzaniii, автор проекта <code>JungleVPN</code> 🌴
 
-    ⚡️Неограниченное количество трафика
-    🔒Доступ к РФ сайтам и зарубежным ресурсам
+    Сейчас VPN полностью бесплатный — хочу сделать более качественно и стабильно!
+
+    Если захочешь поддержать развитие проекта — можешь отправить донат, для меня это будет большой мотивацией 💙
+
+    Или помоги иначе: расскажи друзьям и подпишись на канал.
+
+    Спасибо ❤️
+
+    Мои контакты:
+    <blockquote>
+        <code>Telegram</code>: @Ramazzaniii
+        <code>Канал</code>: @In_The_Jungle
+        <code>LinkedIn</code>: <a href="https://www.linkedin.com/in/ramazan-ittiev/">Ссылка</a>
+    </blockquote>
 
 
-    🌍Доступные страны:
+donate-text =
+    Спасибо за желание поддержать проект! 💙
+
+    Если есть идеи, мысли или просто фидбек — пиши, буду рад 🙂
+
+    Мои контакты:
+    <blockquote>
+        <code>Telegram</code>: @Ramazzaniii
+        <code>Канал</code>: @In_The_Jungle
+        <code>LinkedIn</code>: <a href="https://www.linkedin.com/in/ramazan-ittiev/">Ссылка</a>
+    </blockquote>
+
+
+available-countries-text =
+    🌍Вот список стран, которые доступны для подключения:
+
     ╠ 🇩🇪 Германия
     ╠ 🇵🇱 Польша
     ╠ 🇫🇮 Финляндия
     ╠ 🇷🇺 Россия
     ╚ Дальше будет больше...
 
+    Также...
 
-<#--    { $isExpired ->-->
-<#--    [true]  🆘🆘🆘 <b>У тебя закончилась подписка 🥲</b>-->
-<#--    *[false]  📅 <b>Подписка закончится:</b>-->
-<#--    <blockquote>{ $expireAt } (МСК)</blockquote>-->
-<#--    }-->
-
-
-donate-text =
-    Привет! 👋
-
-    Я Рамазан, автор проекта <code>JungleVPN</code> 🌴
-
-    Сейчас VPN полностью бесплатный — я хочу довести качество и стабильность до идеала.
-
-    Если поддержишь развитие проекта донатом мне будет очень приятно 💙
-
-
-
-    Или помоги иначе: расскажи друзьям и подпишись на канал.
-
-    Спасибо всем, кто остаётся, пробует и поддерживает ❤️
-    Я продолжаю работать над Jungle — дальше будет лучше!
-
-
-    Мои контакты:
-    <code>Telegram</code>: @Ramazzaniii
-    <code>LinkedIn</code>: <a href="https://www.linkedin.com/in/ramazan-ittiev/">Ссылка</a>
-
-
+    ⚡️Неограниченное количество трафика
+    🔒Доступ к РФ сайтам и зарубежным ресурсам
 
 devices-text =
     📱<b>Выбери платформу, на котором хочешь настроить VPN:</b>

@@ -3,7 +3,8 @@ provider-description-text = Happy to see you in the JUNGLE 🌴
 
 connect-button-label = Connect 📶
 extend-button-label = Extend ➕
-donate-button-label = Donate ➕
+donate-button-label = Donate 💶
+available-countries-button-label = Countries 🌍
 support-button-label = VPN is not working 🚨
 support-chanel-button-label = Support
 home-button-label = Home 🏠
@@ -44,48 +45,53 @@ days-left-label = { $daysLeft ->
 
 
 main-text =
-    🌴 Welcome to the <code>Jungle</code>, <b>{ $username }</b>!
+    Hello, <b>{ $username }</b>! 👋
 
-    In the <code>JUNGLE</code> speed and security come first ❤️
+    I’m @Ramazzaniii, the creator of <code>JungleVPN</code> 🌴
+
+    Right now the VPN is completely free — I want to focus on improving quality and stability.
+
+    If you’d like to support the project, you can send a donation — it really motivates me to keep going 💙
+
+    Or help in another way: tell your friends and subscribe to the channel.
+
+    Thank you ❤️
+
+    My contacts:
+    <blockquote>
+        <code>Telegram</code>: @Ramazzaniii
+        <code>Channel</code>: @In_The_Jungle
+        <code>LinkedIn</code>: <a href="https://www.linkedin.com/in/ramazan-ittiev/">Link</a>
+    </blockquote>
 
 
-    ⚡️ Unlimited traffic
-    🔒 Access to Russian and international resources
-<#--    🆓 First { $trial_period } days are free-->
+donate-text =
+    Thank you for wanting to support the project 💙
+
+    If you have ideas, thoughts, or any feedback — feel free to reach out, I’ll be happy to hear from you 🙂
+
+    My contacts:
+    <blockquote>
+        <code>Telegram</code>: @Ramazzaniii
+        <code>Channel</code>: @In_The_Jungle
+        <code>LinkedIn</code>: <a href="https://www.linkedin.com/in/ramazan-ittiev/">Link</a>
+    </blockquote>
 
 
-    🌍 Available countries:
+
+available-countries-text =
+    🌍 Here’s the list of countries available for connection:
+
     ╠ 🇩🇪 Germany
     ╠ 🇵🇱 Poland
     ╠ 🇫🇮 Finland
     ╠ 🇷🇺 Russia
     ╚ More coming…
 
+    Also...
 
-<#--    { $isExpired ->-->
-<#--    [true]   🆘🆘🆘 <b>Your subscription has expired 🥲</b>-->
-<#--    *[false]  📅 <b>Subscription end date:</b>-->
-<#--    <blockquote>{ $expireAt } (MSK)</blockquote>-->
-<#--    }-->
-
-
-donate-text =
-    Right now, I feel that I want a higher level of quality and stability than what we have at the moment.
-
-    That’s why I decided to make Jungle free and fully focus on improving the service for you — to bring the connections to a level I can truly feel confident about 🙃
-
-    If you’d like to support the project, I’d really appreciate it:
-    <blockquote>
-    •	Tell your friends about Jungle
-    •	Subscribe to the channel — I share updates and future plans there
-    •	Leave a review or any feedback
-    •	If you’d like, you can also support the project financially — I’ll leave a link where you can choose any amount
-    </blockquote>
-
-    Thank you to everyone who stays, tries it out, and supports Jungle ❤️
-    I’ll keep working on it — things will only get better from here.
-
-
+    ⚡️ Unlimited traffic
+    🔒 Access to Russian and international resources
 
 
 devices-text =
