@@ -1,6 +1,7 @@
 import { LocalisationService } from '@bot/localisation/localisation.service';
+import { DonateMenu } from '@bot/navigation/features/donation/donate.menu';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
 import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
@@ -8,7 +9,7 @@ import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-pe
 import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { ProfileMenuService } from '@bot/navigation/features/profile/profile-menu.service';
 import { ReferralMenu } from '@bot/navigation/features/referral/referral.menu';
-import { ReferralMsgService } from '@bot/navigation/features/referral/referral.service';
+import { ReferralMenuService } from '@bot/navigation/features/referral/referral.service';
 import { RevokeSubMenuService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
@@ -32,13 +33,13 @@ import { MenuTree } from './menu.tree';
 @Module({
   providers: [
     // MODELS
-    MainMsgService,
+    MainMenuService,
     PaymentMsgService,
     RevokeSubMenuService,
     SubscriptionMsgService,
     PaymentMethodMsgService,
     ProfileMenuService,
-    ReferralMsgService,
+    ReferralMenuService,
     // MENUS
     MenuTree,
     MainMenu,
@@ -50,6 +51,7 @@ import { MenuTree } from './menu.tree';
     ProfileMenu,
     SupportMenu,
     ReferralMenu,
+    DonateMenu,
     // SERVICES
     RemnaService,
     PaymentsService,
@@ -61,13 +63,13 @@ import { MenuTree } from './menu.tree';
   ],
   exports: [
     // MODELS
-    MainMsgService,
+    MainMenuService,
     PaymentMsgService,
     RevokeSubMenuService,
     SubscriptionMsgService,
     PaymentMethodMsgService,
     ProfileMenuService,
-    ReferralMsgService,
+    ReferralMenuService,
     // MENUS
     MenuTree,
     MainMenu,
@@ -79,6 +81,7 @@ import { MenuTree } from './menu.tree';
     ProfileMenu,
     SupportMenu,
     ReferralMenu,
+    DonateMenu,
   ],
   imports: [TypeOrmModule.forFeature([Payment, Referral]), YookassaModule, StripeModule],
 })

@@ -1,5 +1,6 @@
 import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
+import { DonateMenu } from '@bot/navigation/features/donation/donate.menu';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { PaymentMenu } from '@bot/navigation/features/payment/payment.menu';
 import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
@@ -22,6 +23,7 @@ export class MenuTree {
     private readonly profileMenu: ProfileMenu,
     private readonly supportMenu: SupportMenu,
     private readonly referralMenu: ReferralMenu,
+    private readonly donateMenu: DonateMenu,
   ) {}
 
   init(): Menu {
@@ -34,6 +36,7 @@ export class MenuTree {
     const profileMenu = this.profileMenu.menu;
     const supportMenu = this.supportMenu.menu;
     const referralMenu = this.referralMenu.menu;
+    const donateMenu = this.donateMenu.menu;
 
     main.register(devices);
     main.register(paymentMenu);
@@ -43,6 +46,7 @@ export class MenuTree {
     main.register(profileMenu);
     main.register(supportMenu);
     main.register(referralMenu);
+    main.register(donateMenu);
 
     return main;
   }

@@ -8,7 +8,7 @@ import { UserLocale } from '@user/user.model';
 import { UserService } from '@user/user.service';
 
 @Injectable()
-export class ReferralMsgService extends Base {
+export class ReferralMenuService extends Base {
   constructor(
     private readonly userService: UserService,
     private readonly localService: LocalisationService,

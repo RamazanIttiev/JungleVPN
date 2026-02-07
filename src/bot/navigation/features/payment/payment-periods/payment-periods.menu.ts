@@ -1,6 +1,6 @@
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { PaymentMethodMenu } from '@bot/navigation/features/payment/payment-method/payment-method.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { paymentPeriods } from '@bot/utils/constants';
@@ -14,7 +14,7 @@ export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
 
   constructor(
     readonly config: ConfigService,
-    readonly mainMsgService: MainMsgService,
+    readonly mainMenuService: MainMenuService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
     readonly paymentMethodMenu: PaymentMethodMenu,
@@ -41,7 +41,7 @@ export class PaymentsPeriodsMenu extends Base implements OnModuleInit {
 
       range.row();
       range.text({ text: (ctx) => ctx.t('back-button-label') }, async (ctx) => {
-        await this.mainMsgService.init(ctx, this.mainMenu.menu);
+        await this.mainMenuService.init(ctx, this.mainMenu.menu);
       });
     });
   }

@@ -1,11 +1,12 @@
 import * as process from 'node:process';
 import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
+import { DonateMenu } from '@bot/navigation/features/donation/donate.menu';
 import { PaymentsPeriodsMenu } from '@bot/navigation/features/payment/payment-periods/payment-periods.menu';
 import { ProfileMenu } from '@bot/navigation/features/profile/profile.menu';
 import { ProfileMenuService } from '@bot/navigation/features/profile/profile-menu.service';
 import { ReferralMenu } from '@bot/navigation/features/referral/referral.menu';
-import { ReferralMsgService } from '@bot/navigation/features/referral/referral.service';
+import { ReferralMenuService } from '@bot/navigation/features/referral/referral.service';
 import { SupportMenu } from '@bot/navigation/features/support/support.menu';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
@@ -25,7 +26,8 @@ export class MainMenu extends Base {
     readonly supportMenu: SupportMenu,
     @Inject(forwardRef(() => ReferralMenu))
     readonly referralMenu: ReferralMenu,
-    readonly referralMsgService: ReferralMsgService,
+    readonly donateMenu: DonateMenu,
+    readonly referralMenuService: ReferralMenuService,
   ) {
     super();
 
@@ -37,28 +39,27 @@ export class MainMenu extends Base {
         },
       )
       .text(
-        (ctx) => ctx.t('extend-button-label'),
+        (ctx) => ctx.t('donate-button-label'),
         async (ctx) => {
-          await this.render(ctx, ctx.t('payment-periods-text'), this.paymentsPeriodsMenu.menu);
+          await this.render(ctx, ctx.t('donate-text'), this.donateMenu.menu);
         },
       )
-      .row()
-      .text(
-        (ctx) => ctx.t('referra-button-label'),
-        async (ctx) => {
-          await this.referralMsgService.init(ctx, this.referralMenu.menu);
-        },
-      )
-      .text(
-        (ctx) => ctx.t('profile-button-label'),
-        async (ctx) => await this.profileMenuService.init(ctx),
-      )
+      // .row()
+      // .text(
+      //   (ctx) => ctx.t('referra-button-label'),
+      //   async (ctx) => {
+      //     await this.referralMenuService.init(ctx, this.referralMenu.menu);
+      //   },
+      // )
+      // .text(
+      //   (ctx) => ctx.t('profile-button-label'),
+      //   async (ctx) => await this.profileMenuService.init(ctx),
+      // )
       .row()
       .url(
         (ctx) => ctx.t('chanel-button-label'),
         process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/in_the_jungle',
       )
-      .row()
       .text(
         (ctx) => ctx.t('support-button-label'),
         async (ctx) => {

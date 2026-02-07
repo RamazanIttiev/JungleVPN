@@ -1,6 +1,6 @@
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InlineKeyboard } from 'grammy';
@@ -12,8 +12,8 @@ export class ProfileMenu extends Base {
   constructor(
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
-    @Inject(forwardRef(() => MainMsgService))
-    readonly mainMsgService: MainMsgService,
+    @Inject(forwardRef(() => MainMenuService))
+    readonly mainMenuService: MainMenuService,
   ) {
     super();
 
@@ -48,7 +48,7 @@ export class ProfileMenu extends Base {
       .row()
       .text(
         async (ctx) => ctx.t('home-button-label'),
-        async (ctx) => this.mainMsgService.init(ctx, this.mainMenu.menu),
+        async (ctx) => this.mainMenuService.init(ctx, this.mainMenu.menu),
       );
   }
 }

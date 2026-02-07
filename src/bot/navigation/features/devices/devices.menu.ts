@@ -2,7 +2,7 @@ import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
 import { SubscriptionMenu } from '@bot/navigation/features/subscription/subscription.menu';
 import { Base } from '@bot/navigation/menu.base';
@@ -18,7 +18,7 @@ export class DevicesMenu extends Base {
   );
 
   constructor(
-    readonly mainMsgService: MainMsgService,
+    readonly mainMenuService: MainMenuService,
     readonly subscriptionMsgService: SubscriptionMsgService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
@@ -35,7 +35,7 @@ export class DevicesMenu extends Base {
 
       range.row();
       range.text({ text: (ctx) => ctx.t('back-button-label') }, async (ctx) => {
-        await this.mainMsgService.init(ctx, this.mainMenu.menu);
+        await this.mainMenuService.init(ctx, this.mainMenu.menu);
       });
     });
   }

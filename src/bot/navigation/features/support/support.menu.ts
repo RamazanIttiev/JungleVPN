@@ -2,7 +2,7 @@ import * as process from 'node:process';
 import { Menu } from '@bot/navigation';
 import { DevicesMenu } from '@bot/navigation/features/devices/devices.menu';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { RevokeSubMenuService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
@@ -15,7 +15,7 @@ export class SupportMenu extends Base {
     readonly revokeSubMenuService: RevokeSubMenuService,
     @Inject(forwardRef(() => DevicesMenu))
     readonly devicesMenu: DevicesMenu,
-    readonly mainMsgService: MainMsgService,
+    readonly mainMenuService: MainMenuService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
   ) {
@@ -38,7 +38,7 @@ export class SupportMenu extends Base {
       .text(
         (ctx) => ctx.t('home-button-label'),
         async (ctx) => {
-          await this.mainMsgService.init(ctx, this.mainMenu.menu);
+          await this.mainMenuService.init(ctx, this.mainMenu.menu);
         },
       );
   }

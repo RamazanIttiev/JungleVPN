@@ -1,6 +1,6 @@
 import { BotContext, initialSession } from '@bot/bot.types';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { toDateString } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { Bot } from 'grammy';
@@ -12,7 +12,7 @@ import { decodeReferralCode } from '../../referral/referral.utils';
 export class StartCommand {
   constructor(
     readonly mainMenu: MainMenu,
-    readonly mainMsgService: MainMsgService,
+    readonly mainMenuService: MainMenuService,
     readonly referralService: ReferralService,
     readonly analyticsService: AnalyticsService,
   ) {}
@@ -34,7 +34,7 @@ export class StartCommand {
       }
 
       ctx.session.user = initialSession().user;
-      await this.mainMsgService.init(ctx, this.mainMenu.menu);
+      await this.mainMenuService.init(ctx, this.mainMenu.menu);
 
       if (payload?.startsWith('ad_')) {
         const channel = payload.slice(3);

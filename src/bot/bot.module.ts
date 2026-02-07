@@ -18,7 +18,7 @@ import { UserExpireListener } from '@bot/listeners/user-expire.listener';
 import { UserNotConnectedListener } from '@bot/listeners/user-not-connected.listener';
 import { LocalisationService } from '@bot/localisation/localisation.service';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { PaymentMsgService } from '@bot/navigation/features/payment/payment.service';
 import { RevokeSubMenuService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { SubscriptionMsgService } from '@bot/navigation/features/subscription/subscribtion.service';
@@ -50,7 +50,7 @@ import { BotService } from './bot.service';
     UserService,
     AnalyticsService,
     // MENU SERVICES
-    MainMsgService,
+    MainMenuService,
     PaymentMsgService,
     SubscriptionMsgService,
     RevokeSubMenuService,

@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { UserService } from '@user/user.service';
 
 @Injectable()
-export class MainMsgService extends Base {
+export class MainMenuService extends Base {
   constructor(readonly userService: UserService) {
     super();
   }

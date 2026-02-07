@@ -1,6 +1,6 @@
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
@@ -9,7 +9,7 @@ export class ReferralMenu extends Base {
   readonly menu = new Menu('referral-menu');
 
   constructor(
-    readonly mainMsgService: MainMsgService,
+    readonly mainMenuService: MainMenuService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
   ) {
@@ -21,7 +21,7 @@ export class ReferralMenu extends Base {
       .text(
         (ctx) => ctx.t('home-button-label'),
         async (cxt) => {
-          await this.mainMsgService.init(cxt, this.mainMenu.menu);
+          await this.mainMenuService.init(cxt, this.mainMenu.menu);
         },
       );
   }

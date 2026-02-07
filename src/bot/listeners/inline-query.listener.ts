@@ -7,7 +7,6 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserLocale } from '@user/user.model';
 import { UserService } from '@user/user.service';
 import { Bot, InlineKeyboard } from 'grammy';
-import { ReferralService } from '../../referral/referral.service';
 
 @Injectable()
 export class InlineQueryListener {
@@ -16,7 +15,6 @@ export class InlineQueryListener {
   constructor(
     @Inject(forwardRef(() => BotService))
     private readonly botService: BotService,
-    private readonly referralService: ReferralService,
     private readonly userService: UserService,
     private readonly localService: LocalisationService,
   ) {
@@ -25,7 +23,7 @@ export class InlineQueryListener {
 
   register(bot: Bot<BotContext>) {
     bot.on('inline_query', async (ctx) => {
-      const link = this.referralService.getUserReferralLink(ctx.from.id);
+      const link = `https://t.me/${process.env.TELEGRAM_BOT_USERNAME}`;
       const tgUser = this.userService.validateUser(ctx.from);
       const user = await this.userService.getUserByTgId(tgUser.id);
       const locale = (user?.description || process.env.DEFAULT_LOCALE || 'ru') as UserLocale;
@@ -51,7 +49,6 @@ export class InlineQueryListener {
           input_message_content: {
             message_text: ctx.t('invitation-text', {
               username: username!,
-              trial_period: Number(process.env.TRIAL_PERIOD_IN_DAYS),
             }),
             parse_mode: 'HTML',
           },

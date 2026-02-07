@@ -1,6 +1,6 @@
 import { Menu } from '@bot/navigation';
 import { MainMenu } from '@bot/navigation/features/main/main.menu';
-import { MainMsgService } from '@bot/navigation/features/main/main.service';
+import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { Base } from '@bot/navigation/menu.base';
 import { getAppUrl } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
@@ -10,7 +10,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 export class SubscriptionMenu extends Base {
   menu = new Menu('subscription-menu');
   constructor(
-    readonly mainMsgService: MainMsgService,
+    readonly mainMenuService: MainMenuService,
     @Inject(forwardRef(() => MainMenu))
     readonly mainMenu: MainMenu,
   ) {
@@ -35,7 +35,7 @@ export class SubscriptionMenu extends Base {
       .text(
         (ctx) => ctx.t('home-button-label'),
         async (ctx) => {
-          await this.mainMsgService.init(ctx, this.mainMenu.menu);
+          await this.mainMenuService.init(ctx, this.mainMenu.menu);
         },
       );
   }

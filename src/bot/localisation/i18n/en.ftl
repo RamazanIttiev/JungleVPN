@@ -3,6 +3,7 @@ provider-description-text = Happy to see you in the JUNGLE 🌴
 
 connect-button-label = Connect 📶
 extend-button-label = Extend ➕
+donate-button-label = Donate ➕
 support-button-label = VPN is not working 🚨
 support-chanel-button-label = Support
 home-button-label = Home 🏠
@@ -24,7 +25,7 @@ new-link-button-label = New link 🔄
 referra-button-label = Referral 🤝
 invite-button-label = Invite 🖖
 invite-inline-title = Invite a friend to JUNGLE 🌴
-invite-inline-description = Send this card to a friend and get extra subscription days 🙃
+invite-inline-description = Thank you for inviting people to the Jungle 🙃
 chanel-button-label = Telegram chanel 🌟
 broadcast-sent-success = ✅ Message sent to all users!
 payment-success = ✅ Payment successful! Thank you for your support.
@@ -49,21 +50,42 @@ main-text =
 
 
     ⚡️ Unlimited traffic
-    🆓 First { $trial_period } days are free
+    🔒 Access to Russian and international resources
+<#--    🆓 First { $trial_period } days are free-->
 
 
     🌍 Available countries:
     ╠ 🇩🇪 Germany
+    ╠ 🇵🇱 Poland
     ╠ 🇫🇮 Finland
     ╠ 🇷🇺 Russia
     ╚ More coming…
 
 
-    { $isExpired ->
-    [true]   🆘🆘🆘 <b>Your subscription has expired 🥲</b>
-    *[false]  📅 <b>Subscription end date:</b>
-    <blockquote>{ $expireAt } (MSK)</blockquote>
-    }
+<#--    { $isExpired ->-->
+<#--    [true]   🆘🆘🆘 <b>Your subscription has expired 🥲</b>-->
+<#--    *[false]  📅 <b>Subscription end date:</b>-->
+<#--    <blockquote>{ $expireAt } (MSK)</blockquote>-->
+<#--    }-->
+
+
+donate-text =
+    Right now, I feel that I want a higher level of quality and stability than what we have at the moment.
+
+    That’s why I decided to make Jungle free and fully focus on improving the service for you — to bring the connections to a level I can truly feel confident about 🙃
+
+    If you’d like to support the project, I’d really appreciate it:
+    <blockquote>
+    •	Tell your friends about Jungle
+    •	Subscribe to the channel — I share updates and future plans there
+    •	Leave a review or any feedback
+    •	If you’d like, you can also support the project financially — I’ll leave a link where you can choose any amount
+    </blockquote>
+
+    Thank you to everyone who stays, tries it out, and supports Jungle ❤️
+    I’ll keep working on it — things will only get better from here.
+
+
 
 
 devices-text =
@@ -220,14 +242,15 @@ invitation-text =
     Jungle is a VPN service. Connect easily and use the internet securely ❤️
 
     ⚡️Unlimited traffic
-    🆓First { $trial_period } days — free
+    🔒 Access to Russian and international resources
 
 
-    🌍Available locations:
+    🌍 Available countries:
     ╠ 🇩🇪 Germany
+    ╠ 🇵🇱 Poland
     ╠ 🇫🇮 Finland
     ╠ 🇷🇺 Russia
-    ╚ More coming soon...
+    ╚ More coming…
 
 
 
