@@ -4,6 +4,7 @@ import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { UserService } from '@user/user.service';
 
 @Injectable()
 export class ProfileMenu extends Base {
@@ -16,6 +17,7 @@ export class ProfileMenu extends Base {
     readonly mainMenu: MainMenu,
     @Inject(forwardRef(() => MainMenuService))
     readonly mainMenuService: MainMenuService,
+    readonly userService: UserService,
   ) {
     super();
 
@@ -50,6 +52,7 @@ export class ProfileMenu extends Base {
       .text(
         (ctx) => ctx.t('connect-button-label'),
         async (ctx) => {
+          await this.userService.init(ctx);
           await this.render(ctx, ctx.t('devices-text'), this.devicesMenu.menu);
         },
       )
