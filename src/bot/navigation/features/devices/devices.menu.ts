@@ -9,6 +9,7 @@ import { Base } from '@bot/navigation/menu.base';
 import { mapDeviceLabel } from '@bot/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserDevice } from '@user/user.model';
+import { UserService } from '@user/user.service';
 
 @Injectable()
 export class DevicesMenu extends Base {
@@ -24,6 +25,7 @@ export class DevicesMenu extends Base {
     readonly mainMenu: MainMenu,
     @Inject(forwardRef(() => SubscriptionMenu))
     readonly subscriptionMenu: SubscriptionMenu,
+    readonly userService: UserService,
   ) {
     super();
 
@@ -42,6 +44,7 @@ export class DevicesMenu extends Base {
 
   private async selectDevice(ctx: BotContext, device: UserDevice) {
     ctx.session.selectedDevice = device;
+    await this.userService.init(ctx);
     await this.subscriptionMsgService.init(ctx, this.subscriptionMenu.menu);
   }
 }

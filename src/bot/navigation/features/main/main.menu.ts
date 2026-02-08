@@ -40,7 +40,6 @@ export class MainMenu extends Base {
       .text(
         (ctx) => ctx.t('connect-button-label'),
         async (ctx) => {
-          await this.userService.init(ctx);
           await this.render(ctx, ctx.t('devices-text'), this.devicesMenu.menu);
         },
       )
