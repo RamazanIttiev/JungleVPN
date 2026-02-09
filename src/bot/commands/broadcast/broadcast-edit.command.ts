@@ -29,6 +29,8 @@ export class BroadcastEditCommand extends BroadcastBase {
       const entities = ctx.message?.entities;
       if (!message) return;
 
+      await ctx.reply('🚀 Starting editting...');
+
       const parseResult = this.parseBroadcastId(message, 'editmsg');
       if ('error' in parseResult) {
         await ctx.reply(parseResult.error, { parse_mode: 'HTML' });
@@ -65,27 +67,23 @@ export class BroadcastEditCommand extends BroadcastBase {
     messages: BroadcastMessage[],
     textToEdit: string,
   ) {
-    await this.processBatch(
-      messages,
-      async (msg) => {
-        // Try editing as caption first (for photo messages)
-        let result = await safeEditMessageCaption(bot, msg.telegramId, msg.messageId, textToEdit);
+    await this.processBatch(messages, async (msg) => {
+      // Try editing as caption first (for photo messages)
+      let result = await safeEditMessageCaption(bot, msg.telegramId, msg.messageId, textToEdit);
 
-        // If caption edit fails (likely text-only message), try editing as text
-        if (result !== true && 'error_code' in result) {
-          if (result.error_code === 400) {
-            // Message is not a media message, edit as text instead
-            result = await safeEditMessage(bot, msg.telegramId, msg.messageId, textToEdit);
-          }
+      // If caption edit fails (likely text-only message), try editing as text
+      if (result !== true && 'error_code' in result) {
+        if (result.error_code === 400) {
+          // Message is not a media message, edit as text instead
+          result = await safeEditMessage(bot, msg.telegramId, msg.messageId, textToEdit);
         }
+      }
 
-        if (result !== true && 'error_code' in result) {
-          this.errorMessages.push(`${result.description}`);
-          throw new Error(result.description);
-        }
-      },
-      'edit',
-    );
+      if (result !== true && 'error_code' in result) {
+        this.errorMessages.push(`${result.description}`);
+        throw new Error(result.description);
+      }
+    });
   }
 
   private getBroadcastMessage(broadcast: Broadcast, errorMessages?: string | null): string {

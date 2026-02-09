@@ -119,7 +119,6 @@ export async function safeReplyMessage(
     });
   } catch (err) {
     const error = err as GrammyError;
-    await ctx.reply(error.description);
     return error.description;
   }
 }

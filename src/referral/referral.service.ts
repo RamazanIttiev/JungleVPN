@@ -124,4 +124,8 @@ export class ReferralService {
     const code = generateReferralCode(telegramId);
     return `https://t.me/${process.env.TELEGRAM_BOT_USERNAME}?start=ref_${code}`;
   }
+
+  async deleteUser(telegramId: number) {
+    await this.referralRepository.delete({ invitedId: telegramId });
+  }
 }

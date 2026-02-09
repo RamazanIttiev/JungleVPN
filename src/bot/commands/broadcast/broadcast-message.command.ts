@@ -9,11 +9,13 @@ import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
 import { Bot } from 'grammy';
 import { Repository } from 'typeorm';
+import { ReferralService } from '../../../referral/referral.service';
 
 @Injectable()
 export class BroadcastMessageCommand extends BroadcastBase {
   constructor(
     readonly remnaService: RemnaService,
+    readonly referralService: ReferralService,
     @InjectRepository(Broadcast)
     readonly broadcastRepo: Repository<Broadcast>,
     @InjectRepository(BroadcastMessage)
@@ -54,7 +56,12 @@ export class BroadcastMessageCommand extends BroadcastBase {
     const errorMessagesText = this.mapErrorMessages(this.errorMessages);
     const resultMessage = this.getBroadcastMessage(broadcast, errorMessagesText);
 
-    await safeReplyMessage(ctx, resultMessage);
+    const erroReplyMessage = await safeReplyMessage(ctx, resultMessage);
+
+    if (typeof erroReplyMessage === 'string') {
+      const resultReplyMessage = this.getBroadcastMessage(broadcast, erroReplyMessage);
+      await safeReplyMessage(ctx, resultReplyMessage);
+    }
     this.resetState();
   };
 
@@ -65,29 +72,38 @@ export class BroadcastMessageCommand extends BroadcastBase {
     broadcast: Broadcast,
     imageFileId?: string,
   ) {
-    await this.processBatch(
-      users,
-      async (user) => {
-        const result = imageFileId
-          ? await safeSendPhoto(bot, user.telegramId || 0, imageFileId, textToSend)
-          : await safeSendMessage(bot, user.telegramId || 0, textToSend);
+    await this.processBatch(users, async (user) => {
+      const result = imageFileId
+        ? await safeSendPhoto(bot, user.telegramId || 0, imageFileId, textToSend)
+        : await safeSendMessage(bot, user.telegramId || 0, textToSend);
 
-        const isError = typeof result === 'string';
+      const isError = typeof result === 'string';
 
-        if (isError) {
+      if (isError) {
+        const isBlocked =
+          result.includes('Forbidden: bot was blocked by the user') ||
+          result.includes('Bad Request: chat not found');
+
+        if (isBlocked && !user.userTraffic.firstConnectedAt) {
+          await this.remnaService.deleteUser(user.uuid);
+          await this.referralService.deleteUser(user.telegramId || 0);
+          this.errorMessages.push(`Deleted user ${user.telegramId} - blocked and not connected`);
+
+          this.logger.warn(`Deleted user ${user.telegramId} - blocked and not connected`);
+        } else {
           this.errorMessages.push(`<code>${user.telegramId}</code>: ${result}`);
-          throw new Error(result);
         }
 
-        const broadcastMessage = this.broadcastMessageRepo.create({
-          broadcast,
-          telegramId: String(user.telegramId),
-          messageId: result.message_id,
-        });
-        await this.broadcastMessageRepo.save(broadcastMessage);
-      },
-      'broadcast',
-    );
+        throw new Error(result);
+      }
+
+      const broadcastMessage = this.broadcastMessageRepo.create({
+        broadcast,
+        telegramId: String(user.telegramId),
+        messageId: result.message_id,
+      });
+      await this.broadcastMessageRepo.save(broadcastMessage);
+    });
   }
 
   private getBroadcastMessage(broadcast: Broadcast, errorMessages?: string | null): string {

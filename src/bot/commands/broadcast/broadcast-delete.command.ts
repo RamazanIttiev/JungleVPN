@@ -70,12 +70,8 @@ ${errorMessagesText ? `<b>Errors:</b>\n${errorMessagesText}` : 'No errors.'}
   }
 
   private async deleteBroadcastMessages(bot: Bot<BotContext>, messages: BroadcastMessage[]) {
-    await this.processBatch(
-      messages,
-      async (msg) => {
-        await bot.api.deleteMessage(Number(msg.telegramId), msg.messageId);
-      },
-      'delete',
-    );
+    await this.processBatch(messages, async (msg) => {
+      await bot.api.deleteMessage(Number(msg.telegramId), msg.messageId);
+    });
   }
 }

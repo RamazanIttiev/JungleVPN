@@ -24,11 +24,7 @@ export abstract class BroadcastBase {
     protected readonly broadcastMessageRepo: Repository<BroadcastMessage>,
   ) {}
 
-  protected async processBatch<T>(
-    items: T[],
-    processItem: (item: T) => Promise<void>,
-    batchLabel: string,
-  ) {
+  protected async processBatch<T>(items: T[], processItem: (item: T) => Promise<void>) {
     const totalItems = items.length;
 
     for (let i = 0; i < totalItems; i += this.BATCH_SIZE) {
@@ -39,9 +35,6 @@ export abstract class BroadcastBase {
           await processItem(item);
           this.successCount++;
         } catch (e) {
-          const error = e as Error;
-
-          this.logger.error(`${batchLabel} error: ${error.message}`);
           this.failureCount++;
         }
       });

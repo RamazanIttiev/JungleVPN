@@ -82,8 +82,6 @@ export const CreateUserResponseSchema = z.object({
   email: z.email().nullable(),
   hwidDeviceLimit: z.number().nullable(),
 
-  firstConnectedAt: z.iso.date(),
-
   lastTriggeredThreshold: z.number(),
 
   createdAt: z.iso.date(),
@@ -110,6 +108,14 @@ export const CreateUserResponseSchema = z.object({
 
   happ: z.object({
     cryptoLink: z.string(),
+  }),
+
+  userTraffic: z.object({
+    usedTrafficBytes: z.number(),
+    lifetimeUsedTrafficBytes: z.number(),
+    onlineAt: z.string(),
+    lastConnectedNodeUuid: z.string().nullable(),
+    firstConnectedAt: z.string().nullable(),
   }),
 });
 
@@ -144,8 +150,6 @@ export const mockUserDto: UserDto = {
   email: null,
   hwidDeviceLimit: null,
 
-  firstConnectedAt: new Date().toISOString(),
-
   lastTriggeredThreshold: 0,
 
   createdAt: new Date().toISOString(),
@@ -162,20 +166,36 @@ export const mockUserDto: UserDto = {
   happ: {
     cryptoLink: 'https://example.com/crypto',
   },
+
+  userTraffic: {
+    usedTrafficBytes: 860903544,
+    lifetimeUsedTrafficBytes: 860903544,
+    onlineAt: '2026-02-09T21:57:30.119Z',
+    lastConnectedNodeUuid: 'd3659e85-01ec-4865-90c4-86fd8d23686f',
+    firstConnectedAt: '2026-02-09T18:48:30.150Z',
+  },
 };
 
 export const mockBroadcastUserDto: UserDto[] = [
   {
     ...mockUserDto,
-    uuid: '223e4567-e89b-12d3-a456-426614174000',
+    uuid: '504dbd6c-09e6-4fea-9a73-92974ef6185f',
     username: '7683608743',
     telegramId: 7683608743,
+    userTraffic: {
+      ...mockUserDto.userTraffic,
+      firstConnectedAt: '2026-02-09T21:57:30.119Z',
+    },
   },
   {
     ...mockUserDto,
-    uuid: '223e4567-e89b-12d3-426614174000',
+    uuid: 'cab71e6c-5577-4ebb-8756-719a5edaf5d6',
     username: '5986698166',
     telegramId: 5986698166,
+    userTraffic: {
+      ...mockUserDto.userTraffic,
+      firstConnectedAt: null,
+    },
   },
 ];
 
