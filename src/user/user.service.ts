@@ -71,6 +71,10 @@ export class UserService {
     const errorMessage =
       typeof error === 'string' ? error : error?.description || error?.message;
 
+    if (!errorMessage) {
+      return false;
+    }
+
     const isBlocked =
       errorMessage.includes('Forbidden: bot was blocked by the user') ||
       errorMessage.includes('Bad Request: chat not found');
