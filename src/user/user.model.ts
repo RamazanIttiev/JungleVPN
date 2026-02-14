@@ -184,7 +184,7 @@ export const mockBroadcastUserDto: UserDto[] = [
     telegramId: 7683608743,
     userTraffic: {
       ...mockUserDto.userTraffic,
-      firstConnectedAt: '2026-02-09T21:57:30.119Z',
+      firstConnectedAt: null
     },
   },
   {
@@ -194,7 +194,7 @@ export const mockBroadcastUserDto: UserDto[] = [
     telegramId: 5986698166,
     userTraffic: {
       ...mockUserDto.userTraffic,
-      firstConnectedAt: null,
+      firstConnectedAt: '2026-02-09T21:57:30.119Z',
     },
   },
 ];

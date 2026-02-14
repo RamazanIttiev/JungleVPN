@@ -10,6 +10,7 @@ import { BroadcastMessageCommand } from '@bot/commands/broadcast/broadcast-messa
 import { Broadcast } from '@bot/commands/broadcast/entities/broadcast.entity';
 import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-message.entity';
 import { StartCommand } from '@bot/commands/start.command';
+import { PollService } from '@bot/poll/poll.service';
 import { InlineQueryListener } from '@bot/listeners/inline-query.listener';
 import { PaymentStatusListener } from '@bot/listeners/payment-status.listener';
 import { TorrentListener } from '@bot/listeners/torrent.listener';
@@ -69,6 +70,7 @@ import { BotService } from './bot.service';
     BroadcastMessageCommand,
     BroadcastEditCommand,
     BroadcastDeleteCommand,
+    PollService,
     // CALLBACKS
     PaymentSuccessCallback,
     PaymentPeriodsCallback,

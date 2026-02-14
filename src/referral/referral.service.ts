@@ -1,6 +1,6 @@
 import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from '@user/user.service';
@@ -16,6 +16,7 @@ export class ReferralService {
   constructor(
     @InjectRepository(Referral)
     private readonly referralRepository: Repository<Referral>,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private eventEmitter: EventEmitter2,
   ) {}

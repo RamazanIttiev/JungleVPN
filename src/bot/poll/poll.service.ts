@@ -1,0 +1,152 @@
+import { BotContext } from '@bot/bot.types';
+import { PROD } from '@bot/utils/constants';
+import { Injectable, Logger } from '@nestjs/common';
+import { RemnaService } from '@remna/remna.service';
+import { mockBroadcastUserDto } from '@user/user.model';
+import { UserService } from '@user/user.service';
+import { Bot, GrammyError } from 'grammy';
+import { PollAnswer } from '../../analytics/analytics.model';
+import { AnalyticsService } from '../../analytics/analytics.service';
+
+interface ActivePoll {
+  question: string;
+  options: string[];
+}
+
+@Injectable()
+export class PollService {
+  private readonly logger = new Logger(PollService.name);
+  private readonly activePolls = new Map<string, ActivePoll>();
+
+  private readonly BATCH_SIZE = 25;
+  private readonly DELAY_MS = 1050;
+  private readonly adminId = Number(process.env.TELEGRAM_ADMIN_ID);
+
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly remnaService: RemnaService,
+    private readonly userService: UserService,
+  ) {}
+
+  register(bot: Bot<BotContext>) {
+    // Listen for metadata updates (sent when a poll changes state)
+    bot.on('poll', async (ctx) => {
+      const poll = ctx.poll;
+      this.logger.log(
+        `� Poll Metadata Update: "${poll.question}" (Anonymous: ${poll.is_anonymous})`,
+      );
+
+      this.activePolls.set(poll.id, {
+        question: poll.question,
+        options: poll.options.map((o) => o.text),
+      });
+
+      if (poll.is_anonymous) {
+        await ctx.reply(
+          `⚠️ Poll "${poll.question}" is anonymous. "poll_answer" updates will NOT be received!`,
+        );
+      }
+    });
+
+    // Listen for the initial poll message to trigger distribution
+    bot.on(':poll', async (ctx) => {
+      const poll = ctx.message?.poll;
+      if (!poll) return;
+
+      this.activePolls.set(poll.id, {
+        question: poll.question,
+        options: poll.options.map((o) => o.text),
+      });
+
+      if (ctx.from?.id === this.adminId) {
+        await this.broadcastPoll(ctx);
+      }
+    });
+
+    // Listen for individual votes
+    bot.on('poll_answer', async (ctx) => {
+      const { poll_id, user, option_ids } = ctx.pollAnswer;
+
+      if (!user) return;
+
+      const pollData = this.activePolls.get(poll_id);
+
+      if (!pollData) {
+        this.logger.warn(`⚠️ Answer for untracked poll ${poll_id}. Question unknown.`);
+        return;
+      }
+
+      const selectedOptions = option_ids.map((id) => pollData.options[id]);
+
+      const answer: PollAnswer = {
+        question: pollData.question,
+        userId: user.id,
+        userName: `${user.first_name || user.username} ${user.last_name || ''}`.trim(),
+        options: selectedOptions,
+        dateAndTime: new Date().toLocaleString(),
+      };
+
+      await this.analyticsService.addPollData(answer);
+    });
+  }
+
+  private async broadcastPoll(ctx: BotContext) {
+    const poll = ctx.message?.poll;
+    if (!poll) return;
+
+    if (poll.is_anonymous) {
+      await ctx.reply('⚠️ Poll is anonymous. Cannot broadcast.');
+      return;
+    }
+
+    const isProd = process.env.NODE_ENV === PROD;
+    const users = isProd ? await this.remnaService.getAllUsers() : mockBroadcastUserDto;
+    const validUsers = users.filter((u) => u.telegramId && u.telegramId !== this.adminId);
+
+    await ctx.reply(`🚀 Broadcasting poll "${poll.question}"`);
+
+    const pollMetadata: ActivePoll = {
+      question: poll.question,
+      options: poll.options.map((o) => o.text),
+    };
+
+    for (let i = 0; i < validUsers.length; i += this.BATCH_SIZE) {
+      const batch = validUsers.slice(i, i + this.BATCH_SIZE);
+      const promises = batch.map(async (user) => {
+        try {
+          // Use sendPoll instead of copyMessage to receive and map the unique poll_id for each user
+          const sentMessage = await ctx.api.sendPoll(
+            user.telegramId!,
+            poll.question,
+            poll.options.map((o) => o.text),
+            {
+              is_anonymous: poll.is_anonymous,
+              type: poll.type,
+              allows_multiple_answers: poll.allows_multiple_answers,
+              correct_option_id: poll.correct_option_id,
+              explanation: poll.explanation,
+              explanation_entities: poll.explanation_entities,
+              open_period: poll.open_period,
+              close_date: poll.close_date,
+            },
+          );
+
+          if (sentMessage.poll) {
+            this.activePolls.set(sentMessage.poll.id, pollMetadata);
+          }
+        } catch (err) {
+          const error = err as string | GrammyError;
+          await this.userService.handleInvalidUserRemoval(user, error);
+        }
+      });
+
+      await Promise.allSettled(promises);
+
+      if (i + this.BATCH_SIZE < validUsers.length) {
+        await new Promise((resolve) => setTimeout(resolve, this.DELAY_MS));
+      }
+    }
+
+    await ctx.reply('✅ Poll distribution finished!');
+  }
+}

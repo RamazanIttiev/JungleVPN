@@ -10,6 +10,7 @@ import { BroadcastDeleteCommand } from '@bot/commands/broadcast/broadcast-delete
 import { BroadcastEditCommand } from '@bot/commands/broadcast/broadcast-edit.command';
 import { BroadcastMessageCommand } from '@bot/commands/broadcast/broadcast-message.command';
 import { StartCommand } from '@bot/commands/start.command';
+import { PollService } from '@bot/poll/poll.service';
 import { LocalisationService } from '@bot/localisation/localisation.service';
 import { InlineQueryListener } from '@bot/listeners/inline-query.listener';
 import { MenuTree } from '@bot/navigation/menu.tree';
@@ -35,6 +36,7 @@ export class BotService implements OnModuleInit {
     private readonly navigatePaymentPeriodsCallback: NavigatePaymentPeriodsCallback,
     private readonly localService: LocalisationService,
     private readonly inlineQueryListener: InlineQueryListener,
+    private readonly pollService: PollService,
   ) {
     if (!this.token) {
       throw new Error('TELEGRAM_BOT_TOKEN missing');
@@ -56,6 +58,7 @@ export class BotService implements OnModuleInit {
     this.broadcastMessageCommand.register(this.bot);
     this.broadcastEditCommand.register(this.bot);
     this.broadcastDeleteCommand.register(this.bot);
+    this.pollService.register(this.bot);
 
     this.navigateMainCallback.register(this.bot);
     this.navigateDevicesCallback.register(this.bot);

@@ -7,15 +7,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
+import { UserService } from '@user/user.service';
 import { Bot } from 'grammy';
 import { Repository } from 'typeorm';
-import { ReferralService } from '../../../referral/referral.service';
 
 @Injectable()
 export class BroadcastMessageCommand extends BroadcastBase {
   constructor(
     readonly remnaService: RemnaService,
-    readonly referralService: ReferralService,
+    readonly userService: UserService,
     @InjectRepository(Broadcast)
     readonly broadcastRepo: Repository<Broadcast>,
     @InjectRepository(BroadcastMessage)
@@ -80,16 +80,10 @@ export class BroadcastMessageCommand extends BroadcastBase {
       const isError = typeof result === 'string';
 
       if (isError) {
-        const isBlocked =
-          result.includes('Forbidden: bot was blocked by the user') ||
-          result.includes('Bad Request: chat not found');
+        const isInvalidUser = await this.userService.handleInvalidUserRemoval(user, result);
 
-        if (isBlocked && !user.userTraffic.firstConnectedAt) {
-          await this.remnaService.deleteUser(user.uuid);
-          await this.referralService.deleteUser(user.telegramId || 0);
+        if (isInvalidUser) {
           this.errorMessages.push(`Deleted user ${user.telegramId} - blocked and not connected`);
-
-          this.logger.warn(`Deleted user ${user.telegramId} - blocked and not connected`);
         } else {
           this.errorMessages.push(`<code>${user.telegramId}</code>: ${result}`);
         }

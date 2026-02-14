@@ -16,14 +16,36 @@
     "strict": true,
     "skipLibCheck": true,
     "paths": {
-      "@bot/*": ["src/bot/*"],
-      "@remna/*": ["src/remna/*"],
-      "@payments/*": ["src/payments/*"],
-      "@user/*": ["src/user/*"],
-      "@assets/*": ["src/assets/*"],
-      "@utils/*": ["src/utils/*"]
+      "@bot/*": [
+        "src/bot/*"
+      ],
+      "@remna/*": [
+        "src/remna/*"
+      ],
+      "@payments/*": [
+        "src/payments/*"
+      ],
+      "@referral/*": [
+        "src/referral/*"
+      ],
+      "@user/*": [
+        "src/user/*"
+      ],
+      "@assets/*": [
+        "src/assets/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ]
     }
   },
-  "include": ["src/**/*", "db/**/*", "assets/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*",
+    "db/**/*",
+    "assets/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
