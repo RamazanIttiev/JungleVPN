@@ -2,12 +2,12 @@ import { Broadcast } from '@bot/commands/broadcast/entities/broadcast.entity';
 import { BroadcastMessage } from '@bot/commands/broadcast/entities/broadcast-message.entity';
 import { DEV } from '@bot/utils/constants';
 import { Payment } from '@payments/payment.entity';
+import { Referral } from '@referral/referral.entity';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { Referral } from '../src/referral/referral.entity';
 
 config({
-  path: ['.env.dev', '.env'],
+  path: ['.env'],
 });
 
 export const dataSourceOptions: DataSourceOptions = {

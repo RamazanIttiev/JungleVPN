@@ -29,29 +29,30 @@ export class PollService {
   ) {}
 
   register(bot: Bot<BotContext>) {
-    // Listen for metadata updates (sent when a poll changes state)
     bot.on('poll', async (ctx) => {
       const poll = ctx.poll;
-      this.logger.log(
-        `� Poll Metadata Update: "${poll.question}" (Anonymous: ${poll.is_anonymous})`,
-      );
-
-      this.activePolls.set(poll.id, {
-        question: poll.question,
-        options: poll.options.map((o) => o.text),
-      });
 
       if (poll.is_anonymous) {
         await ctx.reply(
           `⚠️ Poll "${poll.question}" is anonymous. "poll_answer" updates will NOT be received!`,
         );
+        return;
       }
+
+      this.logger.log(`� Poll Metadata Update: "${poll.question}"`);
+
+      this.activePolls.set(poll.id, {
+        question: poll.question,
+        options: poll.options.map((o) => o.text),
+      });
     });
 
     // Listen for the initial poll message to trigger distribution
     bot.on(':poll', async (ctx) => {
       const poll = ctx.message?.poll;
       if (!poll) return;
+
+      this.logger.log(`📊 New Poll Detected: ${poll.question}`);
 
       this.activePolls.set(poll.id, {
         question: poll.question,
@@ -63,10 +64,8 @@ export class PollService {
       }
     });
 
-    // Listen for individual votes
     bot.on('poll_answer', async (ctx) => {
       const { poll_id, user, option_ids } = ctx.pollAnswer;
-
       if (!user) return;
 
       const pollData = this.activePolls.get(poll_id);
@@ -75,6 +74,8 @@ export class PollService {
         this.logger.warn(`⚠️ Answer for untracked poll ${poll_id}. Question unknown.`);
         return;
       }
+
+      this.logger.log('✅ Received answer for poll:', pollData.question, 'from user:', user.id);
 
       const selectedOptions = option_ids.map((id) => pollData.options[id]);
 

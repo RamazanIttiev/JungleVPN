@@ -11,7 +11,7 @@ import { WebhookModule } from './webhook/webhook.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.dev', '.env'],
+      envFilePath: ['.env'],
     }),
     EventEmitterModule.forRoot(),
     TypeOrmModule.forRoot(dataSourceOptions),
