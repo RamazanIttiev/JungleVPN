@@ -2,6 +2,7 @@ export interface Advertisement {
   channel: string;
   userId: number | undefined;
   dateAndTime: string;
+  sheetId: string;
 }
 
 export interface PollAnswer {

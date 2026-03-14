@@ -19,7 +19,7 @@ export class AnalyticsService {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: `${process.env.GOOGLE_SHEET_TITLE}!A2`,
+      range: data.sheetId,
       valueInputOption: 'RAW',
       requestBody: { values: [values] },
     });

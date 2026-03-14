@@ -3,10 +3,10 @@ import { MainMenu } from '@bot/navigation/features/main/main.menu';
 import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { toDateString } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
+import { ReferralService } from '@referral/referral.service';
+import { decodeReferralCode } from '@referral/referral.utils';
 import { Bot } from 'grammy';
 import { AnalyticsService } from '../../analytics/analytics.service';
-import { ReferralService } from '../../referral/referral.service';
-import { decodeReferralCode } from '../../referral/referral.utils';
 
 @Injectable()
 export class StartCommand {
@@ -37,14 +37,21 @@ export class StartCommand {
       await this.mainMenuService.init(ctx, this.mainMenu.menu);
 
       if (payload?.startsWith('ad_')) {
-        const channel = payload.slice(3);
-
-        await this.analyticsService.addData({
-          channel,
-          userId: ctx.from?.id,
-          dateAndTime: toDateString(new Date().toISOString(), true),
-        });
+        await this.addData(payload, ctx.from?.id || 0);
       }
+
+      if (payload?.startsWith('web_app')) {
+        await this.addData(payload, ctx.from?.id || 0);
+      }
+    });
+  }
+
+  async addData(channel: string, userId: number) {
+    await this.analyticsService.addData({
+      channel,
+      userId,
+      dateAndTime: toDateString(new Date().toISOString(), true),
+      sheetId: `${process.env.GOOGLE_SHEET_TITLE}!A2`,
     });
   }
 }
