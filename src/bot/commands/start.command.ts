@@ -5,6 +5,7 @@ import { toDateString } from '@bot/utils/utils';
 import { Injectable } from '@nestjs/common';
 import { ReferralService } from '@referral/referral.service';
 import { decodeReferralCode } from '@referral/referral.utils';
+import { UserService } from '@user/user.service';
 import { Bot } from 'grammy';
 import { AnalyticsService } from '../../analytics/analytics.service';
 
@@ -13,6 +14,7 @@ export class StartCommand {
   constructor(
     readonly mainMenu: MainMenu,
     readonly mainMenuService: MainMenuService,
+    readonly userService: UserService,
     readonly referralService: ReferralService,
     readonly analyticsService: AnalyticsService,
   ) {}
@@ -20,7 +22,7 @@ export class StartCommand {
   register(bot: Bot<BotContext>) {
     bot.command('start', async (ctx) => {
       await ctx.react('🍌');
-
+      await this.userService.init(ctx);
       const payload = ctx.match;
 
       if (payload?.startsWith('ref_')) {
