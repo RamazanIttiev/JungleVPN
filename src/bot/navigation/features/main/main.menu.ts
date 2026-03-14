@@ -37,11 +37,9 @@ export class MainMenu extends Base {
         },
       )
       .row()
-      .text(
+      .webApp(
         (ctx) => ctx.t('connect-button-label'),
-        async (ctx) => {
-          await this.render(ctx, ctx.t('devices-text'), this.devicesMenu.menu);
-        },
+        process.env.WEB_APP_URL || 'https://miniapp.thejungle.pro',
       )
       .text(
         (ctx) => ctx.t('available-countries-button-label'),
