@@ -100,6 +100,13 @@ devices-text =
     Next you’ll get instructions on how to install and configure it 🙂
 
 
+revoked-sub-text =
+    Your subscription has been revoked ✅
+
+    Now, please try to connect again. Just press the button below and follow the instructions.
+
+    Your Jungle 🌴
+
 payment-periods-text =
     <b>How long do you want to subscribe to the VPN?</b>
 

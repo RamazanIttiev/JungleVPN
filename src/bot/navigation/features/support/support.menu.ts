@@ -6,6 +6,7 @@ import { MainMenuService } from '@bot/navigation/features/main/main.service';
 import { RevokeSubMenuService } from '@bot/navigation/features/subscription/revokeSub.service';
 import { Base } from '@bot/navigation/menu.base';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { InlineKeyboard } from 'grammy';
 
 @Injectable()
 export class SupportMenu extends Base {
@@ -22,13 +23,24 @@ export class SupportMenu extends Base {
     super();
 
     this.menu
-      .text(
-        (ctx) => ctx.t('new-link-button-label'),
-        async (ctx) => {
-          await this.revokeSubMenuService.init(ctx);
-          await this.render(ctx, ctx.t('devices-text'), this.devicesMenu.menu);
-        },
-      )
+      .dynamic((_, range) => {
+        const keyboard = new InlineKeyboard();
+        range.text(
+          (ctx) => ctx.t('new-link-button-label'),
+          async (ctx) => {
+            await this.revokeSubMenuService.init(ctx);
+
+            await this.render(
+              ctx,
+              ctx.t('revoked-sub-text'),
+              keyboard.webApp(
+                ctx.t('connect-button-label'),
+                process.env.WEB_APP_URL || 'https://miniapp.thejungle.pro',
+              ),
+            );
+          },
+        );
+      })
       .row()
       .url(
         (ctx) => ctx.t('support-chanel-button-label'),
