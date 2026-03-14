@@ -98,11 +98,16 @@ export async function safeSendMessage(
   content: string,
   options?: Other<RawApi, 'sendMessage', 'chat_id' | 'text'> | undefined,
 ): Promise<Message.TextMessage | ErrorMessage> {
+  const excludeList = process.env.EXCLUDE_BROADCAST_LIST?.includes(userId.toString());
+
   try {
-    return await bot.api.sendMessage(userId, content, {
-      parse_mode: 'HTML',
-      ...options,
-    });
+    if (!excludeList) {
+      return await bot.api.sendMessage(userId, content, {
+        parse_mode: 'HTML',
+        ...options,
+      });
+    }
+    return 'User is in the exclude list, message not sent.';
   } catch (err) {
     const error = err as GrammyError;
     return error.description;
