@@ -41,12 +41,12 @@ export class MainMenu extends Base {
         (ctx) => ctx.t('connect-button-label'),
         process.env.WEB_APP_URL || 'https://miniapp.thejungle.pro',
       )
-      .text(
-        (ctx) => ctx.t('available-countries-button-label'),
-        async (ctx) => {
-          await this.render(ctx, ctx.t('available-countries-text'), this.profileMenu.menu);
-        },
-      )
+      // .text(
+      //   (ctx) => ctx.t('available-countries-button-label'),
+      //   async (ctx) => {
+      //     await this.render(ctx, ctx.t('available-countries-text'), this.profileMenu.menu);
+      //   },
+      // )
       // .text(
       //   (ctx) => ctx.t('referra-button-label'),
       //   async (ctx) => {
