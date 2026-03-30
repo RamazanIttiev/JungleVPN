@@ -68,10 +68,9 @@ export class UserService {
   }
 
   async handleInvalidUserRemoval(user: UserDto, error: string | GrammyError): Promise<boolean> {
-    const errorMessage =
-      typeof error === 'string' ? error : error?.description || error?.message;
+    const errorMessage = typeof error === 'string' ? error : error?.description || error?.message;
 
-    if (!errorMessage) {
+    if (!errorMessage || user.email) {
       return false;
     }
 
