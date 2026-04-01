@@ -79,12 +79,7 @@ export class BroadcastMessageCommand extends BroadcastBase {
 
       const isError = typeof result === 'string';
 
-      console.log(
-        'Error for user',
-        user.telegramId,
-        ':',
-        isError ? result : 'Message sent successfully',
-      );
+      console.log(isError && result);
 
       if (isError) {
         const isInvalidUser = await this.userService.handleInvalidUserRemoval(user, result);
