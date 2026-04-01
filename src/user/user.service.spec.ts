@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { ReferralService } from '@referral/referral.service';
 import { RemnaService } from '@remna/remna.service';
 import { UserDto } from '@user/user.model';
-import { GrammyError } from 'grammy';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserService } from './user.service';
 
@@ -57,17 +56,6 @@ describe('UserService', () => {
       expect(mockReferralService.deleteUser).toHaveBeenCalledWith(123456789);
     });
 
-    it('should delete user if they blocked the bot and never connected (error as GrammyError)', async () => {
-      const error = {
-        description: 'Forbidden: bot was blocked by the user',
-      } as GrammyError;
-      const result = await service.handleInvalidUserRemoval(mockUser, error);
-
-      expect(result).toBe(true);
-      expect(service.deleteUser).toHaveBeenCalledWith('user-uuid');
-      expect(mockReferralService.deleteUser).toHaveBeenCalledWith(123456789);
-    });
-
     it('should NOT delete user if they have already connected even if blocked', async () => {
       const connectedUser = {
         ...mockUser,
@@ -95,12 +83,6 @@ describe('UserService', () => {
 
     it('should handle edge case: error is undefined', async () => {
       const result = await service.handleInvalidUserRemoval(mockUser, undefined as any);
-      expect(result).toBe(false);
-    });
-
-    it('should handle edge case: error description is missing in GrammyError', async () => {
-      const error = {} as GrammyError;
-      const result = await service.handleInvalidUserRemoval(mockUser, error);
       expect(result).toBe(false);
     });
 

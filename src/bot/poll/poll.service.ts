@@ -1,10 +1,11 @@
+import * as process from 'node:process';
 import { BotContext } from '@bot/bot.types';
 import { PROD } from '@bot/utils/constants';
 import { Injectable, Logger } from '@nestjs/common';
 import { RemnaService } from '@remna/remna.service';
 import { mockBroadcastUserDto } from '@user/user.model';
 import { UserService } from '@user/user.service';
-import { Bot, GrammyError } from 'grammy';
+import { Bot } from 'grammy';
 import { PollAnswer } from '../../analytics/analytics.model';
 import { AnalyticsService } from '../../analytics/analytics.service';
 
@@ -114,29 +115,35 @@ export class PollService {
     for (let i = 0; i < validUsers.length; i += this.BATCH_SIZE) {
       const batch = validUsers.slice(i, i + this.BATCH_SIZE);
       const promises = batch.map(async (user) => {
+        const excludeList = process.env.EXCLUDE_POLL_BROADCAST_LIST?.includes(
+          <string>user.telegramId?.toString(),
+        );
+
         try {
           // Use sendPoll instead of copyMessage to receive and map the unique poll_id for each user
-          const sentMessage = await ctx.api.sendPoll(
-            user.telegramId!,
-            poll.question,
-            poll.options.map((o) => o.text),
-            {
-              is_anonymous: poll.is_anonymous,
-              type: poll.type,
-              allows_multiple_answers: poll.allows_multiple_answers,
-              correct_option_id: poll.correct_option_id,
-              explanation: poll.explanation,
-              explanation_entities: poll.explanation_entities,
-              open_period: poll.open_period,
-              close_date: poll.close_date,
-            },
-          );
+          if (!excludeList) {
+            const sentMessage = await ctx.api.sendPoll(
+              user.telegramId!,
+              poll.question,
+              poll.options.map((o) => o.text),
+              {
+                is_anonymous: poll.is_anonymous,
+                type: poll.type,
+                allows_multiple_answers: poll.allows_multiple_answers,
+                correct_option_id: poll.correct_option_id,
+                explanation: poll.explanation,
+                explanation_entities: poll.explanation_entities,
+                open_period: poll.open_period,
+                close_date: poll.close_date,
+              },
+            );
 
-          if (sentMessage.poll) {
-            this.activePolls.set(sentMessage.poll.id, pollMetadata);
+            if (sentMessage.poll) {
+              this.activePolls.set(sentMessage.poll.id, pollMetadata);
+            }
           }
         } catch (err) {
-          const error = err as string | GrammyError;
+          const error = err as string;
           await this.userService.handleInvalidUserRemoval(user, error);
         }
       });

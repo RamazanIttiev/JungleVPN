@@ -5,7 +5,6 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ReferralService } from '@referral/referral.service';
 import { RemnaService } from '@remna/remna.service';
 import { UpdateUserRequestDto, UserDto } from '@user/user.model';
-import { GrammyError } from 'grammy';
 
 @Injectable()
 export class UserService {
@@ -67,16 +66,18 @@ export class UserService {
     }
   }
 
-  async handleInvalidUserRemoval(user: UserDto, error: string | GrammyError): Promise<boolean> {
-    const errorMessage = typeof error === 'string' ? error : error?.description || error?.message;
+  async handleInvalidUserRemoval(user: UserDto, error: string): Promise<boolean> {
+    if (!error) {
+      return false;
+    }
 
-    if (!errorMessage || user.email) {
+    if (error && user.email) {
       return false;
     }
 
     const isBlocked =
-      errorMessage.includes('Forbidden: bot was blocked by the user') ||
-      errorMessage.includes('Bad Request: chat not found');
+      error.includes('Forbidden: bot was blocked by the user') ||
+      error.includes('Bad Request: chat not found');
 
     if (isBlocked && !user.userTraffic.firstConnectedAt) {
       await this.deleteUser(user.uuid);
