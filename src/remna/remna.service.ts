@@ -67,16 +67,30 @@ export class RemnaService {
     }
   }
 
-  async getAllUsers() {
-    const { users } = await this.fetch<{
-      total: number;
-      users: UserDto[];
-    }>({
-      url: '/users?size=1000',
-      method: 'GET',
-    });
+  async getAllUsers(): Promise<UserDto[]> {
+    const pageSize = 1000;
+    const allUsers: UserDto[] = [];
+    let start = 0;
 
-    return users;
+    for (;;) {
+      const { total, users } = await this.fetch<{
+        total: number;
+        users: UserDto[];
+      }>({
+        url: `/users?size=${pageSize}&start=${start}`,
+        method: 'GET',
+      });
+
+      allUsers.push(...users);
+
+      if (users.length === 0) break;
+      if (allUsers.length >= total) break;
+      if (users.length < pageSize) break;
+
+      start += pageSize;
+    }
+
+    return allUsers;
   }
 
   async createUser(payload: Pick<CreateUserRequestDto, 'username' | 'telegramId' | 'description'>) {
